@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { AboutYouStep } from '@/steps/AboutYouStep'
+import { ContributingOverviewStep } from '@/steps/ContributingOverviewStep'
 import { ExtendStep } from '@/steps/ExtendStep'
 import { FinishStep } from '@/steps/FinishStep'
 import { GraphStep } from '@/steps/GraphStep'
@@ -27,6 +28,7 @@ export const STEP_REGISTRY: StepEntry[] = [
   { id: 'stack', Component: StackStep },
   { id: 'tour', Component: TourStep },
   { id: 'quiz', Component: QuizStep, lazy: true },
+  { id: 'contributing-overview', Component: ContributingOverviewStep },
   { id: 'issues', Component: IssuesStep, lazy: true },
   { id: 'prompt', Component: PromptStep, lazy: true },
   { id: 'verify', Component: VerifyStep, lazy: true },

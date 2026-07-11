@@ -121,7 +121,7 @@ export default function App() {
   const isExtendStep = stepId === 'extend'
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
 
-  // Gate Next: about requires persona; overview/graph/tour/verify/quiz hide until complete; issues require a pick.
+  // Gate Next: about requires persona; overview/graph/tour/contributing/verify/quiz hide until complete; issues require a pick.
   const hideNext =
     isFinishStep ||
     (stepId === 'about' && !personaSelected) ||
@@ -129,6 +129,7 @@ export default function App() {
     (stepId === 'graph' && !gates.graph) ||
     (stepId === 'tour' && !gates.tour) ||
     (stepId === 'quiz' && !quizFinished) ||
+    (stepId === 'contributing-overview' && !gates.contributingOverview) ||
     (stepId === 'verify' && !gates.verify)
 
   const issueSelected = useSyncExternalStore(

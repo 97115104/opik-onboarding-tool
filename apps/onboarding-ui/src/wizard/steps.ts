@@ -7,6 +7,12 @@ export const WIZARD_STEPS: WizardStepConfig[] = [
   { id: 'stack', label: 'Local stack', testId: 'step-stack', owner: 'B' },
   { id: 'tour', label: 'Try Opik', testId: 'step-tour', owner: 'B' },
   { id: 'quiz', label: 'Quiz', testId: 'step-quiz', owner: 'C' },
+  {
+    id: 'contributing-overview',
+    label: 'Contributing',
+    testId: 'step-contributing-overview',
+    owner: 'C',
+  },
   { id: 'issues', label: 'Issues', testId: 'step-issues', owner: 'C' },
   { id: 'prompt', label: 'Cursor prompt', testId: 'step-prompt', owner: 'C' },
   { id: 'verify', label: 'Verify', testId: 'step-verify', owner: 'C' },

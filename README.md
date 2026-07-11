@@ -80,7 +80,7 @@ opik-onboarding-tool/
   scripts/                  # Bash orchestration
   apps/onboarding-ui/       # Wizard (Vite + React)
   apps/chat-demo/           # Ollama chat with Opik SDK
-  content/                  # Overview, graph, tour, quiz
+  content/                  # Overview, contributing overview, graph, tour, quiz
   docs/audiences/           # Role-specific guides
   e2e/                      # Playwright acceptance tests
 ```

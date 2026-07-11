@@ -1,4 +1,9 @@
-export type WizardGateId = 'overview' | 'graph' | 'tour' | 'verify'
+export type WizardGateId =
+  | 'overview'
+  | 'graph'
+  | 'tour'
+  | 'contributingOverview'
+  | 'verify'
 
 type Listener = () => void
 
@@ -6,6 +11,7 @@ const gates: Record<WizardGateId, boolean> = {
   overview: false,
   graph: false,
   tour: false,
+  contributingOverview: false,
   verify: false,
 }
 
@@ -14,6 +20,11 @@ let gatesSnapshot: Record<WizardGateId, boolean> = { ...gates }
 
 /** Persisted across step remounts so Back does not wipe gated progress. */
 export type OverviewProgress = {
+  slideIndex: number
+  reachedLast: boolean
+}
+
+export type ContributingOverviewProgress = {
   slideIndex: number
   reachedLast: boolean
 }
@@ -28,6 +39,10 @@ export type VerifyProgress = {
 }
 
 let overviewProgress: OverviewProgress = { slideIndex: 0, reachedLast: false }
+let contributingOverviewProgress: ContributingOverviewProgress = {
+  slideIndex: 0,
+  reachedLast: false,
+}
 let graphReviewedIds: string[] = []
 let tourProgress: TourProgress = { done: {}, revealedCount: 1 }
 let verifyProgress: VerifyProgress = { done: {} }
@@ -67,6 +82,15 @@ export function getOverviewProgress(): OverviewProgress {
 export function setOverviewProgress(next: OverviewProgress) {
   overviewProgress = { ...next }
   syncGate('overview', overviewProgress.reachedLast)
+}
+
+export function getContributingOverviewProgress(): ContributingOverviewProgress {
+  return { ...contributingOverviewProgress }
+}
+
+export function setContributingOverviewProgress(next: ContributingOverviewProgress) {
+  contributingOverviewProgress = { ...next }
+  syncGate('contributingOverview', contributingOverviewProgress.reachedLast)
 }
 
 export function getGraphReviewedIds(): string[] {

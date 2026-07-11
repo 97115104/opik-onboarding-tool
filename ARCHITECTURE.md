@@ -7,7 +7,7 @@ This document describes how the onboarding tool is structured, how services conn
 The **Opik Onboarding Tool** guides a contributor from zero to a first Opik contribution. It:
 
 1. Deploys a local Opik stack (Docker via `opik.sh`), Ollama, and demo UIs.
-2. Walks the user through product knowledge (overview, graph, tour, quiz).
+2. Walks the user through product knowledge (overview, graph, tour, quiz) and Opik contribution norms (contributing overview).
 3. Assigns a ranked GitHub issue from `comet-ml/opik` and generates a Cursor prompt + contribution branch on the **Opik repo** (not this repo).
 4. Provides test/CI/PR checklists aligned with Opik's CONTRIBUTING.md.
 
@@ -100,13 +100,16 @@ Single-page wizard with light (white/black) aesthetic. Steps:
 | Local stack status | `stack` | Same-origin `/api/health/:service` | B |
 | Tour | `tour` | `content/onboarding-tour.md` | B |
 | Quiz | `quiz` | `content/quiz.json` (auto-grade) | C |
+| Contributing overview | `contributing-overview` | `contributingSlides.ts` (+ `content/contributing-overview.md`) | C |
 | Issues (1+2) | `issues` | `scripts/rank-issues.sh` + persona | C |
 | Cursor prompt | `prompt` | Generated + open-Cursor command | C |
+| Verify | `verify` | Area plan + checklist | C |
 | PR help | `pr-help` | Secondary Cursor prompt | C |
 | Extend tool | `extend` | CONTRIBUTING.md link | B |
+| Finish | `finish` | Celebration | B |
 
 Shell, routing, design system, About you, health proxy, and non-C steps → **workstream B**.  
-Quiz, issue ranking, Cursor prompts, PR-help → **workstream C** under `src/features/`.
+Quiz, issues, Cursor prompts, verify, and PR-help → **workstream C** under `src/features/`. Contributing overview (owner C) lives in `src/steps/ContributingOverviewStep.tsx` with slides in `src/content/contributingSlides.ts`.
 
 ## Chat demo
 

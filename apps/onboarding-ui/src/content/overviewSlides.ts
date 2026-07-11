@@ -52,6 +52,6 @@ export const OVERVIEW_SLIDES: OverviewSlide[] = [
   {
     id: 'wizard-uses',
     title: 'How this wizard uses Opik',
-    body: 'You will run the self-hosted stack, send a chat demo trace, learn the product, then pick a GitHub issue and open a draft PR with Cursor.',
+    body: 'You will run the self-hosted stack, send a chat demo trace, learn the product, review how Opik contributions work, then pick a GitHub issue and open a draft PR with Cursor.',
   },
 ]

@@ -15,6 +15,7 @@ Thank you for improving the onboarding experience. This repo orchestrates local 
 | File | Purpose | Consumed by |
 |------|---------|-------------|
 | `overview.md` | Product overview markdown | Wizard overview step |
+| `contributing-overview.md` | Opik upstream contributing walkthrough | Wizard contributing overview step |
 | `knowledge-graph.json` | Navigable concept graph | Wizard graph step |
 | `onboarding-tour.md` | Guided tour copy | Wizard tour step |
 | `quiz.json` | Five-question quiz | Wizard quiz step (see schema in CONTRACTS) |
@@ -54,7 +55,7 @@ Owned by the UI workstream. To add a wizard step:
 3. If the step reads new content, add the file under `content/` and load it from the step.
 4. Extend Playwright in `e2e/tests/onboarding-wizard.spec.ts`.
 
-Feature areas (`quiz`, `issues`, `prompt`, `checklist`) live under `src/features/`. Coordinate to avoid path conflicts.
+Feature areas (`quiz`, `issues`, `prompt`, `checklist`, `verify`) live under `src/features/`. Contributing overview slides live under `src/content/contributingSlides.ts` with mirror `content/contributing-overview.md`. Coordinate to avoid path conflicts.
 
 ### Scripts (`scripts/`)
 

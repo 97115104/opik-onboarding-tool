@@ -22,6 +22,14 @@ const GRAPH_NODE_IDS = [
 ];
 
 const OVERVIEW_SLIDE_COUNT = 6;
+const CONTRIBUTING_SLIDE_IDS = [
+  "what-contributing-means",
+  "repo-layout",
+  "where-to-work",
+  "how-to-contribute",
+  "github-actions",
+  "whats-next",
+] as const;
 
 async function clickNext(page: Page): Promise<void> {
   await page.getByTestId("wizard-next").click();
@@ -126,6 +134,28 @@ async function completeQuiz(page: Page): Promise<void> {
   await expect(page.getByTestId("quiz-results")).toBeVisible();
 }
 
+async function completeContributingOverviewSlides(page: Page): Promise<void> {
+  await expectStep(page, "step-contributing-overview");
+  await expect(page.getByTestId("contributing-slides")).toBeVisible();
+  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+  await expect(page.getByTestId("contributing-slide-prev")).toBeDisabled();
+
+  for (let i = 0; i < CONTRIBUTING_SLIDE_IDS.length; i++) {
+    await expect(
+      page.getByTestId(`contributing-slide-${CONTRIBUTING_SLIDE_IDS[i]}`),
+    ).toBeVisible();
+    if (i < CONTRIBUTING_SLIDE_IDS.length - 1) {
+      await page.getByTestId("contributing-slide-next").click();
+      await expect(page.getByTestId("contributing-slide-prev")).toBeEnabled();
+    }
+  }
+
+  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast.
+  await expect(page.getByTestId("contributing-slide-next")).toHaveCount(0);
+  await expect(page.getByTestId("wizard-next")).toBeVisible();
+  await clickNext(page);
+}
+
 async function completeVerify(page: Page): Promise<void> {
   await expectStep(page, "step-verify");
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
@@ -176,6 +206,8 @@ test.describe("onboarding wizard", () => {
     await completeQuiz(page);
     await expect(page.getByTestId("wizard-next")).toBeVisible();
     await clickNext(page);
+
+    await completeContributingOverviewSlides(page);
 
     await expectStep(page, "step-issues");
     await expect(page.getByTestId("issue-recommended")).toBeVisible({

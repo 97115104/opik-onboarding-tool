@@ -213,6 +213,7 @@ interface ContributionSnapshot {
 | Local stack | `stack` | `step-stack` | B |
 | Try Opik | `tour` | `step-tour` | B |
 | Quiz | `quiz` | `step-quiz` | C |
+| Contributing overview | `contributing-overview` | `step-contributing-overview` | C |
 | Issues (1+2) | `issues` | `step-issues` | C |
 | Cursor prompt | `prompt` | `step-prompt` | C |
 | Verify | `verify` | `step-verify` | C |
@@ -229,12 +230,15 @@ interface ContributionSnapshot {
 | `graph` | Hidden until every Opik Features node is reviewed (modal close) |
 | `tour` | Hidden until all tour steps are done (CTA click auto-completes; checkbox still works) |
 | `quiz` | Hidden until quiz results (`quizFinished`) |
+| `contributing-overview` | Hidden until the last contributing overview slide is reached |
 | `issues` | Next disabled until an issue is confirmed |
 | `verify` | Hidden until checklist (`verify-check-ran-local` + `verify-check-matches-issue`) |
 | `extend` | Footer label is **Finish**; advances to celebration |
 | `finish` | Footer Next/Finish hidden; Back returns to Extend; progress reads Complete |
 
 Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned).
+
+Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo.
 
 Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
 
@@ -342,6 +346,10 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Quiz option | `quiz-option-{index}` |
 | Quiz next question | `quiz-next-question` |
 | Quiz results summary | `quiz-results` |
+| Contributing overview panel | `step-contributing-overview` |
+| Contributing slides | `contributing-slides` |
+| Contributing slide | `contributing-slide-{id}` |
+| Contributing slide prev/next | `contributing-slide-prev`, `contributing-slide-next` |
 | Issues panel | `step-issues` |
 | Issue list | `issue-list` |
 | Recommended issue | `issue-recommended` |
@@ -462,7 +470,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 

@@ -19,9 +19,14 @@ export interface WizardStepDefinition {
   testId: string;
 }
 
-/** Metadata only. Components are lazy-loaded by B via lazyFeatures.ts. */
+/** Metadata only. Most C step components are lazy-loaded by B via lazyFeatures.ts; contributing-overview is eager. */
 export const CONTRIBUTION_WIZARD_STEPS: WizardStepDefinition[] = [
   { key: "quiz", label: "Quiz", testId: "step-quiz" },
+  {
+    key: "contributing-overview",
+    label: "Contributing",
+    testId: "step-contributing-overview",
+  },
   { key: "issues", label: "Issues", testId: "step-issues" },
   { key: "prompt", label: "Cursor prompt", testId: "step-prompt" },
   { key: "verify", label: "Verify", testId: "step-verify" },
