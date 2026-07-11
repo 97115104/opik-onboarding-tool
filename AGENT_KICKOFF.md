@@ -172,20 +172,22 @@ On smoke failure, open fix issues labeled `workstream:fix` + parent workstream l
 
 - [ ] `./deploy-locally.sh` one-shot works (Bun, gh auth, Opik, Ollama, UIs, e2e, browsers)
 - [ ] Playwright suite passes in deploy and smoke
-- [ ] Wizard covers steps 1,2,6–8,10,11 with Cursor-like UI
-- [ ] Quiz + assignment produces Cursor prompt + branch `opik-onboarding-tool-97115104-contribution-N`
+- [ ] Wizard: About you → overview → graph → stack → tour → quiz → issues → prompt → pr-help → extend
+- [ ] Quiz auto-grades; issues show 1 recommended + 2 alternatives; dual Cursor prompts
 - [ ] Every implement issue closed with two addressed review passes
-- [ ] Issue board shows Prep → A–E → Smoke with no path conflicts
+- [ ] Issue board shows Prep → implement → Smoke with no path conflicts
 
 ## UI direction
 
 Reference: [cursor.com/home](https://cursor.com/home)
 
+- Light theme: white surface, black text, restrained accent
 - Single composition, first viewport
 - Expressive typography (not Inter/Roboto)
 - Atmospheric background (subtle gradient/pattern)
 - One job per step; 2–3 intentional motion transitions
 - No card soup in hero
+- No em dashes in UI-facing copy
 
 ## Seeded issues
 

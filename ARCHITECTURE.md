@@ -90,22 +90,23 @@ Sequential phases (see CONTRACTS for flags):
 
 ## Onboarding UI wizard
 
-Single-page wizard with Cursor-like aesthetic (see plan). Steps:
+Single-page wizard with light (white/black) aesthetic. Steps:
 
 | Step | Route key | Data source | Owner |
 |------|-----------|-------------|-------|
+| About you | `about` | Persona choice (localStorage) | B |
 | Overview | `overview` | `content/overview.md` | B |
 | Knowledge graph | `graph` | `content/knowledge-graph.json` | B |
-| Local stack status | `stack` | Poll CONTRACTS ports / health | B |
+| Local stack status | `stack` | Same-origin `/api/health/:service` | B |
 | Tour | `tour` | `content/onboarding-tour.md` | B |
-| Quiz | `quiz` | `content/quiz.json` | C |
-| Role + issue assignment | `issues` | `scripts/rank-issues.sh` + gh | C |
-| Cursor prompt | `prompt` | Generated from assigned issue | C |
-| Test / CI / PR | `checklist` | Opik CONTRIBUTING alignment | C |
+| Quiz | `quiz` | `content/quiz.json` (auto-grade) | C |
+| Issues (1+2) | `issues` | `scripts/rank-issues.sh` + persona | C |
+| Cursor prompt | `prompt` | Generated + open-Cursor command | C |
+| PR help | `pr-help` | Secondary Cursor prompt | C |
 | Extend tool | `extend` | CONTRIBUTING.md link | B |
 
-Shell, routing, design system, and steps without quiz/issues/prompt/checklist logic → **workstream B**.  
-Quiz, issue ranking, Cursor prompt, PR checklist → **workstream C** under `src/features/`.
+Shell, routing, design system, About you, health proxy, and non-C steps → **workstream B**.  
+Quiz, issue ranking, Cursor prompts, PR-help → **workstream C** under `src/features/`.
 
 ## Chat demo
 
