@@ -102,6 +102,6 @@ Do **not** silently edit `CONTRACTS.md` or `ARCHITECTURE.md` during a feature is
 
 ## Getting help
 
-- Opik product docs: https://www.comet.com/docs/opik/
+- Opik product docs: https://www.comet.com/docs/opik/v1/
 - Opik contributing: https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md
 - This repo issues: https://github.com/97115104/opik-onboarding-tool/issues

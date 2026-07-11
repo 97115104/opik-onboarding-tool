@@ -28,6 +28,6 @@ Prefer small, focused spans (one per LLM call, tool, or retrieval step) so trace
 
 ## Deeper reading
 
-- [Opik tracing](https://www.comet.com/docs/opik/tracing/)
-- [Integrations](https://www.comet.com/docs/opik/integrations/overview/)
+- [Opik tracing](https://www.comet.com/docs/opik/v1/tracing/)
+- [Integrations](https://www.comet.com/docs/opik/v1/integrations/overview/)
 - [Opik CONTRIBUTING](https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md)

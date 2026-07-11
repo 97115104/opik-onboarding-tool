@@ -28,5 +28,5 @@ Opik connects **what the AI did** (traces) with **how well it performed** (metri
 
 ## Learn more
 
-- [Production monitoring](https://www.comet.com/docs/opik/production/production_monitoring/)
-- [Evaluation overview](https://www.comet.com/docs/opik/evaluation/overview/)
+- [Production monitoring](https://www.comet.com/docs/opik/v1/production/production_monitoring)
+- [Evaluation overview](https://www.comet.com/docs/opik/v1/evaluation/overview/)

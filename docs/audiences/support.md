@@ -29,5 +29,5 @@ Collect project name, approximate UTC time, session or trace ID, and expected vs
 
 ## Learn more
 
-- [Tracing overview](https://www.comet.com/docs/opik/tracing/)
-- [Annotate traces & feedback](https://www.comet.com/docs/opik/tracing/annotate_traces/)
+- [Tracing overview](https://www.comet.com/docs/opik/v1/tracing/)
+- [Annotate traces & feedback](https://www.comet.com/docs/opik/v1/opik-university/observability/annotate-traces)

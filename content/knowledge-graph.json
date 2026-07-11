@@ -11,7 +11,7 @@
       "links": [
         {
           "label": "Documentation",
-          "url": "https://www.comet.com/docs/opik/"
+          "url": "https://www.comet.com/docs/opik/v1/"
         },
         {
           "label": "GitHub",
@@ -27,7 +27,7 @@
       "links": [
         {
           "label": "Tracing guide",
-          "url": "https://www.comet.com/docs/opik/tracing/"
+          "url": "https://www.comet.com/docs/opik/v1/tracing/"
         }
       ]
     },
@@ -39,7 +39,7 @@
       "links": [
         {
           "label": "Annotate traces",
-          "url": "https://www.comet.com/docs/opik/tracing/annotate_traces/"
+          "url": "https://www.comet.com/docs/opik/v1/opik-university/observability/annotate-traces"
         }
       ]
     },
@@ -51,7 +51,7 @@
       "links": [
         {
           "label": "Evaluation overview",
-          "url": "https://www.comet.com/docs/opik/evaluation/overview/"
+          "url": "https://www.comet.com/docs/opik/v1/evaluation/overview/"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "links": [
         {
           "label": "Metrics catalog",
-          "url": "https://www.comet.com/docs/opik/evaluation/metrics/"
+          "url": "https://www.comet.com/docs/opik/v1/evaluation/metrics/"
         }
       ]
     },
@@ -75,7 +75,7 @@
       "links": [
         {
           "label": "Manage datasets",
-          "url": "https://www.comet.com/docs/opik/evaluation/manage_datasets/"
+          "url": "https://www.comet.com/docs/opik/v1/evaluation/manage_datasets"
         }
       ]
     },
@@ -87,7 +87,7 @@
       "links": [
         {
           "label": "Production monitoring",
-          "url": "https://www.comet.com/docs/opik/production/production_monitoring/"
+          "url": "https://www.comet.com/docs/opik/v1/production/production_monitoring"
         }
       ]
     },
@@ -99,7 +99,7 @@
       "links": [
         {
           "label": "Prompt engineering",
-          "url": "https://www.comet.com/docs/opik/prompt_engineering/playground"
+          "url": "https://www.comet.com/docs/opik/v1/prompt_engineering/playground"
         }
       ]
     },
@@ -111,7 +111,7 @@
       "links": [
         {
           "label": "Integrations overview",
-          "url": "https://www.comet.com/docs/opik/integrations/overview/"
+          "url": "https://www.comet.com/docs/opik/v1/integrations/overview/"
         }
       ]
     },
@@ -123,7 +123,7 @@
       "links": [
         {
           "label": "Agent optimizer",
-          "url": "https://www.comet.com/docs/opik/agent_optimization/overview/"
+          "url": "https://www.comet.com/docs/opik/v1/agent_optimization/overview"
         }
       ]
     },
@@ -135,7 +135,7 @@
       "links": [
         {
           "label": "Guardrails",
-          "url": "https://www.comet.com/docs/opik/guardrails/overview/"
+          "url": "https://www.comet.com/docs/opik/latest/production/gateway-guardrails/guardrails"
         }
       ]
     },
@@ -147,7 +147,7 @@
       "links": [
         {
           "label": "Local installation",
-          "url": "https://www.comet.com/docs/opik/self-host/overview/"
+          "url": "https://www.comet.com/docs/opik/v1/self-host/overview/"
         }
       ]
     }

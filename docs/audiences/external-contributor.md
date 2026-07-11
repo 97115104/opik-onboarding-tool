@@ -43,5 +43,5 @@ Good first issues often carry labels like `good first issue` or `help wanted`. T
 ## Community
 
 - [Opik GitHub](https://github.com/comet-ml/opik)
-- [Documentation](https://www.comet.com/docs/opik/)
+- [Documentation](https://www.comet.com/docs/opik/v1/)
 - [Slack community](https://www.comet.com/slack/opik)

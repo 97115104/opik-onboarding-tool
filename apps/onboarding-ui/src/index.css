@@ -9,6 +9,16 @@
   --color-muted: #64748b;
   --color-accent: #0f172a;
   --color-accent-soft: rgba(15, 23, 42, 0.06);
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+  --radius: 0;
+  --radius-full: 0;
 }
 
 html,
@@ -88,7 +98,7 @@ body {
   font-size: 0.85em;
   background: rgba(15, 23, 42, 0.06);
   padding: 0.15em 0.4em;
-  border-radius: 0.25rem;
+  border-radius: 0;
   color: #1e293b;
 }
 

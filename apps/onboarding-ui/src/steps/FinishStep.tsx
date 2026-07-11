@@ -24,8 +24,6 @@ const COLORS = [
   '#f8fafc',
 ]
 
-const BURST_DURATION_MS = 9000
-
 function burst(particles: Particle[], width: number, height: number) {
   const cx = width * (0.15 + Math.random() * 0.7)
   const cy = height * (0.15 + Math.random() * 0.45)
@@ -69,8 +67,7 @@ export function FinishStep() {
     let running = true
     const particles: Particle[] = []
     let lastBurst = 0
-    const startedAt = performance.now()
-    let lastTick = startedAt
+    let lastTick = performance.now()
 
     const resize = () => {
       const parent = canvas.parentElement
@@ -95,17 +92,15 @@ export function FinishStep() {
       const height = canvas.clientHeight
       fillAtmosphere(ctx, width, height)
 
-      const elapsed = time - startedAt
       const dt = Math.min(0.05, Math.max(0.001, (time - lastTick) / 1000))
       lastTick = time
 
-      if (elapsed < BURST_DURATION_MS && time - lastBurst > 650) {
+      if (time - lastBurst > 650) {
         burst(particles, width, height)
         if (Math.random() > 0.35) burst(particles, width, height)
         lastBurst = time
       }
 
-      // Wall-clock motion/decay so high-refresh displays stay ~8–10s.
       const lifeDecayPerSec = 0.55
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i]!

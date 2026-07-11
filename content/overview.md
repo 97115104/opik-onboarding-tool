@@ -14,6 +14,6 @@ The onboarding UI Overview step uses the typed slide deck in
 
 ## Learn more
 
-- [Documentation](https://www.comet.com/docs/opik/)
+- [Documentation](https://www.comet.com/docs/opik/v1/)
 - [GitHub](https://github.com/comet-ml/opik)
-- [Quickstart](https://www.comet.com/docs/opik/quickstart/)
+- [Quickstart](https://www.comet.com/docs/opik/v1/quickstart/)
