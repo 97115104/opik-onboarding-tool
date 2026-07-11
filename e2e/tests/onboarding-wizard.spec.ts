@@ -40,7 +40,8 @@ async function completeOverviewSlides(page: Page): Promise<void> {
     await page.getByTestId("overview-slide-next").click();
   }
 
-  await expect(page.getByTestId("overview-slide-next")).toBeDisabled();
+  // Last slide: no overview-slide-next; wizard Next unlocks via reachedLast.
+  await expect(page.getByTestId("overview-slide-next")).toHaveCount(0);
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await clickNext(page);
 }
@@ -58,7 +59,7 @@ async function completeGraphUnlock(page: Page): Promise<void> {
     await expect(node).toBeEnabled();
     await node.click();
     await expect(page.getByTestId("graph-detail-modal")).toBeVisible();
-    await page.getByTestId("graph-got-it").click();
+    await page.getByTestId("graph-detail-modal-close").click();
     await expect(page.getByTestId("graph-detail-modal")).toHaveCount(0);
   }
 
@@ -76,6 +77,7 @@ async function completeTour(page: Page): Promise<void> {
   await expect(page.getByTestId("tour-open-chat")).toHaveCount(0);
   await expect(page.getByTestId("tour-open-traces")).toHaveCount(0);
   await expect(page.getByTestId("tour-open-spans")).toHaveCount(0);
+  await expect(page.getByTestId("graph-got-it")).toHaveCount(0);
 
   // Close external tabs opened by tour CTAs.
   page.on("popup", (popup) => {
@@ -91,12 +93,14 @@ async function completeTour(page: Page): Promise<void> {
   await expect(page.getByTestId("tour-check-send-chat")).toBeChecked();
   await expect(page.getByTestId("tour-open-traces")).toBeVisible();
 
+  await expect(page.getByTestId("tour-item-find-trace")).toContainText("Metadata");
+  await expect(page.getByTestId("tour-item-find-trace")).toContainText("Token usage");
+
   await page.getByTestId("tour-open-traces").click();
   await expect(page.getByTestId("tour-check-find-trace")).toBeChecked();
-  await expect(page.getByTestId("tour-open-spans")).toBeVisible();
-
-  await page.getByTestId("tour-open-spans").click();
-  await expect(page.getByTestId("tour-check-inspect-spans")).toBeChecked();
+  await expect(page.getByTestId("tour-open-spans")).toHaveCount(0);
+  await expect(page.getByTestId("tour-check-inspect-spans")).toHaveCount(0);
+  await expect(page.getByTestId("tour-progress")).toContainText("3 of 3");
 
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await clickNext(page);
@@ -120,6 +124,27 @@ async function completeQuiz(page: Page): Promise<void> {
   }
 
   await expect(page.getByTestId("quiz-results")).toBeVisible();
+}
+
+async function completeVerify(page: Page): Promise<void> {
+  await expectStep(page, "step-verify");
+  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+  await expect(page.getByTestId("verify-area")).toBeVisible();
+  await expect(page.getByTestId("verify-area-name")).toBeVisible();
+  await expect(page.getByTestId("verify-area-rationale")).toBeVisible();
+  await expect(page.getByTestId("verify-commands")).toBeVisible();
+  await expect(page.getByTestId("verify-workflows")).toBeVisible();
+  await expect(page.getByTestId("verify-prompt")).toBeVisible();
+  await expect(page.getByTestId("verify-checklist")).toBeVisible();
+  await expect(page.getByTestId("open-verify-prompt")).toBeVisible();
+  await expect(page.getByTestId("copy-verify-prompt")).toBeVisible();
+
+  // Both checklist items required before Next unlocks.
+  await page.getByTestId("verify-check-ran-local").check();
+  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+  await page.getByTestId("verify-check-matches-issue").check();
+  await expect(page.getByTestId("wizard-next")).toBeVisible();
+  await clickNext(page);
 }
 
 test.describe("onboarding wizard", () => {
@@ -182,6 +207,8 @@ test.describe("onboarding wizard", () => {
     const prompt = page.getByTestId("cursor-prompt");
     await expect(prompt).toBeVisible();
     await expect(prompt).toContainText(BRANCH_NAME_PATTERN);
+    await expect(prompt).toContainText("Do not open a PR yet");
+    await expect(prompt).not.toContainText("gh pr create --draft");
     await expect(page.getByTestId("open-cursor-prompt")).toBeVisible();
     const deeplink = page.getByTestId("open-cursor-prompt");
     await expect(deeplink).toHaveAttribute(
@@ -189,6 +216,8 @@ test.describe("onboarding wizard", () => {
       /^cursor:\/\/anysphere\.cursor-deeplink\/prompt\?text=/,
     );
     await clickNext(page);
+
+    await completeVerify(page);
 
     await expectStep(page, "step-pr-help");
     await expect(page.getByTestId("pr-help-prompt")).toBeVisible();
@@ -201,6 +230,7 @@ test.describe("onboarding wizard", () => {
 
     await expectStep(page, "step-finish");
     await expect(page.getByText("Complete")).toBeVisible();
+    await expect(page.getByText("Well done")).toBeVisible();
     await expect(page.getByTestId("finish-fireworks")).toBeVisible();
     await expect(page.getByTestId("finish-opik-github")).toHaveAttribute(
       "href",

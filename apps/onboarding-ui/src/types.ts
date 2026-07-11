@@ -8,8 +8,6 @@ export interface KnowledgeGraphNode {
   label: string
   summary: string
   details: string
-  /** Optional short bullets shown instead of (or with) details prose. */
-  detailBullets?: string[]
   links: KnowledgeGraphLink[]
 }
 

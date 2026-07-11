@@ -121,14 +121,15 @@ export default function App() {
   const isExtendStep = stepId === 'extend'
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
 
-  // Gate Next: about requires persona; overview/graph/tour/quiz hide until complete; issues require a pick.
+  // Gate Next: about requires persona; overview/graph/tour/verify/quiz hide until complete; issues require a pick.
   const hideNext =
     isFinishStep ||
     (stepId === 'about' && !personaSelected) ||
     (stepId === 'overview' && !gates.overview) ||
     (stepId === 'graph' && !gates.graph) ||
     (stepId === 'tour' && !gates.tour) ||
-    (stepId === 'quiz' && !quizFinished)
+    (stepId === 'quiz' && !quizFinished) ||
+    (stepId === 'verify' && !gates.verify)
 
   const issueSelected = useSyncExternalStore(
     contributionStore.subscribe,

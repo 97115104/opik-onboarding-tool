@@ -82,6 +82,65 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify({ path: resolveOpikPath() }));
       });
+
+      server.middlewares.use("/api/contribution-diff", (req, res) => {
+        if (req.method !== "GET") {
+          res.statusCode = 405;
+          res.end("Method not allowed");
+          return;
+        }
+        try {
+          const opikPath = resolveOpikPath();
+          const branchResult = spawnSync("git", ["-C", opikPath, "rev-parse", "--abbrev-ref", "HEAD"], {
+            encoding: "utf-8",
+          });
+          const branch =
+            branchResult.status === 0 ? branchResult.stdout.trim() : "";
+
+          const pathSet = new Set<string>();
+
+          const diffResult = spawnSync(
+            "git",
+            ["-C", opikPath, "diff", "--name-only", "origin/main...HEAD"],
+            { encoding: "utf-8" },
+          );
+          if (diffResult.status === 0 && diffResult.stdout.trim()) {
+            for (const line of diffResult.stdout.split("\n")) {
+              const p = line.trim();
+              if (p) pathSet.add(p);
+            }
+          }
+
+          const statusResult = spawnSync(
+            "git",
+            ["-C", opikPath, "status", "--porcelain"],
+            { encoding: "utf-8" },
+          );
+          if (statusResult.status === 0 && statusResult.stdout.trim()) {
+            for (const line of statusResult.stdout.split("\n")) {
+              const trimmed = line.trim();
+              if (!trimmed) continue;
+              // porcelain: XY PATH or XY ORIG -> PATH
+              const renamed = trimmed.match(/^.?\s?.?\s(.+?)\s->\s(.+)$/);
+              const path = renamed ? renamed[2]! : trimmed.replace(/^[^\s]+\s+/, "");
+              if (path) pathSet.add(path);
+            }
+          }
+
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ paths: [...pathSet], branch }));
+        } catch (err) {
+          res.statusCode = 500;
+          res.setHeader("Content-Type", "application/json");
+          res.end(
+            JSON.stringify({
+              error: err instanceof Error ? err.message : "diff failed",
+              paths: [],
+              branch: "",
+            }),
+          );
+        }
+      });
     },
   };
 }

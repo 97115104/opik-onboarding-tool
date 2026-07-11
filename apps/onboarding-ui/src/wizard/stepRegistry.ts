@@ -11,6 +11,7 @@ import {
   PrHelpStep,
   PromptStep,
   QuizStep,
+  VerifyStep,
 } from '@/wizard/lazyFeatures'
 
 export interface StepEntry {
@@ -28,6 +29,7 @@ export const STEP_REGISTRY: StepEntry[] = [
   { id: 'quiz', Component: QuizStep, lazy: true },
   { id: 'issues', Component: IssuesStep, lazy: true },
   { id: 'prompt', Component: PromptStep, lazy: true },
+  { id: 'verify', Component: VerifyStep, lazy: true },
   { id: 'pr-help', Component: PrHelpStep, lazy: true },
   { id: 'extend', Component: ExtendStep },
   { id: 'finish', Component: FinishStep },

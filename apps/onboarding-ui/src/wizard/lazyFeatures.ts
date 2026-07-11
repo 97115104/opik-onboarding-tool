@@ -16,5 +16,6 @@ function lazyDefault(
 export const QuizStep = lazyDefault(() => import('@/features/quiz/QuizStep'))
 export const IssuesStep = lazyDefault(() => import('@/features/issues/IssuesStep'))
 export const PromptStep = lazyDefault(() => import('@/features/prompt/PromptStep'))
+export const VerifyStep = lazyDefault(() => import('@/features/verify/VerifyStep'))
 /** C may rename ChecklistStep to PrHelpStep; keep ChecklistStep import until then. */
 export const PrHelpStep = lazyDefault(() => import('@/features/checklist/ChecklistStep'))

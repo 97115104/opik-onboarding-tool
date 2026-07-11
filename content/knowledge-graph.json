@@ -17,11 +17,6 @@
           "label": "GitHub",
           "url": "https://github.com/comet-ml/opik"
         }
-      ],
-      "detailBullets": [
-        "Covers develop, evaluate, monitor, and optimize for generative AI apps.",
-        "Open-source from Comet, with self-hosted and cloud options.",
-        "This wizard uses the self-hosted stack on your machine."
       ]
     },
     {
@@ -34,11 +29,6 @@
           "label": "Tracing guide",
           "url": "https://www.comet.com/docs/opik/tracing/"
         }
-      ],
-      "detailBullets": [
-        "Each user interaction becomes a trace made of spans.",
-        "Spans capture inputs, outputs, timing, model metadata, and errors.",
-        "Essential for debugging RAG and agent pipelines."
       ]
     },
     {
@@ -51,11 +41,6 @@
           "label": "Annotate traces",
           "url": "https://www.comet.com/docs/opik/tracing/annotate_traces/"
         }
-      ],
-      "detailBullets": [
-        "Attach scores and notes to traces or individual spans.",
-        "Use thumbs, custom metrics, or LLM-judge results.",
-        "Feeds dashboards, online rules, and review queues."
       ]
     },
     {
@@ -68,11 +53,6 @@
           "label": "Evaluation overview",
           "url": "https://www.comet.com/docs/opik/evaluation/overview/"
         }
-      ],
-      "detailBullets": [
-        "Run experiments over datasets and compare model versions.",
-        "Define pass/fail checks in natural language.",
-        "Includes 30+ built-in metrics plus custom evaluators."
       ]
     },
     {
@@ -85,11 +65,6 @@
           "label": "Metrics catalog",
           "url": "https://www.comet.com/docs/opik/evaluation/metrics/"
         }
-      ],
-      "detailBullets": [
-        "An LLM scores outputs for relevance, hallucination, moderation, and more.",
-        "Works in offline experiments, CI, and live production rules.",
-        "Helps catch regressions without reviewing every trace by hand."
       ]
     },
     {
@@ -102,11 +77,6 @@
           "label": "Manage datasets",
           "url": "https://www.comet.com/docs/opik/evaluation/manage_datasets/"
         }
-      ],
-      "detailBullets": [
-        "Curate test data from production traces or imports.",
-        "Compare scores across prompt or model changes.",
-        "Use before shipping so quality stays measurable."
       ]
     },
     {
@@ -119,11 +89,6 @@
           "label": "Production monitoring",
           "url": "https://www.comet.com/docs/opik/production/production_monitoring/"
         }
-      ],
-      "detailBullets": [
-        "Ingest live traces at scale.",
-        "Track latency, cost, and error trends.",
-        "Online rules can flag low-quality or unsafe outputs automatically."
       ]
     },
     {
@@ -136,11 +101,6 @@
           "label": "Prompt engineering",
           "url": "https://www.comet.com/docs/opik/prompt_engineering/playground"
         }
-      ],
-      "detailBullets": [
-        "Try prompt variants and swap models in the UI.",
-        "Compare outputs without redeploying app code.",
-        "Prompts can be versioned and linked to experiments."
       ]
     },
     {
@@ -153,11 +113,6 @@
           "label": "Integrations overview",
           "url": "https://www.comet.com/docs/opik/integrations/overview/"
         }
-      ],
-      "detailBullets": [
-        "Python and TypeScript SDKs plus framework adapters.",
-        "Works with LangChain, LlamaIndex, OpenAI, Anthropic, CrewAI, and more.",
-        "Emit traces with decorators or callbacks and minimal code changes."
       ]
     },
     {
@@ -170,11 +125,6 @@
           "label": "Agent optimizer",
           "url": "https://www.comet.com/docs/opik/agent_optimization/overview/"
         }
-      ],
-      "detailBullets": [
-        "Runs optimization loops over traces and prompts.",
-        "Aims to improve task completion, cost, or custom goals.",
-        "Complements manual playground iteration."
       ]
     },
     {
@@ -187,11 +137,6 @@
           "label": "Guardrails",
           "url": "https://www.comet.com/docs/opik/guardrails/overview/"
         }
-      ],
-      "detailBullets": [
-        "Screen content for toxic, off-topic, or policy-violating output.",
-        "Usable in development and production pipelines.",
-        "Helps keep unsafe responses from reaching users."
       ]
     },
     {
@@ -204,11 +149,6 @@
           "label": "Local installation",
           "url": "https://www.comet.com/docs/opik/self-host/overview/"
         }
-      ],
-      "detailBullets": [
-        "Run Opik locally with Docker via opik.sh.",
-        "This tool clones Opik, starts the stack, and verifies chat traces.",
-        "Best for local learning and air-gapped setups."
       ]
     }
   ],

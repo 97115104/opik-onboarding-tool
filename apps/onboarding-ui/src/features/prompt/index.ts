@@ -4,5 +4,6 @@ export {
   CURSOR_PROMPT_BRANCH_REGEX,
   generateCursorPrompt,
   generatePrHelpPrompt,
+  generateVerifyPrompt,
   openCursorCommands,
 } from "./generatePrompt";

@@ -1,4 +1,4 @@
-export type WizardGateId = 'overview' | 'graph' | 'tour'
+export type WizardGateId = 'overview' | 'graph' | 'tour' | 'verify'
 
 type Listener = () => void
 
@@ -6,6 +6,7 @@ const gates: Record<WizardGateId, boolean> = {
   overview: false,
   graph: false,
   tour: false,
+  verify: false,
 }
 
 /** Cached snapshot for useSyncExternalStore (must be referentially stable). */
@@ -22,9 +23,14 @@ export type TourProgress = {
   revealedCount: number
 }
 
+export type VerifyProgress = {
+  done: Record<string, boolean>
+}
+
 let overviewProgress: OverviewProgress = { slideIndex: 0, reachedLast: false }
 let graphReviewedIds: string[] = []
 let tourProgress: TourProgress = { done: {}, revealedCount: 1 }
+let verifyProgress: VerifyProgress = { done: {} }
 
 const listeners = new Set<Listener>()
 
@@ -86,4 +92,13 @@ export function setTourProgress(
 ) {
   tourProgress = { done: { ...done }, revealedCount }
   syncGate('tour', itemIds.length > 0 && itemIds.every((id) => Boolean(done[id])))
+}
+
+export function getVerifyProgress(): VerifyProgress {
+  return { done: { ...verifyProgress.done } }
+}
+
+export function setVerifyProgress(done: Record<string, boolean>, itemIds: string[]) {
+  verifyProgress = { done: { ...done } }
+  syncGate('verify', itemIds.length > 0 && itemIds.every((id) => Boolean(done[id])))
 }

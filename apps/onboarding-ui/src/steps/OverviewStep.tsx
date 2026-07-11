@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { OVERVIEW_SLIDES } from '../content/overviewSlides'
 import { StepPanel } from '../components/StepPanel'
-import { personaSubtitle } from '../lib/persona'
 import { getOverviewProgress, setOverviewProgress } from '../lib/wizardGates'
 
 export function OverviewStep() {
@@ -19,16 +18,8 @@ export function OverviewStep() {
     })
   }, [slideIndex, isLast])
 
-  const subtitle = personaSubtitle({
-    default: 'A short walkthrough of Opik and this wizard.',
-    engineer: 'A short product map before you touch the local stack.',
-    pm: 'A plain-language look at Opik before you pick an issue.',
-    support: 'A quick product briefing before you guide a contribution.',
-    external: 'What Opik is, then how this wizard gets you to a first PR.',
-  })
-
   return (
-    <StepPanel testId="step-overview" title="Product overview" subtitle={subtitle}>
+    <StepPanel testId="step-overview" title="Product overview">
       <div className="space-y-5" data-testid="overview-slides">
         <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
           Slide {slideIndex + 1} of {total}
@@ -60,15 +51,16 @@ export function OverviewStep() {
           >
             Previous slide
           </button>
-          <button
-            type="button"
-            data-testid="overview-slide-next"
-            disabled={isLast}
-            onClick={() => setSlideIndex((index) => Math.min(total - 1, index + 1))}
-            className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-35"
-          >
-            {isLast ? 'Last slide' : 'Next slide'}
-          </button>
+          {!isLast ? (
+            <button
+              type="button"
+              data-testid="overview-slide-next"
+              onClick={() => setSlideIndex((index) => Math.min(total - 1, index + 1))}
+              className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+            >
+              Next slide
+            </button>
+          ) : null}
         </div>
       </div>
     </StepPanel>

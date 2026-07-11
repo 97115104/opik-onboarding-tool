@@ -29,18 +29,11 @@ const TOUR_ITEMS: TourItem[] = [
   },
   {
     id: 'find-trace',
-    title: 'Find the new trace and its duration',
+    title: 'Open the trace and check Metadata and Token usage',
     instruction:
-      'Back in Opik, open Traces. Look for the newest row from the chat demo. Duration is how long that request took end to end.',
-    hint: 'At a glance: a new row means your app sent work to Opik; duration tells you if it was fast or slow.',
+      'Back in Opik, open Traces and click the newest row from the chat demo. In the trace view, check Metadata and Token usage. Duration is a useful secondary signal for how long the request took.',
+    hint: 'A new row means your app sent work to Opik. Metadata and Token usage show what ran and how much it cost; duration shows speed.',
     cta: { label: 'Open traces', href: OPIK_URL, testId: 'tour-open-traces' },
-  },
-  {
-    id: 'inspect-spans',
-    title: 'Open the span tree',
-    instruction:
-      'Click the trace. Expand the tree of steps (spans). Look for the user message as input and the model reply as output.',
-    cta: { label: 'Open spans', href: OPIK_URL, testId: 'tour-open-spans' },
   },
 ]
 

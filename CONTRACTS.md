@@ -143,6 +143,7 @@ apps/onboarding-ui/src/features/quiz/**
 apps/onboarding-ui/src/features/issues/**
 apps/onboarding-ui/src/features/prompt/**
 apps/onboarding-ui/src/features/checklist/**
+apps/onboarding-ui/src/features/verify/**
 ```
 
 B owns health client (`lib/health.ts`) and a separate health Vite plugin (not C's contribution API plugin).
@@ -154,11 +155,12 @@ apps/onboarding-ui/src/features/quiz/**
 apps/onboarding-ui/src/features/issues/**
 apps/onboarding-ui/src/features/prompt/**
 apps/onboarding-ui/src/features/checklist/**
+apps/onboarding-ui/src/features/verify/**
 scripts/rank-issues.sh
 scripts/create-contribution-branch.sh
 ```
 
-Checklist feature folder is repurposed as **PR-help** (same path prefix; UX is a second Cursor prompt, not multi-checkbox busywork).
+Checklist feature folder is repurposed as **PR-help** (same path prefix; UX is a second Cursor prompt, not multi-checkbox busywork). Verify sits between Cursor prompt and PR help.
 
 ### Workstream D — docs + content
 
@@ -213,6 +215,7 @@ interface ContributionSnapshot {
 | Quiz | `quiz` | `step-quiz` | C |
 | Issues (1+2) | `issues` | `step-issues` | C |
 | Cursor prompt | `prompt` | `step-prompt` | C |
+| Verify | `verify` | `step-verify` | C |
 | PR help | `pr-help` | `step-pr-help` | C |
 | Extend | `extend` | `step-extend` | B |
 | Finish (celebration) | `finish` | `step-finish` | B |
@@ -223,10 +226,11 @@ interface ContributionSnapshot {
 |------|----------------------|
 | `about` | Hidden until a persona is selected |
 | `overview` | Hidden until the last overview slide is reached |
-| `graph` | Hidden until every Opik Features node is reviewed (modal close or Got it) |
+| `graph` | Hidden until every Opik Features node is reviewed (modal close) |
 | `tour` | Hidden until all tour steps are done (CTA click auto-completes; checkbox still works) |
 | `quiz` | Hidden until quiz results (`quizFinished`) |
 | `issues` | Next disabled until an issue is confirmed |
+| `verify` | Hidden until checklist (`verify-check-ran-local` + `verify-check-matches-issue`) |
 | `extend` | Footer label is **Finish**; advances to celebration |
 | `finish` | Footer Next/Finish hidden; Back returns to Extend; progress reads Complete |
 
@@ -322,7 +326,6 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Graph node button | `graph-node-{id}` |
 | Graph detail modal | `graph-detail-modal` |
 | Graph detail modal close | `graph-detail-modal-close` |
-| Graph Got it | `graph-got-it` |
 | Stack status | `step-stack` |
 | Stack service URL | `stack-url-{service}` |
 | Stack fix button | `stack-fix-{service}` |
@@ -332,7 +335,6 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Tour open Opik CTA | `tour-open-opik` |
 | Tour open chat CTA | `tour-open-chat` |
 | Tour open traces CTA | `tour-open-traces` |
-| Tour open spans CTA | `tour-open-spans` |
 | Tour checkbox | `tour-check-{id}` |
 | Step error boundary | `step-error-boundary` |
 | Step error retry | `step-error-retry` |
@@ -356,6 +358,16 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Open prompt truncated notice | `open-cursor-prompt-truncated` |
 | Cursor prompt | `cursor-prompt` |
 | Copy prompt button | `copy-prompt` |
+| Verify panel | `step-verify` |
+| Verify area | `verify-area`, `verify-area-name`, `verify-area-rationale` |
+| Verify commands | `verify-commands` |
+| Verify workflows | `verify-workflows` |
+| Verify prompt | `verify-prompt` |
+| Open verify prompt in Cursor | `open-verify-prompt` |
+| Open verify prompt truncated notice | `open-verify-prompt-truncated` |
+| Copy verify prompt | `copy-verify-prompt` |
+| Verify checklist | `verify-checklist` |
+| Verify checklist items | `verify-check-ran-local`, `verify-check-matches-issue` |
 | PR help step | `step-pr-help` |
 | PR help prompt | `pr-help-prompt` |
 | Extend panel | `step-extend` |
@@ -364,7 +376,7 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Finish Opik GitHub link | `finish-opik-github` |
 | Finish support email | `finish-support-email` |
 
-**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`.
+**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`, `graph-got-it`, `tour-open-spans`.
 
 ## Quiz contract (`content/quiz.json`)
 
@@ -410,11 +422,22 @@ Primary prompt step must include:
 - Assigned issue number, title, URL
 - Branch name matching `opik-onboarding-tool-97115104-contribution-\d+`
 - Opik clone path `OPIK_PATH`
-- Steps: implement fix, run relevant tests, draft PR via `gh pr create --draft`
-- AI disclosure + attestation checkbox reference
+- Steps: implement fix and commit; stop before draft PR (verify + PR-help cover checks and `gh pr create --draft`)
+- AI disclosure note (full disclosure happens in PR template)
 - Link to Opik CONTRIBUTING.md fast path
 - Shorter body; simpler tone for PM/Support
 - Note: user confirms the prompt in Cursor; open the Opik folder first if the workspace is not already open
+
+## Verify step (pre-PR checks)
+
+Step `verify` (`step-verify`) sits between `prompt` and `pr-help`:
+
+1. Classify contribution area from optional `GET /api/contribution-diff` paths (override) or issue labels/title.
+2. Show area + rationale, copyable local commands, and GitHub Actions workflow links to watch.
+3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`) asking the agent to run those checks under `OPIK_PATH`.
+4. Honor-system checklist gate: `verify-check-ran-local` + `verify-check-matches-issue` before footer Next.
+
+Optional API: `GET /api/contribution-diff` returns `{ paths: string[], branch: string }` from `git diff --name-only origin/main...HEAD` (fallback `git status --porcelain`). No test execution.
 
 ## PR-help prompt (replaces checklist)
 
@@ -439,7 +462,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated) → Opik Features sequential unlock (Next gated) → stack URL → tour progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → open-cursor-prompt + PR-help prompts → Extend Finish → celebration; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -466,4 +489,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.2.0** (UX polish: slides, features unlock, tour gate, Cursor deeplink, Finish celebration)
+Contract version: **1.3.0** (UX polish + Verify step between Cursor prompt and PR help)

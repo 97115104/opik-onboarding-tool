@@ -9,6 +9,7 @@
  *   () => import('@/features/quiz/QuizStep')
  *   () => import('@/features/issues/IssuesStep')
  *   () => import('@/features/prompt/PromptStep')
+ *   () => import('@/features/verify/VerifyStep')
  *   () => import('@/features/checklist/ChecklistStep')  // PrHelpStep / ChecklistStep
  */
 
@@ -23,6 +24,7 @@ export const CONTRIBUTION_WIZARD_STEPS: WizardStepDefinition[] = [
   { key: "quiz", label: "Quiz", testId: "step-quiz" },
   { key: "issues", label: "Issues", testId: "step-issues" },
   { key: "prompt", label: "Cursor prompt", testId: "step-prompt" },
+  { key: "verify", label: "Verify", testId: "step-verify" },
   { key: "pr-help", label: "PR help", testId: "step-pr-help" },
 ];
 

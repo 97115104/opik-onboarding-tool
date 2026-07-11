@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import graphData from '@content/knowledge-graph.json'
 import { Modal } from '../components/Modal'
 import { StepPanel } from '../components/StepPanel'
-import { personaSubtitle } from '../lib/persona'
 import { getGraphReviewedIds, setGraphReviewedIds } from '../lib/wizardGates'
 import type { KnowledgeGraph } from '../types'
 
@@ -66,16 +65,8 @@ export function GraphStep() {
     setModalOpen(false)
   }
 
-  const subtitle = personaSubtitle({
-    default: graph.description,
-    engineer: 'Review each feature in order before you dig into the stack.',
-    pm: 'Open each feature card in order for a plain-language product map.',
-    support: 'A simple map of Opik features you can reference while helping contributors.',
-    external: 'Review each feature in order before the local tour.',
-  })
-
   return (
-    <StepPanel testId="step-graph" title={graph.title} subtitle={subtitle}>
+    <StepPanel testId="step-graph" title={graph.title}>
       <p
         data-testid="graph-empty-hint"
         className={`mb-4 text-sm text-slate-500 ${reviewedIds.size > 0 ? 'sr-only' : ''}`}
@@ -131,15 +122,7 @@ export function GraphStep() {
       >
         {selectedNode ? (
           <div className="space-y-4">
-            {selectedNode.detailBullets && selectedNode.detailBullets.length > 0 ? (
-              <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-600">
-                {selectedNode.detailBullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm leading-relaxed text-slate-600">{selectedNode.details}</p>
-            )}
+            <p className="text-sm leading-relaxed text-slate-600">{selectedNode.details}</p>
 
             {selectedNode.links.length > 0 ? (
               <div className="space-y-2">
@@ -211,15 +194,6 @@ export function GraphStep() {
                 </ul>
               </div>
             ) : null}
-
-            <button
-              type="button"
-              data-testid="graph-got-it"
-              onClick={closeModal}
-              className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
-            >
-              Got it
-            </button>
           </div>
         ) : null}
       </Modal>
