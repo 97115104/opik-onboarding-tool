@@ -1,8 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Instrument Serif', Georgia, serif;
-  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-display: 'Times New Roman', Times, serif;
+  --font-sans: 'Times New Roman', Times, serif;
   --color-surface: #fafafa;
   --color-surface-elevated: #ffffff;
   --color-border: rgba(15, 23, 42, 0.1);
@@ -52,7 +52,17 @@ body {
 }
 
 .markdown-body ul {
-  padding-left: 1.25rem;
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.markdown-body li {
+  display: list-item;
 }
 
 .markdown-body table {

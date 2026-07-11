@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from 'react'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { WizardShell } from '@/components/WizardShell'
 import { ContributionProvider } from '@/features/issues/ContributionContext'
 import { contributionStore } from '@/features/issues'
@@ -94,6 +95,7 @@ function useQuizFinished() {
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [boundaryKey, setBoundaryKey] = useState(0)
   const personaSelected = usePersonaSelected()
   const quizFinished = useQuizFinished()
 
@@ -105,9 +107,20 @@ export default function App() {
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
   const isLastStep = currentIndex === STEP_REGISTRY.length - 1
 
-  // Gate Next: about requires persona; quiz hides Next until finished.
+  // Gate Next: about requires persona; quiz hides Next until finished; issues require a pick.
   const hideNext =
     (stepId === 'about' && !personaSelected) || (stepId === 'quiz' && !quizFinished)
+
+  const issueSelected = useSyncExternalStore(
+    contributionStore.subscribe,
+    () => contributionStore.getSnapshot().selectedIssue !== null,
+    () => contributionStore.getSnapshot().selectedIssue !== null,
+  )
+
+  const canAdvance =
+    canGoNext &&
+    !hideNext &&
+    !(stepId === 'issues' && !issueSelected)
 
   const goBack = useCallback(() => {
     setCurrentIndex((index) => Math.max(0, index - 1))
@@ -126,23 +139,25 @@ export default function App() {
         onBack={goBack}
         onNext={goNext}
         canGoBack={canGoBack}
-        canGoNext={canGoNext && !hideNext}
+        canGoNext={canAdvance}
         hideNext={hideNext}
         nextLabel={isLastStep ? 'Finish' : 'Next'}
       >
-        <AnimatePresence mode="wait">
-          {StepComponent ? (
-            <StepTransition stepKey={stepKey}>
-              {step?.lazy ? (
-                <Suspense fallback={<StepFallback />}>
+        <ErrorBoundary onReset={() => setBoundaryKey((value) => value + 1)}>
+          <AnimatePresence mode="wait">
+            {StepComponent ? (
+              <StepTransition stepKey={`${stepKey}-${boundaryKey}`}>
+                {step?.lazy ? (
+                  <Suspense fallback={<StepFallback />}>
+                    <StepComponent />
+                  </Suspense>
+                ) : (
                   <StepComponent />
-                </Suspense>
-              ) : (
-                <StepComponent />
-              )}
-            </StepTransition>
-          ) : null}
-        </AnimatePresence>
+                )}
+              </StepTransition>
+            ) : null}
+          </AnimatePresence>
+        </ErrorBoundary>
       </WizardShell>
     </ContributionProvider>
   )

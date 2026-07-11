@@ -72,6 +72,32 @@ When upstream returns a non-healthy status: `{ "ok": false, "status": <code>, "d
 
 Opik API: treat HTTP 200 or 401 as healthy.
 
+## Heal endpoint (onboarding UI)
+
+When a stack service is unhealthy, the wizard may auto-heal and expose a Fix button:
+
+```
+POST /api/heal/:service
+```
+
+`:service` is the same set as health: `opik-ui`, `opik-api`, `ollama`, `chat-demo`.
+
+Server behavior (fire-and-forget spawn of repo scripts):
+
+| service | Script |
+|---------|--------|
+| `opik-ui`, `opik-api` | `scripts/start-opik.sh` (coalesced: one in-flight heal for both) |
+| `ollama` | Light serve restart (`ollama serve` if `/api/tags` fails); full pull/smoke stays in `ensure-ollama.sh` |
+| `chat-demo` | `scripts/start-chat-demo.sh` |
+
+Response JSON:
+
+```json
+{ "ok": true, "service": "ollama", "detail": "Heal started" }
+```
+
+Clients should re-poll `GET /api/health/:service` after a short delay.
+
 ## CLI flags (`deploy-locally.sh`)
 
 | Flag | Effect |
@@ -181,9 +207,9 @@ interface ContributionSnapshot {
 |------|-----|--------|-------|
 | About you | `about` | `step-about` | B |
 | Overview | `overview` | `step-overview` | B |
-| Knowledge graph | `graph` | `step-graph` | B |
+| Understanding Opik | `graph` | `step-graph` | B |
 | Local stack | `stack` | `step-stack` | B |
-| Tour | `tour` | `step-tour` | B |
+| Try Opik | `tour` | `step-tour` | B |
 | Quiz | `quiz` | `step-quiz` | C |
 | Issues (1+2) | `issues` | `step-issues` | C |
 | Cursor prompt | `prompt` | `step-prompt` | C |
@@ -231,7 +257,7 @@ interface ContributionSnapshot {
 ```bash
 # Usage: rank-issues.sh [--limit N] [--label LABEL] [--persona PERSONA]
 # Output: JSON array to stdout
-# [{ "number": 1234, "title": "...", "url": "...", "score": 0.87, "labels": [...], "plainExplanation": "..." }]
+# [{ "number": 1234, "title": "...", "url": "...", "score": 0.87, "labels": [...], "plainExplanation": "...", "excerpt": "..." }]
 ```
 
 - Prefer `good first issue`, `help wanted`
@@ -239,7 +265,8 @@ interface ContributionSnapshot {
 - `--persona=pm|support`: stronger weight on docs / good-first; deprioritize infra / Docker / hardware-style bugs
 - `--persona=engineer|external`: current ranking with optional advanced labels
 - Sort by score descending; default limit 10
-- Data source: `gh issue list --repo comet-ml/opik --json number,title,url,labels,assignees`
+- Data source: `gh issue list --repo comet-ml/opik --json number,title,url,labels,assignees,body`
+- Optional `excerpt`: truncated issue body for the issues detail modal
 
 Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to the script.
 
@@ -267,8 +294,20 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Persona choice | `about-persona-engineer`, `about-persona-pm`, `about-persona-support`, `about-persona-external` |
 | Overview panel | `step-overview` |
 | Graph panel | `step-graph` |
+| Graph empty hint | `graph-empty-hint` |
+| Graph node button | `graph-node-{id}` |
+| Graph detail modal | `graph-detail-modal` |
+| Graph detail modal close | `graph-detail-modal-close` |
 | Stack status | `step-stack` |
+| Stack service URL | `stack-url-{service}` |
+| Stack fix button | `stack-fix-{service}` |
 | Tour panel | `step-tour` |
+| Tour checklist | `tour-checklist` |
+| Tour open Opik CTA | `tour-open-opik` |
+| Tour open chat CTA | `tour-open-chat` |
+| Tour checkbox | `tour-check-{id}` |
+| Step error boundary | `step-error-boundary` |
+| Step error retry | `step-error-retry` |
 | Quiz panel | `step-quiz` |
 | Quiz option | `quiz-option-{index}` |
 | Quiz next question | `quiz-next-question` |
@@ -276,6 +315,11 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Issues panel | `step-issues` |
 | Issue list | `issue-list` |
 | Recommended issue | `issue-recommended` |
+| Issue detail modal | `issue-detail-modal` |
+| Issue excerpt | `issue-excerpt` |
+| Issue time estimate | `issue-time-estimate` |
+| Issue GitHub link | `issue-github-link` |
+| Issue confirm select | `issue-confirm-select` |
 | Alternative issue | `issue-alternative-0`, `issue-alternative-1` |
 | Issue select | `issue-select-{number}` |
 | Prompt panel | `step-prompt` |
@@ -357,7 +401,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → quiz auto-grade → 1+2 issues → primary + PR-help prompts; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → graph empty/modal → stack URL → tour CTAs → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → primary + PR-help prompts; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 

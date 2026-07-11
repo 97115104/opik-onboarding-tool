@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import graphData from '@content/knowledge-graph.json'
+import { Modal } from '../components/Modal'
 import { StepPanel } from '../components/StepPanel'
 import { personaSubtitle } from '../lib/persona'
 import type { KnowledgeGraph } from '../types'
@@ -7,20 +8,28 @@ import type { KnowledgeGraph } from '../types'
 const graph = graphData as KnowledgeGraph
 
 export function GraphStep() {
-  const [selectedId, setSelectedId] = useState(graph.rootId)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   const selectedNode = useMemo(
-    () => graph.nodes.find((node) => node.id === selectedId) ?? graph.nodes[0],
+    () => (selectedId ? (graph.nodes.find((node) => node.id === selectedId) ?? null) : null),
     [selectedId],
   )
 
   const relatedEdges = useMemo(
     () =>
-      graph.edges.filter(
-        (edge) => edge.source === selectedId || edge.target === selectedId,
-      ),
+      selectedId
+        ? graph.edges.filter(
+            (edge) => edge.source === selectedId || edge.target === selectedId,
+          )
+        : [],
     [selectedId],
   )
+
+  function openNode(id: string) {
+    setSelectedId(id)
+    setModalOpen(true)
+  }
 
   const subtitle = personaSubtitle({
     default: graph.description,
@@ -32,37 +41,53 @@ export function GraphStep() {
 
   return (
     <StepPanel testId="step-graph" title={graph.title} subtitle={subtitle}>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-          {graph.nodes.map((node) => {
-            const active = node.id === selectedId
-            return (
-              <li key={node.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedId(node.id)}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${
-                    active
-                      ? 'border-slate-900 bg-slate-900 text-white'
-                      : 'border-[var(--color-border)] bg-white text-slate-700 hover:border-slate-400'
-                  }`}
-                >
-                  <span className="font-medium">{node.label}</span>
-                  <span
-                    className={`mt-1 block text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}
-                  >
-                    {node.summary}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+      <p
+        data-testid="graph-empty-hint"
+        className={`mb-4 text-sm text-slate-500 ${selectedId ? 'sr-only' : ''}`}
+      >
+        Select an aspect of Opik to learn more
+      </p>
 
+      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {graph.nodes.map((node) => {
+          const active = node.id === selectedId
+          return (
+            <li key={node.id} className="h-full">
+              <button
+                type="button"
+                data-testid={`graph-node-${node.id}`}
+                onClick={() => openNode(node.id)}
+                className={`flex h-full min-h-[7.5rem] w-full flex-col rounded-xl border px-3 py-2.5 text-left text-sm transition ${
+                  active
+                    ? 'border-slate-900 ring-1 ring-slate-900 bg-white text-slate-900'
+                    : 'border-[var(--color-border)] bg-white text-slate-700 hover:border-slate-400'
+                }`}
+              >
+                <span className="font-medium">{node.label}</span>
+                <span className="mt-1 block flex-1 text-xs text-slate-500">{node.summary}</span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+
+      <Modal
+        open={modalOpen && selectedNode !== null}
+        title={selectedNode?.label ?? ''}
+        onClose={() => setModalOpen(false)}
+        testId="graph-detail-modal"
+      >
         {selectedNode ? (
-          <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-slate-50 p-5">
-            <h3 className="font-display text-2xl text-slate-950">{selectedNode.label}</h3>
-            <p className="text-sm leading-relaxed text-slate-600">{selectedNode.details}</p>
+          <div className="space-y-4">
+            {selectedNode.detailBullets && selectedNode.detailBullets.length > 0 ? (
+              <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-600">
+                {selectedNode.detailBullets.map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm leading-relaxed text-slate-600">{selectedNode.details}</p>
+            )}
 
             {selectedNode.links.length > 0 ? (
               <div className="space-y-2">
@@ -73,7 +98,7 @@ export function GraphStep() {
                       <a
                         href={link.url}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="text-sm text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
                       >
                         {link.label}
@@ -96,7 +121,7 @@ export function GraphStep() {
                           <button
                             type="button"
                             className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
-                            onClick={() => setSelectedId(edge.target)}
+                            onClick={() => openNode(edge.target)}
                           >
                             {graph.nodes.find((n) => n.id === edge.target)?.label ?? edge.target}
                           </button>
@@ -106,7 +131,7 @@ export function GraphStep() {
                           <button
                             type="button"
                             className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
-                            onClick={() => setSelectedId(edge.source)}
+                            onClick={() => openNode(edge.source)}
                           >
                             {graph.nodes.find((n) => n.id === edge.source)?.label ?? edge.source}
                           </button>{' '}
@@ -120,7 +145,7 @@ export function GraphStep() {
             ) : null}
           </div>
         ) : null}
-      </div>
+      </Modal>
     </StepPanel>
   )
 }

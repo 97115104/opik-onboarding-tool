@@ -51,6 +51,6 @@ This wizard runs the **self-hosted** stack on your machine so you can trace the 
 
 ## Learn more
 
-- Documentation: https://www.comet.com/docs/opik/
-- GitHub: https://github.com/comet-ml/opik
-- Quickstart: https://www.comet.com/docs/opik/quickstart/
+- [Documentation](https://www.comet.com/docs/opik/)
+- [GitHub](https://github.com/comet-ml/opik)
+- [Quickstart](https://www.comet.com/docs/opik/quickstart/)

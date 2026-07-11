@@ -7,6 +7,9 @@ export interface RankedIssue {
   score: number;
   labels: string[];
   plainExplanation?: string;
+  /** Optional short excerpt from the GitHub issue body. */
+  excerpt?: string;
+  body?: string;
 }
 
 export interface ContributionState {

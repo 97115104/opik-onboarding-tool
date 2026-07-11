@@ -1,4 +1,6 @@
-.cursor/
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**
 node_modules/
 e2e/test-results/
 e2e/playwright-report/

@@ -1,5 +1,5 @@
-import ReactMarkdown from 'react-markdown'
 import overviewMd from '@content/overview.md?raw'
+import { Markdown } from '../components/Markdown'
 import { StepPanel } from '../components/StepPanel'
 import { personaSubtitle } from '../lib/persona'
 
@@ -15,7 +15,7 @@ export function OverviewStep() {
   return (
     <StepPanel testId="step-overview" title="Product overview" subtitle={subtitle}>
       <article className="markdown-body">
-        <ReactMarkdown>{overviewMd}</ReactMarkdown>
+        <Markdown>{overviewMd}</Markdown>
       </article>
     </StepPanel>
   )

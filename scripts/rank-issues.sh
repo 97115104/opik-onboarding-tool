@@ -71,14 +71,20 @@ issues_json="$(gh issue list \
   --state open \
   --limit 100 \
   "${LABEL_ARGS[@]}" \
-  --json number,title,url,labels,assignees)"
+  --json number,title,url,labels,assignees,body)"
 
-python3 - "$issues_json" "$LIMIT" "$PERSONA" <<'PY'
+# Write JSON to a temp file so large issue bodies never hit ARG_MAX.
+issues_tmp="$(mktemp)"
+trap 'rm -f "$issues_tmp"' EXIT
+printf '%s' "$issues_json" > "$issues_tmp"
+
+python3 - "$issues_tmp" "$LIMIT" "$PERSONA" <<'PY'
 import json
 import re
 import sys
 
-raw = json.loads(sys.argv[1])
+with open(sys.argv[1], encoding="utf-8") as fh:
+    raw = json.load(fh)
 limit = int(sys.argv[2])
 persona = (sys.argv[3] or "").strip().lower()
 non_engineer = persona in {"pm", "support"}
@@ -116,6 +122,16 @@ def explain(issue, labels):
         return "A scoped Opik change. Open the issue link to see what maintainers expect."
     return "Open the issue for acceptance criteria, then implement a focused change on your branch."
 
+def excerpt(body):
+    text = (body or "").strip()
+    if not text:
+        return ""
+    text = re.sub(r"\r\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    if len(text) > 420:
+        return text[:417].rstrip() + "…"
+    return text
+
 def score(issue):
     labels = {lbl["name"].lower() for lbl in issue.get("labels", [])}
     title = issue.get("title", "")
@@ -140,14 +156,18 @@ def score(issue):
 ranked = []
 for issue in raw:
     labels = {lbl["name"].lower() for lbl in issue.get("labels", [])}
-    ranked.append({
+    body_excerpt = excerpt(issue.get("body"))
+    item = {
         "number": issue["number"],
         "title": issue["title"],
         "url": issue["url"],
         "score": round(score(issue), 2),
         "labels": [lbl["name"] for lbl in issue.get("labels", [])],
         "plainExplanation": explain(issue, labels),
-    })
+    }
+    if body_excerpt:
+        item["excerpt"] = body_excerpt
+    ranked.append(item)
 
 ranked.sort(key=lambda x: (-x["score"], x["number"]))
 print(json.dumps(ranked[:limit], indent=2))

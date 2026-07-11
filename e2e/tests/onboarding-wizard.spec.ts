@@ -49,16 +49,34 @@ test.describe("onboarding wizard", () => {
     await clickNext(page);
 
     await advancePastStep(page, "step-overview");
-    await advancePastStep(page, "step-graph");
+
+    await expectStep(page, "step-graph");
+    await expect(page.getByTestId("graph-empty-hint")).toBeVisible();
+    await page.getByTestId("graph-node-tracing").click();
+    await expect(page.getByTestId("graph-detail-modal")).toBeVisible();
+    await page.getByTestId("graph-detail-modal-close").click();
+    await clickNext(page);
 
     const stack = page.getByTestId("step-stack");
-    if (await stack.isVisible().catch(() => false)) {
-      await clickNext(page);
-    }
+    await expect(stack).toBeVisible();
+    await expect(page.getByTestId("stack-url-opik-ui")).toBeVisible();
+    await clickNext(page);
 
-    await advancePastStep(page, "step-tour");
+    await expectStep(page, "step-tour");
+    await expect(page.getByTestId("tour-checklist")).toBeVisible();
+    await expect(page.getByTestId("tour-open-opik")).toBeVisible();
+    await expect(page.getByTestId("tour-open-chat")).toBeVisible();
+    await page.getByTestId("tour-check-open-opik").check();
+    await clickNext(page);
+
+    // Tour → Quiz must keep the app alive (no blank connection-refused page).
+    await expect(page.getByTestId("step-error-boundary")).toHaveCount(0);
+    await expectStep(page, "step-quiz");
+    // Quiz hides wizard-next until finished (CONTRACTS); assert absence, not visibility.
+    await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
     await completeQuiz(page);
+    await expect(page.getByTestId("wizard-next")).toBeVisible();
     await clickNext(page);
 
     await expectStep(page, "step-issues");
@@ -79,6 +97,10 @@ test.describe("onboarding wizard", () => {
     const issueOption = page.locator('[data-testid^="issue-select-"]').first();
     await expect(issueOption).toBeVisible();
     await issueOption.click();
+    await expect(page.getByTestId("issue-detail-modal")).toBeVisible();
+    await expect(page.getByTestId("issue-excerpt")).toBeVisible();
+    await expect(page.getByTestId("issue-time-estimate")).toBeVisible();
+    await page.getByTestId("issue-confirm-select").click();
     await clickNext(page);
 
     await expect(page.getByTestId("open-cursor-command")).toBeVisible({

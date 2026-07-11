@@ -1,20 +1,27 @@
+import { useState } from "react";
+import { Modal } from "@/components/Modal";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution, useSelectIssue } from "./ContributionContext";
-import { explainIssue, usefulLabels } from "./explainIssue";
+import {
+  estimateCursorTime,
+  explainIssue,
+  issueExcerpt,
+  usefulLabels,
+} from "./explainIssue";
 import type { RankedIssue } from "./types";
 import { useRankedIssues } from "./useRankedIssues";
 
 function IssueCard({
   issue,
   selected,
-  onSelect,
+  onOpen,
   badge,
   testId,
   explanation,
 }: {
   issue: RankedIssue;
   selected: boolean;
-  onSelect: () => void;
+  onOpen: () => void;
   badge: string;
   testId: string;
   explanation: string;
@@ -26,7 +33,7 @@ function IssueCard({
       <button
         type="button"
         data-testid={`issue-select-${issue.number}`}
-        onClick={onSelect}
+        onClick={onOpen}
         className={`w-full rounded-lg border px-4 py-3 text-left transition-colors ${
           selected
             ? "border-emerald-500/60 bg-emerald-50"
@@ -62,6 +69,7 @@ function IssuesStepContent() {
   const { persona, selectedIssue } = useContribution();
   const { selectIssue } = useSelectIssue();
   const { issues, loading, error } = useRankedIssues({ persona, limit: 8 });
+  const [detailIssue, setDetailIssue] = useState<RankedIssue | null>(null);
 
   const recommended = issues[0] ?? null;
   const alternatives = issues.slice(1, 3);
@@ -84,7 +92,7 @@ function IssuesStepContent() {
           <IssueCard
             issue={recommended}
             selected={selectedIssue?.number === recommended.number}
-            onSelect={() => void selectIssue(recommended)}
+            onOpen={() => setDetailIssue(recommended)}
             badge="Recommended"
             testId="issue-recommended"
             explanation={explainIssue(recommended, persona)}
@@ -95,7 +103,7 @@ function IssuesStepContent() {
             key={issue.number}
             issue={issue}
             selected={selectedIssue?.number === issue.number}
-            onSelect={() => void selectIssue(issue)}
+            onOpen={() => setDetailIssue(issue)}
             badge={`Alternative ${index + 1}`}
             testId={`issue-alternative-${index}`}
             explanation={explainIssue(issue, persona)}
@@ -112,6 +120,58 @@ function IssuesStepContent() {
           Selected #{selectedIssue.number}. Continue to the Cursor prompt step.
         </p>
       )}
+
+      <Modal
+        open={detailIssue !== null}
+        title={detailIssue ? `#${detailIssue.number} ${detailIssue.title}` : ""}
+        onClose={() => setDetailIssue(null)}
+        testId="issue-detail-modal"
+      >
+        {detailIssue ? (
+          <div className="space-y-4">
+            <p className="text-sm leading-relaxed text-slate-600" data-testid="issue-excerpt">
+              {issueExcerpt(detailIssue)}
+            </p>
+            <p className="text-sm font-medium text-slate-900" data-testid="issue-time-estimate">
+              {estimateCursorTime(detailIssue)}
+            </p>
+            {usefulLabels(detailIssue.labels).length > 0 ? (
+              <div className="flex flex-wrap gap-1">
+                {usefulLabels(detailIssue.labels).map((label) => (
+                  <span
+                    key={label}
+                    className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            <div className="flex flex-wrap gap-2 pt-2">
+              <a
+                href={detailIssue.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="issue-github-link"
+                className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm text-slate-800 hover:border-slate-400"
+              >
+                View on GitHub
+              </a>
+              <button
+                type="button"
+                data-testid="issue-confirm-select"
+                onClick={() => {
+                  void selectIssue(detailIssue);
+                  setDetailIssue(null);
+                }}
+                className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+              >
+                Choose this issue
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </Modal>
     </StepPanel>
   );
 }

@@ -18,7 +18,7 @@ export default defineConfig({
     quizContributionAliasPlugin(uiRoot),
     contentPlugin(toolRoot),
     contributionApiPlugin(toolRoot),
-    healthApiPlugin(),
+    healthApiPlugin(toolRoot),
   ],
   resolve: {
     alias: {
