@@ -1,0 +1,66 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "text": "What is the primary purpose of Opik tracing?",
+      "options": [
+        "Capture hierarchical LLM calls, tool steps, and agent activity for debugging and analysis",
+        "Replace Git version control for prompt files",
+        "Host production LLM inference at scale",
+        "Manage Kubernetes clusters for AI workloads"
+      ],
+      "correctIndex": 0,
+      "explanation": "Opik tracing records the full chain of events in a generative AI request — LLM calls, retrievals, tools, and agent steps — as spans you can inspect in the UI."
+    },
+    {
+      "id": "q2",
+      "text": "What does 'LLM-as-a-judge' mean in Opik?",
+      "options": [
+        "A human reviewer must approve every trace manually",
+        "An LLM scores outputs against criteria like relevance or hallucination",
+        "The largest model in a cluster always wins A/B tests",
+        "Opik replaces judges in legal document review"
+      ],
+      "correctIndex": 1,
+      "explanation": "LLM-as-a-judge uses a model to automatically evaluate outputs — for example checking answer relevance, detecting hallucinations, or running moderation — at experiment or production scale."
+    },
+    {
+      "id": "q3",
+      "text": "How does this onboarding tool run Opik locally?",
+      "options": [
+        "It downloads a proprietary Comet-only binary with no source code",
+        "It clones comet-ml/opik and starts the stack with opik.sh (Docker)",
+        "It requires a paid Comet Cloud account before any local UI loads",
+        "It embeds Opik inside the onboarding-ui Vite bundle only"
+      ],
+      "correctIndex": 1,
+      "explanation": "deploy-locally.sh clones the open-source Opik repo to OPIK_PATH (default ../opik) and runs ./opik.sh, which brings up the self-hosted frontend and API on port 5173."
+    },
+    {
+      "id": "q4",
+      "text": "What happens when you send a message in the chat demo during onboarding?",
+      "options": [
+        "Nothing is logged; the demo is UI-only",
+        "Messages go to Ollama for inference and traces are sent to Opik via the SDK",
+        "Messages are posted publicly to GitHub Issues",
+        "Only browser localStorage stores the conversation"
+      ],
+      "correctIndex": 1,
+      "explanation": "The chat demo calls Ollama (llama3.1:latest) for responses and instruments the flow with the Opik SDK so verify-opik-wiring.sh can confirm traces land in your local Opik project."
+    },
+    {
+      "id": "q5",
+      "text": "What branch naming pattern does this tool use for Opik contributions?",
+      "options": [
+        "main-only commits with no branches",
+        "feature/random-uuid",
+        "opik-onboarding-tool-97115104-contribution-{N}",
+        "dependabot/npm_and_yarn"
+      ],
+      "correctIndex": 2,
+      "explanation": "create-contribution-branch.sh creates branches on the Opik repo (not this tool repo) matching opik-onboarding-tool-97115104-contribution-{N}, incrementing N until a free name is found."
+    }
+  ],
+  "passThreshold": 4,
+  "totalQuestions": 5
+}

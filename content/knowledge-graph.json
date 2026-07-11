@@ -1,0 +1,132 @@
+{
+  "title": "Opik Product Map",
+  "description": "Navigate core Opik concepts. Select a node to explore; follow edges to related topics.",
+  "rootId": "opik-platform",
+  "nodes": [
+    {
+      "id": "opik-platform",
+      "label": "Opik Platform",
+      "summary": "Open-source LLM observability, evaluation, and optimization by Comet.",
+      "details": "Opik spans the full lifecycle of generative AI apps: develop with traces, evaluate with metrics and test suites, monitor production, and optimize prompts and agents.",
+      "links": [
+        { "label": "Documentation", "url": "https://www.comet.com/docs/opik/" },
+        { "label": "GitHub", "url": "https://github.com/comet-ml/opik" }
+      ]
+    },
+    {
+      "id": "tracing",
+      "label": "Tracing",
+      "summary": "Hierarchical logs of LLM calls, tools, and agent steps.",
+      "details": "Each user interaction becomes a trace composed of spans. Spans capture inputs, outputs, timing, model metadata, and errors — essential for debugging RAG and agent pipelines.",
+      "links": [
+        { "label": "Tracing guide", "url": "https://www.comet.com/docs/opik/tracing/" }
+      ]
+    },
+    {
+      "id": "spans-feedback",
+      "label": "Spans & Feedback",
+      "summary": "Annotate traces with scores and human or automated feedback.",
+      "details": "Feedback scores on traces and spans power dashboards, online rules, and prioritization for review queues. Attach thumbs-up/down, custom metrics, or LLM-judge results.",
+      "links": [
+        { "label": "Annotate traces", "url": "https://www.comet.com/docs/opik/tracing/annotate_traces/" }
+      ]
+    },
+    {
+      "id": "evaluation",
+      "label": "Evaluation",
+      "summary": "Systematic quality measurement with datasets, metrics, and test suites.",
+      "details": "Run experiments over datasets, compare model versions, and define pass/fail assertions in natural language. Supports 30+ built-in metrics plus custom evaluators.",
+      "links": [
+        { "label": "Evaluation overview", "url": "https://www.comet.com/docs/opik/evaluation/overview/" }
+      ]
+    },
+    {
+      "id": "llm-judge",
+      "label": "LLM-as-a-Judge",
+      "summary": "Use an LLM to score outputs for relevance, hallucination, moderation, and more.",
+      "details": "LLM judges automate subjective checks at scale — in offline experiments, CI, and online production rules — so teams catch regressions without manual review of every trace.",
+      "links": [
+        { "label": "Metrics catalog", "url": "https://www.comet.com/docs/opik/evaluation/metrics/" }
+      ]
+    },
+    {
+      "id": "datasets-experiments",
+      "label": "Datasets & Experiments",
+      "summary": "Versioned test data and side-by-side run comparison.",
+      "details": "Curate datasets from production traces or imports, run evaluation experiments against them, and compare scores across prompt or model changes before shipping.",
+      "links": [
+        { "label": "Manage datasets", "url": "https://www.comet.com/docs/opik/evaluation/manage_datasets/" }
+      ]
+    },
+    {
+      "id": "production",
+      "label": "Production Monitoring",
+      "summary": "Dashboards and online rules for live traffic.",
+      "details": "Ingest production traces at scale, track latency/cost/error trends, and configure online evaluation rules that flag low-quality or unsafe outputs automatically.",
+      "links": [
+        { "label": "Production monitoring", "url": "https://www.comet.com/docs/opik/production/production_monitoring/" }
+      ]
+    },
+    {
+      "id": "prompt-playground",
+      "label": "Prompt Playground",
+      "summary": "Iterate on prompts and models in the UI.",
+      "details": "Test prompt variants, swap models, and compare outputs without redeploying application code. Prompts can be versioned and linked to experiments.",
+      "links": [
+        { "label": "Prompt engineering", "url": "https://www.comet.com/docs/opik/prompt_engineering/playground" }
+      ]
+    },
+    {
+      "id": "integrations",
+      "label": "Integrations",
+      "summary": "SDKs and framework adapters for Python and TypeScript.",
+      "details": "Drop-in support for LangChain, LlamaIndex, OpenAI, Anthropic, CrewAI, and many others. Use @track decorators or framework callbacks to emit traces with minimal code changes.",
+      "links": [
+        { "label": "Integrations overview", "url": "https://www.comet.com/docs/opik/integrations/overview/" }
+      ]
+    },
+    {
+      "id": "agent-optimizer",
+      "label": "Agent Optimizer",
+      "summary": "Automated prompt and agent improvement algorithms.",
+      "details": "Opik Agent Optimizer runs optimization loops over your traces and prompts to improve task completion, reduce cost, or meet custom objectives — complementary to manual playground iteration.",
+      "links": [
+        { "label": "Agent optimizer", "url": "https://www.comet.com/docs/opik/agent_optimization/overview/" }
+      ]
+    },
+    {
+      "id": "guardrails",
+      "label": "Guardrails",
+      "summary": "Safety and content screening for LLM outputs.",
+      "details": "Guardrails help block or flag toxic, off-topic, or policy-violating content before it reaches users — usable in development and production pipelines.",
+      "links": [
+        { "label": "Guardrails", "url": "https://www.comet.com/docs/opik/guardrails/overview/" }
+      ]
+    },
+    {
+      "id": "self-hosted",
+      "label": "Self-Hosted Stack",
+      "summary": "Run Opik locally with Docker via opik.sh.",
+      "details": "The comet-ml/opik repo ships opik.sh to start frontend, API, and backing services. This onboarding tool clones Opik, runs opik.sh, and verifies the chat demo writes traces to your local instance.",
+      "links": [
+        { "label": "Local installation", "url": "https://www.comet.com/docs/opik/self-host/overview/" }
+      ]
+    }
+  ],
+  "edges": [
+    { "source": "opik-platform", "target": "tracing", "label": "observes" },
+    { "source": "tracing", "target": "spans-feedback", "label": "annotates" },
+    { "source": "opik-platform", "target": "evaluation", "label": "measures" },
+    { "source": "evaluation", "target": "llm-judge", "label": "uses" },
+    { "source": "evaluation", "target": "datasets-experiments", "label": "runs on" },
+    { "source": "opik-platform", "target": "production", "label": "monitors" },
+    { "source": "production", "target": "llm-judge", "label": "scores with" },
+    { "source": "opik-platform", "target": "prompt-playground", "label": "iterates" },
+    { "source": "prompt-playground", "target": "agent-optimizer", "label": "complements" },
+    { "source": "opik-platform", "target": "integrations", "label": "connects via" },
+    { "source": "tracing", "target": "integrations", "label": "instrumented by" },
+    { "source": "opik-platform", "target": "guardrails", "label": "secures" },
+    { "source": "opik-platform", "target": "self-hosted", "label": "deploys as" },
+    { "source": "self-hosted", "target": "tracing", "label": "stores" }
+  ]
+}
