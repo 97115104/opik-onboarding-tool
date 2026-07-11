@@ -7,7 +7,7 @@
       "id": "opik-platform",
       "label": "Opik Platform",
       "summary": "Open-source LLM observability, evaluation, and optimization by Comet.",
-      "details": "Opik spans the full lifecycle of generative AI apps: develop with traces, evaluate with metrics and test suites, monitor production, and optimize prompts and agents.",
+      "details": "Opik covers the generative AI lifecycle: develop with traces, evaluate with metrics and test suites, monitor production, and optimize prompts and agents.",
       "links": [
         { "label": "Documentation", "url": "https://www.comet.com/docs/opik/" },
         { "label": "GitHub", "url": "https://github.com/comet-ml/opik" }
@@ -17,7 +17,7 @@
       "id": "tracing",
       "label": "Tracing",
       "summary": "Hierarchical logs of LLM calls, tools, and agent steps.",
-      "details": "Each user interaction becomes a trace composed of spans. Spans capture inputs, outputs, timing, model metadata, and errors — essential for debugging RAG and agent pipelines.",
+      "details": "Each user interaction becomes a trace composed of spans. Spans capture inputs, outputs, timing, model metadata, and errors. Essential for debugging RAG and agent pipelines.",
       "links": [
         { "label": "Tracing guide", "url": "https://www.comet.com/docs/opik/tracing/" }
       ]
@@ -26,7 +26,7 @@
       "id": "spans-feedback",
       "label": "Spans & Feedback",
       "summary": "Annotate traces with scores and human or automated feedback.",
-      "details": "Feedback scores on traces and spans power dashboards, online rules, and prioritization for review queues. Attach thumbs-up/down, custom metrics, or LLM-judge results.",
+      "details": "Feedback scores on traces and spans power dashboards, online rules, and review queues. Attach thumbs-up/down, custom metrics, or LLM-judge results.",
       "links": [
         { "label": "Annotate traces", "url": "https://www.comet.com/docs/opik/tracing/annotate_traces/" }
       ]
@@ -44,7 +44,7 @@
       "id": "llm-judge",
       "label": "LLM-as-a-Judge",
       "summary": "Use an LLM to score outputs for relevance, hallucination, moderation, and more.",
-      "details": "LLM judges automate subjective checks at scale — in offline experiments, CI, and online production rules — so teams catch regressions without manual review of every trace.",
+      "details": "LLM judges automate subjective checks at scale in offline experiments, CI, and online production rules, so teams catch regressions without reviewing every trace.",
       "links": [
         { "label": "Metrics catalog", "url": "https://www.comet.com/docs/opik/evaluation/metrics/" }
       ]
@@ -62,7 +62,7 @@
       "id": "production",
       "label": "Production Monitoring",
       "summary": "Dashboards and online rules for live traffic.",
-      "details": "Ingest production traces at scale, track latency/cost/error trends, and configure online evaluation rules that flag low-quality or unsafe outputs automatically.",
+      "details": "Ingest production traces at scale, track latency, cost, and error trends, and configure online evaluation rules that flag low-quality or unsafe outputs automatically.",
       "links": [
         { "label": "Production monitoring", "url": "https://www.comet.com/docs/opik/production/production_monitoring/" }
       ]
@@ -89,7 +89,7 @@
       "id": "agent-optimizer",
       "label": "Agent Optimizer",
       "summary": "Automated prompt and agent improvement algorithms.",
-      "details": "Opik Agent Optimizer runs optimization loops over your traces and prompts to improve task completion, reduce cost, or meet custom objectives — complementary to manual playground iteration.",
+      "details": "Opik Agent Optimizer runs optimization loops over your traces and prompts to improve task completion, reduce cost, or meet custom objectives. Complements manual playground iteration.",
       "links": [
         { "label": "Agent optimizer", "url": "https://www.comet.com/docs/opik/agent_optimization/overview/" }
       ]
@@ -98,7 +98,7 @@
       "id": "guardrails",
       "label": "Guardrails",
       "summary": "Safety and content screening for LLM outputs.",
-      "details": "Guardrails help block or flag toxic, off-topic, or policy-violating content before it reaches users — usable in development and production pipelines.",
+      "details": "Guardrails help block or flag toxic, off-topic, or policy-violating content before it reaches users. Usable in development and production pipelines.",
       "links": [
         { "label": "Guardrails", "url": "https://www.comet.com/docs/opik/guardrails/overview/" }
       ]

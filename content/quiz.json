@@ -10,7 +10,7 @@
         "Manage Kubernetes clusters for AI workloads"
       ],
       "correctIndex": 0,
-      "explanation": "Opik tracing records the full chain of events in a generative AI request — LLM calls, retrievals, tools, and agent steps — as spans you can inspect in the UI."
+      "explanation": "Opik tracing records the full chain of events in a generative AI request (LLM calls, retrievals, tools, and agent steps) as spans you can inspect in the UI."
     },
     {
       "id": "q2",
@@ -22,7 +22,7 @@
         "Opik replaces judges in legal document review"
       ],
       "correctIndex": 1,
-      "explanation": "LLM-as-a-judge uses a model to automatically evaluate outputs — for example checking answer relevance, detecting hallucinations, or running moderation — at experiment or production scale."
+      "explanation": "LLM-as-a-judge uses a model to automatically evaluate outputs (for example answer relevance, hallucinations, or moderation) at experiment or production scale."
     },
     {
       "id": "q3",
