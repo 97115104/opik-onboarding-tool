@@ -197,4 +197,4 @@ Issue numbers are referenced in GitHub — run `gh issue list --repo 97115104/op
 
 ---
 
-*Contract version 1.0.0 — Prep workstream*
+*Contract version 1.1.0 (UX overhaul)*
