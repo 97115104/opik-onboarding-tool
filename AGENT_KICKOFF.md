@@ -145,7 +145,20 @@ Assume the implementation is wrong until proven otherwise.
 
 ## Orchestrator commands
 
-Monitor board:
+### One-command parallel launch (no manual N kickoffs)
+
+```bash
+export CURSOR_API_KEY="cursor_..."   # cursor.com/dashboard → Integrations
+node orchestrate-cloud-agents.mjs    # launches A–E cloud agents in parallel
+node orchestrate-cloud-agents.mjs --issues 8,9   # prep reviews only
+node orchestrate-cloud-agents.mjs --dry-run      # preview prompts
+```
+
+The script reads open GitHub issues, builds prompts from issue bodies + CONTRACTS, POSTs to `https://api.cursor.com/v1/agents` in parallel, and comments agent URLs on each issue.
+
+Alternative: comment `@cursor` on a GitHub issue to launch a single cloud agent from that issue text.
+
+### Monitor board
 
 ```bash
 gh issue list --repo 97115104/opik-onboarding-tool \
