@@ -19,10 +19,10 @@ The script automates Bun install, Opik clone, Ollama, services, and Playwright c
 | Step | When | What to do |
 |------|------|------------|
 | **sudo** | First run on a fresh machine | Enter your password when `install-deps.sh` installs system packages (Docker, Playwright OS libs, etc.) |
-| **GitHub auth** | If `gh` is not logged in | Complete `gh auth login` — paste the **device code** shown in the terminal when prompted |
+| **GitHub auth** | If `gh` is not logged in | Complete `gh auth login`: paste the **device code** shown in the terminal when prompted |
 | **Docker Desktop (macOS)** | Before or during deploy | Install [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/) and **start it** so the Opik stack can run |
 
-Everything else — cloning Opik, pulling `llama3.1:latest`, starting services, running e2e, opening browser tabs — is handled by the script.
+Everything else (cloning Opik, pulling `llama3.1:latest`, starting services, running e2e, opening browser tabs) is handled by the script.
 
 ### Deploy flags
 
@@ -44,15 +44,16 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) and [CONTRACTS.md](./CONTRACTS.md) for 
 
 ## Wizard flow
 
-1. **Overview** — What Opik is and why it matters
-2. **Knowledge graph** — Navigate core product concepts
-3. **Local stack** — Health of Opik, Ollama, and demo apps
-4. **Tour** — Guided walkthrough of key workflows
-5. **Quiz** — Five questions to confirm understanding
-6. **Issue assignment** — Ranked `comet-ml/opik` issues via `gh`
-7. **Cursor prompt** — Copy-paste prompt with branch `opik-onboarding-tool-97115104-contribution-{N}`
-8. **PR checklist** — Tests, CI, draft PR, AI disclosure
-9. **Extend** — How to improve this tool ([CONTRIBUTING.md](./CONTRIBUTING.md))
+1. **About you:** Choose Engineer, PM, Support, or External contributor
+2. **Overview:** What Opik is and why it matters
+3. **Knowledge graph:** Navigate core product concepts
+4. **Local stack:** Health of Opik, Ollama, and demo apps (via same-origin proxy)
+5. **Tour:** Guided walkthrough of key workflows
+6. **Quiz:** Auto-graded questions with a results summary
+7. **Issues:** One recommended issue plus two alternatives
+8. **Cursor prompt:** Open-repo command plus copy-paste contribution prompt
+9. **PR help:** Short PR explainer plus a second Cursor prompt for draft PR steps
+10. **Extend:** How to improve this tool ([CONTRIBUTING.md](./CONTRIBUTING.md))
 
 Content lives in [`content/`](./content/). Role-specific guides are in [`docs/audiences/`](./docs/audiences/).
 
