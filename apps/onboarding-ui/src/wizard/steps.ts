@@ -3,7 +3,7 @@ import type { WizardStepConfig } from '../types'
 export const WIZARD_STEPS: WizardStepConfig[] = [
   { id: 'about', label: 'About you', testId: 'step-about', owner: 'B' },
   { id: 'overview', label: 'Overview', testId: 'step-overview', owner: 'B' },
-  { id: 'graph', label: 'Understanding Opik', testId: 'step-graph', owner: 'B' },
+  { id: 'graph', label: 'Opik Features', testId: 'step-graph', owner: 'B' },
   { id: 'stack', label: 'Local stack', testId: 'step-stack', owner: 'B' },
   { id: 'tour', label: 'Try Opik', testId: 'step-tour', owner: 'B' },
   { id: 'quiz', label: 'Quiz', testId: 'step-quiz', owner: 'C' },
@@ -11,6 +11,10 @@ export const WIZARD_STEPS: WizardStepConfig[] = [
   { id: 'prompt', label: 'Prompt', testId: 'step-prompt', owner: 'C' },
   { id: 'pr-help', label: 'PR help', testId: 'step-pr-help', owner: 'C' },
   { id: 'extend', label: 'Extend', testId: 'step-extend', owner: 'B' },
+  { id: 'finish', label: 'Finish', testId: 'step-finish', owner: 'B' },
 ]
+
+/** Content steps before the celebration Finish screen. */
+export const CONTENT_STEP_COUNT = WIZARD_STEPS.filter((step) => step.id !== 'finish').length
 
 export const B_STEP_COUNT = WIZARD_STEPS.filter((step) => step.owner === 'B').length

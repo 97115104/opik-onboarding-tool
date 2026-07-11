@@ -70,10 +70,9 @@ export function estimateCursorTime(issue: RankedIssue): string {
 }
 
 export function issueExcerpt(issue: RankedIssue): string {
-  const raw = (issue.excerpt ?? issue.body ?? "").trim();
+  const raw = (issue.body ?? issue.excerpt ?? "").trim();
   if (raw) {
-    const cleaned = raw.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n");
-    return cleaned.length > 420 ? `${cleaned.slice(0, 417).trimEnd()}…` : cleaned;
+    return raw.replace(/\r\n/g, "\n").replace(/\n{3,}/g, "\n\n");
   }
   return "No issue description was available. Open GitHub for the full write-up.";
 }

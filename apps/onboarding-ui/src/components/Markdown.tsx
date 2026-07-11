@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { Components } from 'react-markdown'
 
 const components: Components = {
@@ -10,5 +11,9 @@ const components: Components = {
 }
 
 export function Markdown({ children }: { children: string }) {
-  return <ReactMarkdown components={components}>{children}</ReactMarkdown>
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+      {children}
+    </ReactMarkdown>
+  )
 }

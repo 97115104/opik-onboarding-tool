@@ -43,7 +43,7 @@ export function AboutYouStep() {
     <StepPanel
       testId="step-about"
       title="About you"
-      subtitle="Pick the role that best matches how you will use this wizard. Everyone still walks the contribution path."
+      subtitle="Pick the role that fits you best."
     >
       <ul className="grid gap-3 sm:grid-cols-2">
         {PERSONA_OPTIONS.map((option) => {
@@ -56,7 +56,7 @@ export function AboutYouStep() {
                 onClick={() => onSelect(option.id)}
                 className={`w-full rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition ${
                   active
-                    ? 'border-slate-900 bg-slate-900 text-white'
+                    ? 'border-slate-900 ring-1 ring-slate-900 bg-white text-slate-900'
                     : 'border-[var(--color-border)] bg-white text-slate-800 hover:border-slate-400'
                 }`}
               >

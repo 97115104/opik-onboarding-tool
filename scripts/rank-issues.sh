@@ -88,11 +88,19 @@ with open(sys.argv[1], encoding="utf-8") as fh:
 limit = int(sys.argv[2])
 persona = (sys.argv[3] or "").strip().lower()
 non_engineer = persona in {"pm", "support"}
+# Stronger first-time bias for every persona, including engineer/external.
+first_time_bias = True
 
 PREFERRED = {"good first issue", "help wanted"}
 DOCS = {"documentation", "docs"}
 INFRA_RE = re.compile(
     r"docker|rpi|raspberry|infra|kubernetes|helm|\bci\b|hardware|nvidia|cuda",
+    re.I,
+)
+HARD_RE = re.compile(
+    r"\badk\b|multi[- ]?sdk|sdk integration|typescript sdk|python sdk|"
+    r"distributed|performance regression|benchmark|migration|refactor|"
+    r"breaking change|architecture",
     re.I,
 )
 
@@ -128,29 +136,49 @@ def excerpt(body):
         return ""
     text = re.sub(r"\r\n", "\n", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
-    if len(text) > 420:
-        return text[:417].rstrip() + "…"
+    # Keep enough markdown for the issues modal; still bound payload size.
+    if len(text) > 4000:
+        return text[:3997].rstrip() + "…"
     return text
 
 def score(issue):
     labels = {lbl["name"].lower() for lbl in issue.get("labels", [])}
     title = issue.get("title", "")
+    body = issue.get("body") or ""
     s = 0.5
-    if labels & PREFERRED:
-        s += 0.35 if not non_engineer else 0.45
-    if issue.get("assignees"):
-        s -= 0.4
-    if "bug" in labels:
-        s += 0.05
-    if labels & DOCS:
-        s += 0.05 if not non_engineer else 0.25
-    if "good first issue" in labels and non_engineer:
+    is_gfi = "good first issue" in labels
+    is_docs = bool(labels & DOCS or re.search(r"\bdocs?\b", title, re.I))
+    is_help = "help wanted" in labels
+    preferred = is_gfi or is_docs
+
+    # Docs / good-first must outrank plain help-wanted and short generic issues.
+    if is_gfi:
+        s += 0.55
+    if is_docs:
+        s += 0.45
+    elif is_help and not is_gfi:
         s += 0.15
+
+    if issue.get("assignees"):
+        s -= 0.1 if preferred else 0.4
+
+    if "bug" in labels and not preferred:
+        s += 0.0  # no bump for non-first-time bugs
+
     if INFRA_RE.search(title) or labels & {"infra", "docker", "ci", "hardware"}:
-        s -= 0.35 if non_engineer else 0.1
-    if persona in {"engineer", "external"}:
-        if labels & {"enhancement", "feature", "performance"}:
-            s += 0.05
+        s -= 0.45 if first_time_bias else (0.35 if non_engineer else 0.1)
+
+    if HARD_RE.search(title) or HARD_RE.search(body[:500]):
+        s -= 0.35 if first_time_bias else 0.15
+
+    body_len = len(body.strip())
+    if preferred:
+        pass  # do not penalize long docs/GFI write-ups
+    elif body_len and body_len < 800:
+        s += 0.05
+    elif body_len > 4000:
+        s -= 0.12
+
     return max(0.0, min(1.0, s))
 
 ranked = []

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Markdown } from "@/components/Markdown";
 import { Modal } from "@/components/Modal";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution, useSelectIssue } from "./ContributionContext";
@@ -129,9 +130,12 @@ function IssuesStepContent() {
       >
         {detailIssue ? (
           <div className="space-y-4">
-            <p className="text-sm leading-relaxed text-slate-600" data-testid="issue-excerpt">
-              {issueExcerpt(detailIssue)}
-            </p>
+            <div
+              className="markdown-body text-sm leading-relaxed text-slate-600"
+              data-testid="issue-excerpt"
+            >
+              <Markdown>{issueExcerpt(detailIssue)}</Markdown>
+            </div>
             <p className="text-sm font-medium text-slate-900" data-testid="issue-time-estimate">
               {estimateCursorTime(detailIssue)}
             </p>

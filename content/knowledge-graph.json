@@ -1,6 +1,6 @@
 {
-  "title": "Opik Product Map",
-  "description": "Navigate core Opik concepts. Select a node to explore; follow edges to related topics.",
+  "title": "Opik Features",
+  "description": "Review each feature in order to unlock the next.",
   "rootId": "opik-platform",
   "nodes": [
     {

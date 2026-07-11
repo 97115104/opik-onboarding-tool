@@ -1,10 +1,49 @@
 import type { Persona, RankedIssue } from "../issues/types";
 import { DEFAULT_OPIK_PATH } from "../issues/types";
 
+/** Official Cursor deeplink URL length budget (scheme + path + query). */
+export const CURSOR_DEEPLINK_MAX_URL_LENGTH = 8000;
+
 export function openCursorCommands(opikPath: string): string {
   return `cursor "${opikPath}"
 # fallback if the cursor CLI is not on PATH:
 cd "${opikPath}" && cursor .`;
+}
+
+/**
+ * Build a Cursor prompt deeplink. If the full URL would exceed the limit,
+ * shorten the embedded text and return truncated=true so the UI can keep Copy.
+ */
+export function buildCursorPromptDeeplink(prompt: string): {
+  href: string;
+  truncated: boolean;
+} {
+  const prefix = "cursor://anysphere.cursor-deeplink/prompt?text=";
+  const full = `${prefix}${encodeURIComponent(prompt)}`;
+  if (full.length <= CURSOR_DEEPLINK_MAX_URL_LENGTH) {
+    return { href: full, truncated: false };
+  }
+
+  // Binary-search a prefix of the prompt that fits after encoding.
+  let lo = 0;
+  let hi = prompt.length;
+  let best = "";
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    const candidate = `${prompt.slice(0, mid)}\n\n[Prompt truncated for deeplink. Paste the full prompt from the onboarding UI.]`;
+    const url = `${prefix}${encodeURIComponent(candidate)}`;
+    if (url.length <= CURSOR_DEEPLINK_MAX_URL_LENGTH) {
+      best = candidate;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+
+  return {
+    href: `${prefix}${encodeURIComponent(best || "Open the onboarding UI and copy the full prompt.")}`,
+    truncated: true,
+  };
 }
 
 export function generateCursorPrompt(

@@ -17,6 +17,10 @@ import {
   PERSONA_CHANGED_EVENT,
   readPersona,
 } from '@/lib/persona'
+import {
+  getWizardGatesSnapshot,
+  subscribeWizardGates,
+} from '@/lib/wizardGates'
 import { STEP_REGISTRY } from '@/wizard/stepRegistry'
 import { WIZARD_STEPS } from '@/wizard/steps'
 
@@ -93,23 +97,38 @@ function useQuizFinished() {
   return storeFinished || storageFinished
 }
 
+function useWizardGates() {
+  return useSyncExternalStore(
+    subscribeWizardGates,
+    getWizardGatesSnapshot,
+    getWizardGatesSnapshot,
+  )
+}
+
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [boundaryKey, setBoundaryKey] = useState(0)
   const personaSelected = usePersonaSelected()
   const quizFinished = useQuizFinished()
+  const gates = useWizardGates()
 
   const step = STEP_REGISTRY[currentIndex]
   const StepComponent = step?.Component
   const stepId = WIZARD_STEPS[currentIndex]?.id
 
   const canGoBack = currentIndex > 0
+  const isFinishStep = stepId === 'finish'
+  const isExtendStep = stepId === 'extend'
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
-  const isLastStep = currentIndex === STEP_REGISTRY.length - 1
 
-  // Gate Next: about requires persona; quiz hides Next until finished; issues require a pick.
+  // Gate Next: about requires persona; overview/graph/tour/quiz hide until complete; issues require a pick.
   const hideNext =
-    (stepId === 'about' && !personaSelected) || (stepId === 'quiz' && !quizFinished)
+    isFinishStep ||
+    (stepId === 'about' && !personaSelected) ||
+    (stepId === 'overview' && !gates.overview) ||
+    (stepId === 'graph' && !gates.graph) ||
+    (stepId === 'tour' && !gates.tour) ||
+    (stepId === 'quiz' && !quizFinished)
 
   const issueSelected = useSyncExternalStore(
     contributionStore.subscribe,
@@ -141,7 +160,7 @@ export default function App() {
         canGoBack={canGoBack}
         canGoNext={canAdvance}
         hideNext={hideNext}
-        nextLabel={isLastStep ? 'Finish' : 'Next'}
+        nextLabel={isExtendStep ? 'Finish' : 'Next'}
       >
         <ErrorBoundary onReset={() => setBoundaryKey((value) => value + 1)}>
           <AnimatePresence mode="wait">

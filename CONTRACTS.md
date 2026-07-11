@@ -207,7 +207,7 @@ interface ContributionSnapshot {
 |------|-----|--------|-------|
 | About you | `about` | `step-about` | B |
 | Overview | `overview` | `step-overview` | B |
-| Understanding Opik | `graph` | `step-graph` | B |
+| Opik Features | `graph` | `step-graph` | B |
 | Local stack | `stack` | `step-stack` | B |
 | Try Opik | `tour` | `step-tour` | B |
 | Quiz | `quiz` | `step-quiz` | C |
@@ -215,6 +215,24 @@ interface ContributionSnapshot {
 | Cursor prompt | `prompt` | `step-prompt` | C |
 | PR help | `pr-help` | `step-pr-help` | C |
 | Extend | `extend` | `step-extend` | B |
+| Finish (celebration) | `finish` | `step-finish` | B |
+
+### Wizard gating rules
+
+| Step | Footer Next / Finish |
+|------|----------------------|
+| `about` | Hidden until a persona is selected |
+| `overview` | Hidden until the last overview slide is reached |
+| `graph` | Hidden until every Opik Features node is reviewed (modal close or Got it) |
+| `tour` | Hidden until all tour steps are done (CTA click auto-completes; checkbox still works) |
+| `quiz` | Hidden until quiz results (`quizFinished`) |
+| `issues` | Next disabled until an issue is confirmed |
+| `extend` | Footer label is **Finish**; advances to celebration |
+| `finish` | Footer Next/Finish hidden; Back returns to Extend; progress reads Complete |
+
+Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned).
+
+Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
 
 ## Script contracts
 
@@ -260,13 +278,15 @@ interface ContributionSnapshot {
 # [{ "number": 1234, "title": "...", "url": "...", "score": 0.87, "labels": [...], "plainExplanation": "...", "excerpt": "..." }]
 ```
 
-- Prefer `good first issue`, `help wanted`
+- Prefer `good first issue`, `help wanted`, and docs for **all** personas (first-time contributor bias)
 - Penalize items with assignee
-- `--persona=pm|support`: stronger weight on docs / good-first; deprioritize infra / Docker / hardware-style bugs
-- `--persona=engineer|external`: current ranking with optional advanced labels
+- Harder penalty for infra / Docker / hardware, multi-SDK / ADK-style titles, and long integration bugs
+- Soft prefer shorter issue bodies
+- `--persona=pm|support`: plain-language explanations; same first-time ranking bias
+- `--persona=engineer|external`: same first-time ranking bias; explanations may be more technical
 - Sort by score descending; default limit 10
 - Data source: `gh issue list --repo comet-ml/opik --json number,title,url,labels,assignees,body`
-- Optional `excerpt`: truncated issue body for the issues detail modal
+- Optional `excerpt`: issue body (up to ~4000 chars) for the issues detail modal (rendered as markdown)
 
 Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to the script.
 
@@ -293,18 +313,26 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | About you panel | `step-about` |
 | Persona choice | `about-persona-engineer`, `about-persona-pm`, `about-persona-support`, `about-persona-external` |
 | Overview panel | `step-overview` |
+| Overview slides | `overview-slides` |
+| Overview slide | `overview-slide-{id}` |
+| Overview slide prev/next | `overview-slide-prev`, `overview-slide-next` |
 | Graph panel | `step-graph` |
 | Graph empty hint | `graph-empty-hint` |
+| Graph progress | `graph-progress` |
 | Graph node button | `graph-node-{id}` |
 | Graph detail modal | `graph-detail-modal` |
 | Graph detail modal close | `graph-detail-modal-close` |
+| Graph Got it | `graph-got-it` |
 | Stack status | `step-stack` |
 | Stack service URL | `stack-url-{service}` |
 | Stack fix button | `stack-fix-{service}` |
 | Tour panel | `step-tour` |
 | Tour checklist | `tour-checklist` |
+| Tour progress | `tour-progress` |
 | Tour open Opik CTA | `tour-open-opik` |
 | Tour open chat CTA | `tour-open-chat` |
+| Tour open traces CTA | `tour-open-traces` |
+| Tour open spans CTA | `tour-open-spans` |
 | Tour checkbox | `tour-check-{id}` |
 | Step error boundary | `step-error-boundary` |
 | Step error retry | `step-error-retry` |
@@ -324,11 +352,17 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Issue select | `issue-select-{number}` |
 | Prompt panel | `step-prompt` |
 | Open Cursor command | `open-cursor-command` |
+| Open prompt in Cursor | `open-cursor-prompt` |
+| Open prompt truncated notice | `open-cursor-prompt-truncated` |
 | Cursor prompt | `cursor-prompt` |
 | Copy prompt button | `copy-prompt` |
 | PR help step | `step-pr-help` |
 | PR help prompt | `pr-help-prompt` |
 | Extend panel | `step-extend` |
+| Finish celebration | `step-finish` |
+| Finish fireworks canvas | `finish-fireworks` |
+| Finish Opik GitHub link | `finish-opik-github` |
+| Finish support email | `finish-support-email` |
 
 **Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`.
 
@@ -363,13 +397,16 @@ Behavior:
 - Fetch ranked list (limit ~5–10).
 - Present **1 recommended** (`issue-recommended`) + **2 alternatives** (`issue-alternative-0`, `issue-alternative-1`).
 - Each item has a plain-language explanation (from title/labels; simpler for non-engineers).
+- Issue detail modal renders `excerpt`/`body` as markdown (`issue-excerpt` via Markdown + remark-gfm).
 - Hide raw score noise; labels only if useful.
 
 ## Cursor prompt template (C generates)
 
 Primary prompt step must include:
 
+- Primary CTA: **Open prompt in Cursor** (`open-cursor-prompt`) via `cursor://anysphere.cursor-deeplink/prompt?text=…` (URL length ≤ 8000; if over, shorten deeplink text and keep full prompt in Copy)
 - Copyable open-repo command (`open-cursor-command`), e.g. `cursor "$OPIK_PATH"` plus `cd` fallback, using real path from contribution API / env
+- Copy prompt button (`copy-prompt`) as fallback
 - Assigned issue number, title, URL
 - Branch name matching `opik-onboarding-tool-97115104-contribution-\d+`
 - Opik clone path `OPIK_PATH`
@@ -377,6 +414,7 @@ Primary prompt step must include:
 - AI disclosure + attestation checkbox reference
 - Link to Opik CONTRIBUTING.md fast path
 - Shorter body; simpler tone for PM/Support
+- Note: user confirms the prompt in Cursor; open the Opik folder first if the workspace is not already open
 
 ## PR-help prompt (replaces checklist)
 
@@ -401,7 +439,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → graph empty/modal → stack URL → tour CTAs → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → primary + PR-help prompts; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated) → Opik Features sequential unlock (Next gated) → stack URL → tour progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → issue modal select → open-cursor-prompt + PR-help prompts → Extend Finish → celebration; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -428,4 +466,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.1.1** (UX-Prep follow-up from adversarial review)
+Contract version: **1.2.0** (UX polish: slides, features unlock, tour gate, Cursor deeplink, Finish celebration)

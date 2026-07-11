@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <circle cx="16" cy="16" r="14" stroke="#7dd3fc" stroke-width="2"/>
-  <path d="M10 16h12M16 10v12" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Opik">
+  <rect width="32" height="32" fill="#ffffff"/>
+  <!-- Black O as a path so favicon rasterizers do not depend on fonts -->
+  <path
+    fill="#000000"
+    d="M16 6.5c-5.25 0-9.5 4.25-9.5 9.5s4.25 9.5 9.5 9.5 9.5-4.25 9.5-9.5-4.25-9.5-9.5-9.5zm0 3.2c3.48 0 6.3 2.82 6.3 6.3s-2.82 6.3-6.3 6.3-6.3-2.82-6.3-6.3 2.82-6.3 6.3-6.3z"
+  />
 </svg>
