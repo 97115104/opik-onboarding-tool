@@ -3,7 +3,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { CHAT_DEMO_URL } from "../helpers/constants";
 import { getOpikTraceCount, waitForNewOpikTrace } from "../helpers/opik";
 
-const CHAT_MESSAGE = "e2e wiring check — reply with one short word.";
+const CHAT_MESSAGE = "e2e wiring check: reply with one short word.";
 
 async function chatInput(page: Page) {
   const byTestId = page.getByTestId("chat-input");
