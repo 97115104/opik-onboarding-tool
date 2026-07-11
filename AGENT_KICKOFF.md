@@ -14,7 +14,12 @@ cd opik-onboarding-tool
 
 Manual steps only: sudo for package installs, GitHub device-code paste, Docker Desktop on Mac.
 
-The tool deploys Opik + Ollama + demo UIs, walks an onboarding wizard, assigns a ranked Opik GitHub issue, and emits a Cursor prompt with an Opik-repo branch `opik-onboarding-tool-97115104-contribution-{N}`.
+The tool deploys Opik + Ollama + demo UIs, walks an onboarding wizard, assigns a ranked Opik GitHub issue, and emits a Cursor prompt for work in the **Opik** repo.
+
+**Dual branch conventions (Opik repo only):**
+
+- Opik CONTRIBUTING: `{username}/{ticket}-{summary}` where `{username}` is the contributor's **GitHub handle** (not the numeric `97115104` id).
+- This wizard's contribution path: `opik-onboarding-tool-97115104-contribution-{N}` (created/used by the onboarding tool).
 
 **Out of scope:** Opening a PR against Opik from this repo.
 
@@ -102,7 +107,7 @@ flowchart TD
 |-------|----------|
 | **Prep** | ARCHITECTURE.md, CONTRACTS.md, AGENT_KICKOFF.md |
 | **A** | deploy-locally.sh, scripts/* (except C scripts), apps/chat-demo |
-| **B** | onboarding UI shell, design, overview/graph/tour/stack/extend |
+| **B** | onboarding UI shell, design, about/overview/Opik Features/Try Opik/stack/extend/finish |
 | **C** | quiz, contributing overview, contributing quiz, issues, Cursor prompt, verify, PR help, rank/branch scripts |
 | **D** | README, CONTRIBUTING, content/, docs/ |
 | **E** | e2e/, run-e2e.sh |
@@ -197,4 +202,4 @@ Issue numbers are referenced in GitHub — run `gh issue list --repo 97115104/op
 
 ---
 
-*Contract version 1.1.0 (UX overhaul)*
+*Contract version 1.4.0 (Contributing overview CLA gate + contributing quiz step)*

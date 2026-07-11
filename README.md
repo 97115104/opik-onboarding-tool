@@ -10,7 +10,7 @@ cd opik-onboarding-tool
 ./deploy-locally.sh
 ```
 
-When deploy finishes, open the onboarding wizard at **http://localhost:4310** and follow the steps.
+When deploy finishes, open the onboarding wizard at **http://127.0.0.1:4310** and follow the steps.
 
 ### What you do manually
 
@@ -36,7 +36,7 @@ Everything else (cloning Opik, pulling `llama3.1:latest`, starting services, run
 
 | Service | URL |
 |---------|-----|
-| Onboarding wizard | http://localhost:4310 |
+| Onboarding wizard | http://127.0.0.1:4310 |
 | Chat demo (Ollama + Opik traces) | http://localhost:4311 |
 | Opik UI | http://localhost:5173 |
 
@@ -46,9 +46,9 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) and [CONTRACTS.md](./CONTRACTS.md) for 
 
 1. **About you:** Choose Engineer, PM, Support, or External contributor
 2. **Overview:** What Opik is and why it matters
-3. **Knowledge graph:** Navigate core product concepts
+3. **Opik Features:** Navigate core product concepts
 4. **Local stack:** Health of Opik, Ollama, and demo apps (via same-origin proxy)
-5. **Tour:** Guided walkthrough of key workflows
+5. **Try Opik:** Guided walkthrough of key workflows
 6. **Quiz:** Auto-graded product questions with a results summary
 7. **Contributing overview:** Upstream Opik norms, CLA CTA, and component guides
 8. **Contributing quiz:** Auto-graded contribution questions (CLA, issue links, CI, scope)
@@ -57,6 +57,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) and [CONTRACTS.md](./CONTRACTS.md) for 
 11. **Verify:** Local checks and CI awareness for the chosen issue
 12. **PR help:** Short PR explainer plus a second Cursor prompt for draft PR steps
 13. **Extend:** How to improve this tool ([CONTRIBUTING.md](./CONTRIBUTING.md))
+14. **Finish:** Celebration when you complete the wizard
 
 Content lives in [`content/`](./content/). Role-specific guides are in [`docs/audiences/`](./docs/audiences/).
 

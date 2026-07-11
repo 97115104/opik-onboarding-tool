@@ -144,6 +144,8 @@ apps/onboarding-ui/src/features/issues/**
 apps/onboarding-ui/src/features/prompt/**
 apps/onboarding-ui/src/features/checklist/**
 apps/onboarding-ui/src/features/verify/**
+apps/onboarding-ui/src/steps/ContributingOverviewStep.tsx
+apps/onboarding-ui/src/content/contributingSlides.ts
 ```
 
 B owns health client (`lib/health.ts`) and a separate health Vite plugin (not C's contribution API plugin).
@@ -156,6 +158,8 @@ apps/onboarding-ui/src/features/issues/**
 apps/onboarding-ui/src/features/prompt/**
 apps/onboarding-ui/src/features/checklist/**
 apps/onboarding-ui/src/features/verify/**
+apps/onboarding-ui/src/steps/ContributingOverviewStep.tsx
+apps/onboarding-ui/src/content/contributingSlides.ts
 scripts/rank-issues.sh
 scripts/create-contribution-branch.sh
 ```
@@ -473,7 +477,7 @@ Step `pr-help` (`step-pr-help`):
 No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 
 1. Tracked issue linked (`Fixes #...` or `Resolves #...`)
-2. Branch name: onboarding branch or `{username}/{ticket}-{summary}`
+2. Branch name: onboarding branch `opik-onboarding-tool-97115104-contribution-{N}`, or Opik `{username}/{ticket}-{summary}` where `{username}` is the contributor's GitHub handle
 3. Draft PR: `gh pr create --draft`
 4. Fill `.github/pull_request_template.md`
 5. Run formatters/linters/tests for touched area

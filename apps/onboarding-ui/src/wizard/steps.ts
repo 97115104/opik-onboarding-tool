@@ -9,7 +9,7 @@ export const WIZARD_STEPS: WizardStepConfig[] = [
   { id: 'quiz', label: 'Quiz', testId: 'step-quiz', owner: 'C' },
   {
     id: 'contributing-overview',
-    label: 'Contributing',
+    label: 'Contributing overview',
     testId: 'step-contributing-overview',
     owner: 'C',
   },

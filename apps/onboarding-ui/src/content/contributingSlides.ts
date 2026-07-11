@@ -73,7 +73,7 @@ export const CONTRIBUTING_SLIDES: ContributingSlide[] = [
   {
     id: 'how-to-contribute',
     title: 'How to contribute',
-    body: 'Link your PR to a tracked issue with Fixes #..., name your branch {username}/{ticket}-{summary}, keep the change scoped to that area, and run local formatters, linters, and tests before you open the PR.',
+    body: 'Link your PR to a tracked issue with Fixes #.... Opik accepts branch names as {username}/{ticket}-{summary} where {username} is your GitHub handle. This wizard creates and uses the onboarding branch opik-onboarding-tool-97115104-contribution-{N}. Keep the change scoped to that area, and run local formatters, linters, and tests before you open the PR.',
   },
   {
     id: 'github-actions',

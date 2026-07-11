@@ -8,8 +8,8 @@ Opik connects **what the AI did** (traces) with **how well it performed** (metri
 
 ## Focus in the wizard
 
-- Skim Overview and the knowledge graph: prioritize Production Monitoring, Evaluation, and LLM-as-a-Judge
-- Follow the tour: send a chat message and open the resulting trace
+- Skim Overview and Opik Features: prioritize Production Monitoring, Evaluation, and LLM-as-a-Judge
+- Follow Try Opik: send a chat message and open the resulting trace
 - Take the quiz to lock in demo and roadmap vocabulary
 - You can still walk contribution steps; prefer docs or good-first issues if you pick one
 

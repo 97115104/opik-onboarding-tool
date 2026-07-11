@@ -4,7 +4,7 @@ export interface ChecklistItem {
   detail?: string;
 }
 
-/** PR checklist aligned with Opik CONTRIBUTING.md fast path and AI rules. */
+/** PR-help guidance aligned with Opik CONTRIBUTING.md fast path and AI rules. */
 export const PR_CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     id: "tracked-issue",
@@ -14,7 +14,8 @@ export const PR_CHECKLIST_ITEMS: ChecklistItem[] = [
   {
     id: "branch-name",
     label: "Branch follows Opik or onboarding naming convention",
-    detail: "{username}/{ticket}-{summary} or opik-onboarding-tool-97115104-contribution-{N}",
+    detail:
+      "Opik {username}/{ticket}-{summary} ({username} = your GitHub handle) or this wizard's opik-onboarding-tool-97115104-contribution-{N}",
   },
   {
     id: "draft-pr",

@@ -9,7 +9,7 @@ export function ExtendStep() {
     >
       <div className="space-y-4 text-sm leading-relaxed text-slate-600">
         <p>
-          The onboarding tool is designed to grow with the Opik project. You can add audience-specific
+          This is designed to grow with the Opik project. You can add audience-specific
           guides, new wizard steps, or scripts that automate more of the contributor path.
         </p>
         <p>

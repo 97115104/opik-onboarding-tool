@@ -12,23 +12,25 @@ cd opik-onboarding-tool
 
 Manual steps only: sudo password (if needed), GitHub device code during `gh auth login`, and Docker Desktop on Mac.
 
-When deploy succeeds, work through the wizard at http://localhost:4310.
+When deploy succeeds, work through the wizard at http://127.0.0.1:4310.
 
 ## Wizard checklist
 
-- Read Overview and explore the knowledge graph
+- Read Overview and explore Opik Features
 - Confirm Local stack is green
-- Complete the Tour (chat demo to trace in Opik UI)
+- Complete Try Opik (chat demo to trace in Opik UI)
 - Finish the product quiz (aim for 4 of 5; you can continue after results either way)
 - Walk the Contributing overview and open the CLA
 - Finish the contributing quiz (CLA, issue links, CI, scope)
 - Select an assigned issue and copy the Cursor prompt
+- Complete **Verify** (local checks / CI awareness) and **PR help** (draft PR steps)
 - Create work in the **Opik repo**, not this tool repo
+- Reach **Finish** when you complete the wizard
 
 ## Where your code goes
 
 - `97115104/opik-onboarding-tool`: this wizard (only change if improving onboarding)
-- `comet-ml/opik`: your contribution lives here on branch `opik-onboarding-tool-97115104-contribution-{N}`
+- `comet-ml/opik`: your contribution lives here. This wizard creates branch `opik-onboarding-tool-97115104-contribution-{N}`; Opik CONTRIBUTING also accepts `{username}/{ticket}-{summary}` where `{username}` is your GitHub handle
 
 ## Contribution norms
 

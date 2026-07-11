@@ -18,7 +18,7 @@ Thank you for improving the onboarding experience. This repo orchestrates local 
 | `contributing-overview.md` | Opik upstream contributing walkthrough | Wizard contributing overview step |
 | `contributing-quiz.json` | Five-question contributing quiz | Wizard contributing quiz step |
 | `knowledge-graph.json` | Navigable concept graph | Wizard graph step |
-| `onboarding-tour.md` | Guided tour copy | Wizard tour step |
+| `onboarding-tour.md` | Prose mirror of Try Opik copy | Align with `TourStep.tsx` (`TOUR_ITEMS`) |
 | `quiz.json` | Five-question product quiz | Wizard quiz step (see schema in CONTRACTS) |
 
 **Adding a graph node:** Edit `knowledge-graph.json`: add a `nodes` entry with unique `id`, `label`, `summary`, and optional `details` / `links`. Connect it with an `edges` entry (`source` → `target`, optional `label`). Set `rootId` to the entry node for first paint.
@@ -41,7 +41,7 @@ Thank you for improving the onboarding experience. This repo orchestrates local 
 }
 ```
 
-**Tour sections:** Use markdown headings (`## Step N`) so the UI can split steps. Keep copy concise: one concept per section.
+**Try Opik (tour):** The UI is hardcoded in `apps/onboarding-ui/src/steps/TourStep.tsx` (`TOUR_ITEMS`). Keep `content/onboarding-tour.md` aligned as a prose mirror; it is not the runtime source.
 
 ### Audience docs (`docs/audiences/`)
 
@@ -56,7 +56,7 @@ Owned by the UI workstream. To add a wizard step:
 3. If the step reads new content, add the file under `content/` and load it from the step.
 4. Extend Playwright in `e2e/tests/onboarding-wizard.spec.ts`.
 
-Feature areas (`quiz`, `issues`, `prompt`, `checklist`, `verify`) live under `src/features/`. Contributing overview slides live under `src/content/contributingSlides.ts` with mirror `content/contributing-overview.md`. Coordinate to avoid path conflicts.
+Feature areas (`quiz`, `issues`, `prompt`, `checklist`, `verify`) live under `src/features/`. Contributing overview lives under `src/steps/ContributingOverviewStep.tsx` and `src/content/contributingSlides.ts`, with mirror `content/contributing-overview.md`. Coordinate to avoid path conflicts.
 
 ### Scripts (`scripts/`)
 
@@ -73,7 +73,7 @@ Extend to demonstrate additional Opik SDK patterns (spans, feedback scores, data
 
 ### E2e (`e2e/`)
 
-Add specs when you add user-visible behavior. Base URL for the wizard: `http://localhost:4310`. Run via `scripts/run-e2e.sh`.
+Add specs when you add user-visible behavior. Base URL for the wizard: `http://127.0.0.1:4310`. Run via `scripts/run-e2e.sh`.
 
 ## Development loop
 

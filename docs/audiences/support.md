@@ -11,8 +11,8 @@ For customer support, solutions engineers, and success teams helping users debug
 
 ## Focus in the wizard
 
-- Tour steps 2 through 4 are critical: practice chat demo, then trace, then span drill-down
-- Knowledge graph: read Tracing, Spans & Feedback, and Production Monitoring
+- Try Opik's three guided actions: open Opik UI, send a chat demo message, then open the new trace (Metadata and Token usage)
+- Opik Features: read Tracing, Spans & Feedback, and Production Monitoring
 - Quiz questions on tracing and chat-demo wiring validate the support mental model
 - Prefer docs or good-first issues if you contribute upstream
 

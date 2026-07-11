@@ -10,7 +10,7 @@ The onboarding UI Overview step uses the typed slide deck in
 3. **Core capabilities**: Observability, evaluation, production monitoring, optimization and safety.
 4. **Who Opik is for**: Builders, PMs, support, and businesses (personal and team value).
 5. **Deployment options**: Self-hosted (`./opik.sh`), Comet Cloud, Enterprise. This wizard uses self-hosted.
-6. **How this wizard uses Opik**: Local stack, chat demo trace, learn, contributing overview, pick an issue, draft PR with Cursor.
+6. **How this wizard uses Opik**: Local stack, chat demo trace, learn (Opik Features / Try Opik), product quiz, contributing overview, contributing quiz, pick an issue, Cursor prompt, Verify, PR help (draft PR), Extend, Finish.
 
 ## Learn more
 

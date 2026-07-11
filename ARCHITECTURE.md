@@ -7,9 +7,9 @@ This document describes how the onboarding tool is structured, how services conn
 The **Opik Onboarding Tool** guides a contributor from zero to a first Opik contribution. It:
 
 1. Deploys a local Opik stack (Docker via `opik.sh`), Ollama, and demo UIs.
-2. Walks the user through product knowledge (overview, graph, tour, quiz) and Opik contribution norms (contributing overview).
+2. Walks the user through product knowledge (overview, Opik Features, Try Opik, quiz) and Opik contribution norms (contributing overview + contributing quiz).
 3. Assigns a ranked GitHub issue from `comet-ml/opik` and generates a Cursor prompt + contribution branch on the **Opik repo** (not this repo).
-4. Provides test/CI/PR checklists aligned with Opik's CONTRIBUTING.md.
+4. Provides Verify (local checks / CI awareness) and PR help (draft PR Cursor prompt) aligned with Opik's CONTRIBUTING.md.
 
 This repo does **not** open Opik PRs in the initial pass — it prepares the contributor.
 
@@ -95,18 +95,18 @@ Single-page wizard with light (white/black) aesthetic. Steps:
 | Step | Route key | Data source | Owner |
 |------|-----------|-------------|-------|
 | About you | `about` | Persona choice (localStorage) | B |
-| Overview | `overview` | `content/overview.md` | B |
-| Knowledge graph | `graph` | `content/knowledge-graph.json` | B |
-| Local stack status | `stack` | Same-origin `/api/health/:service` | B |
-| Tour | `tour` | `content/onboarding-tour.md` | B |
+| Overview | `overview` | `overviewSlides.ts` (+ `content/overview.md`) | B |
+| Opik Features | `graph` | `content/knowledge-graph.json` | B |
+| Local stack | `stack` | Same-origin `/api/health/:service` | B |
+| Try Opik | `tour` | `TourStep.tsx` (`TOUR_ITEMS`; `content/onboarding-tour.md` prose mirror) | B |
 | Quiz | `quiz` | `content/quiz.json` (auto-grade) | C |
 | Contributing overview | `contributing-overview` | `contributingSlides.ts` (+ `content/contributing-overview.md`) | C |
 | Contributing quiz | `contributing-quiz` | `content/contributing-quiz.json` (auto-grade) | C |
-| Issues (1+2) | `issues` | `scripts/rank-issues.sh` + persona | C |
+| Issues | `issues` | `scripts/rank-issues.sh` + persona | C |
 | Cursor prompt | `prompt` | Generated + open-Cursor command | C |
 | Verify | `verify` | Area plan + checklist | C |
 | PR help | `pr-help` | Secondary Cursor prompt | C |
-| Extend tool | `extend` | CONTRIBUTING.md link | B |
+| Extend | `extend` | CONTRIBUTING.md link | B |
 | Finish | `finish` | Celebration | B |
 
 Shell, routing, design system, About you, health proxy, and non-C steps → **workstream B**.  
@@ -129,11 +129,12 @@ Pattern: `opik-onboarding-tool-97115104-contribution-{N}`
 `scripts/create-contribution-branch.sh` (workstream C):
 
 1. `cd "$OPIK_PATH"`
-2. Find lowest free `N` where branch does not exist on origin
-3. `git fetch origin main && git checkout -b <branch> origin/main`
-4. Print branch name for UI + Cursor prompt
+2. With `--issue NUMBER`: prefer `…-contribution-{NUMBER}` when that name is free locally and on origin; otherwise fall back to the lowest free `N`
+3. Without `--issue`: find lowest free `N` where branch does not exist on origin
+4. `git fetch origin main && git checkout -b <branch> origin/main` (or checkout if the branch already exists locally)
+5. Print branch name for UI + Cursor prompt
 
-No commits required in this pass — branch creation only.
+No commits required in this pass — branch creation only. Opik's own CONTRIBUTING naming (`{username}/{ticket}-{summary}`, where `{username}` is the contributor's GitHub handle) remains valid; this tool uses the onboarding pattern above for the contribution path.
 
 ## Cloud agent workstreams
 
