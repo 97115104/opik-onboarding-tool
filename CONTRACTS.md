@@ -9,6 +9,7 @@
 | `OPIK_PATH` | `<parent-of-tool>/opik` | Absolute path to Opik clone |
 | `ONBOARDING_UI_PORT` | `4310` | Onboarding wizard dev server |
 | `CHAT_DEMO_PORT` | `4311` | Chat demo dev server |
+| `CHAT_DEMO_URL` | `http://127.0.0.1:4311` | Chat demo base URL (health proxy + clients) |
 | `OPIK_FRONTEND_URL` | `http://127.0.0.1:5173` | Opik UI (from `opik.sh`) |
 | `OPIK_API_URL` | `http://127.0.0.1:5173/api` | Opik API via frontend proxy |
 | `OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama HTTP API |
@@ -51,11 +52,23 @@ GET /api/health/:service
 
 `:service` is one of: `opik-ui`, `opik-api`, `ollama`, `chat-demo`.
 
-Server-side probe uses the env URLs above (prefer `127.0.0.1`). Response JSON:
+Server-side probe map (prefer `127.0.0.1` env URLs):
+
+| service | Probe URL |
+|---------|-----------|
+| `opik-ui` | `OPIK_FRONTEND_URL` `GET /` |
+| `opik-api` | `OPIK_API_URL` `GET /v1/private/projects` (200 or 401 = healthy) |
+| `ollama` | `OLLAMA_URL` `GET /api/tags` |
+| `chat-demo` | `CHAT_DEMO_URL` `GET /` |
+
+Response JSON (always HTTP 200 from the proxy itself):
 
 ```json
 { "ok": true, "status": 200, "detail": "200 OK" }
 ```
+
+When the upstream is down: `{ "ok": false, "status": 0, "detail": "<error>" }`.
+When upstream returns a non-healthy status: `{ "ok": false, "status": <code>, "detail": "..." }`.
 
 Opik API: treat HTTP 200 or 401 as healthy.
 
@@ -149,11 +162,13 @@ type Persona = 'engineer' | 'pm' | 'support' | 'external'
 
 interface ContributionSnapshot {
   persona: Persona | null
-  /** Derived: persona === 'engineer' || persona === 'external' */
+  /** Derived: persona === 'engineer' || persona === 'external'; false when persona is null */
   isEngineer: boolean
   selectedIssue: RankedIssue | null
   branchName: string | null
   quizPassed: boolean
+  /** True after quiz results panel; B hides wizard-next while quiz is active and this is false */
+  quizFinished: boolean
 }
 ```
 
@@ -177,6 +192,40 @@ interface ContributionSnapshot {
 
 ## Script contracts
 
+### `scripts/install-deps.sh` (A)
+
+- Detect Linux vs macOS; install Bun if missing; ensure Docker, `gh`, Ollama, Playwright OS libs
+- `bun install` in `apps/onboarding-ui`, `apps/chat-demo`, `e2e`
+
+### `scripts/ensure-gh-auth.sh` (A)
+
+- Block until `gh auth status` succeeds; `--noninteractive` fails fast if unauthenticated
+
+### `scripts/clone-opik.sh` (A)
+
+- Ensure `OPIK_PATH` is a valid Opik checkout; never `reset --hard` or destroy work
+
+### `scripts/ensure-ollama.sh` (A)
+
+- Serve Ollama; pull `llama3.1:latest`
+
+### `scripts/start-opik.sh` (A)
+
+- Run `./opik.sh` in `OPIK_PATH`; poll frontend until healthy
+
+### `scripts/start-chat-demo.sh` (A)
+
+- Start chat-demo on `CHAT_DEMO_PORT` with `OLLAMA_URL` / `OPIK_API_URL`
+
+### `scripts/start-onboarding-ui.sh` (A)
+
+- Start onboarding UI on `ONBOARDING_UI_PORT`
+- May pass `OPIK_FRONTEND_URL`, `OPIK_API_URL`, `OLLAMA_URL`, `CHAT_DEMO_URL` into the process env for the health proxy
+
+### `scripts/verify-opik-wiring.sh` (A)
+
+- Assert a chat-demo message produces an Opik trace within 60s
+
 ### `scripts/rank-issues.sh` (C)
 
 ```bash
@@ -190,6 +239,7 @@ interface ContributionSnapshot {
 - `--persona=pm|support`: stronger weight on docs / good-first; deprioritize infra / Docker / hardware-style bugs
 - `--persona=engineer|external`: current ranking with optional advanced labels
 - Sort by score descending; default limit 10
+- Data source: `gh issue list --repo comet-ml/opik --json number,title,url,labels,assignees`
 
 Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to the script.
 
@@ -223,10 +273,12 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Quiz option | `quiz-option-{index}` |
 | Quiz next question | `quiz-next-question` |
 | Quiz results summary | `quiz-results` |
+| Issues panel | `step-issues` |
 | Issue list | `issue-list` |
 | Recommended issue | `issue-recommended` |
 | Alternative issue | `issue-alternative-0`, `issue-alternative-1` |
 | Issue select | `issue-select-{number}` |
+| Prompt panel | `step-prompt` |
 | Open Cursor command | `open-cursor-command` |
 | Cursor prompt | `cursor-prompt` |
 | Copy prompt button | `copy-prompt` |
@@ -234,9 +286,7 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | PR help prompt | `pr-help-prompt` |
 | Extend panel | `step-extend` |
 
-**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`.
-
-Optional (may remain for wrong-answer UX): `quiz-show-answer`.
+**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`.
 
 ## Quiz contract (`content/quiz.json`)
 
@@ -309,7 +359,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
 | `onboarding-wizard.spec.ts` | About you → quiz auto-grade → 1+2 issues → primary + PR-help prompts; branch regex on `[data-testid=cursor-prompt]` |
 
-Playwright base URL for onboarding UI: `http://localhost:4310`.
+Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
 ## Copy rules
 
@@ -334,4 +384,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.1.0** (UX-Prep / UX overhaul)
+Contract version: **1.1.1** (UX-Prep follow-up from adversarial review)
