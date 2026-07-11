@@ -7,7 +7,8 @@ export {
 } from "./ContributionContext";
 export { useContributionStore } from "./contributionStore";
 export { useRankedIssues } from "./useRankedIssues";
-export { contributionApiPlugin } from "./contributionApiPlugin";
+// Do not re-export contributionApiPlugin from this barrel: it uses node:child_process
+// and must only be imported from vite.config.ts.
 export { explainIssue, usefulLabels } from "./explainIssue";
 export {
   CONTRIBUTION_WIZARD_STEPS,
