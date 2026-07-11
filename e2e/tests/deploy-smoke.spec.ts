@@ -7,7 +7,7 @@ import {
 } from "../helpers/constants";
 
 test.describe("deploy smoke", () => {
-  test("services respond with HTTP 200 and overview is visible", async ({
+  test("services respond with HTTP 200 and About you is visible", async ({
     page,
     request,
   }) => {
@@ -17,6 +17,6 @@ test.describe("deploy smoke", () => {
     }
 
     await page.goto("/");
-    await expect(page.getByTestId("step-overview")).toBeVisible();
+    await expect(page.getByTestId("step-about")).toBeVisible();
   });
 });

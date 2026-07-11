@@ -18,43 +18,37 @@ async function advancePastStep(page: Page, testId: string): Promise<void> {
   await clickNext(page);
 }
 
-async function answerQuestion(
-  page: Page,
-  optionIndex: number,
-): Promise<void> {
-  await page.getByTestId(`quiz-option-${optionIndex}`).click();
-  await page.getByTestId("quiz-submit").click();
-}
-
 async function completeQuiz(page: Page): Promise<void> {
   await expectStep(page, "step-quiz");
 
-  // Q1: wrong → show answer → next (covers wrong/show-answer path)
-  await answerQuestion(page, 1);
-  const showAnswer = page.getByTestId("quiz-show-answer");
-  if (await showAnswer.isVisible().catch(() => false)) {
-    await showAnswer.click();
-  }
-  await page.getByRole("button", { name: "Next question" }).click();
+  // Q1: wrong answer auto-grades (no submit)
+  await page.getByTestId("quiz-option-1").click();
+  await expect(page.getByTestId("quiz-next-question")).toBeVisible();
+  await expect(page.getByTestId("quiz-submit")).toHaveCount(0);
+  await expect(page.getByTestId("engineer-flag")).toHaveCount(0);
+  await page.getByTestId("quiz-next-question").click();
 
   // Q2–Q5: correct answers
   for (let q = 1; q < QUIZ_CORRECT.length; q++) {
-    await answerQuestion(page, QUIZ_CORRECT[q]!);
-    if (q < QUIZ_CORRECT.length - 1) {
-      await page.getByRole("button", { name: "Next question" }).click();
-    }
+    await page.getByTestId(`quiz-option-${QUIZ_CORRECT[q]!}`).click();
+    await expect(page.getByTestId("quiz-next-question")).toBeVisible();
+    await page.getByTestId("quiz-next-question").click();
   }
+
+  await expect(page.getByTestId("quiz-results")).toBeVisible();
 }
 
 test.describe("onboarding wizard", () => {
-  test("walks through prompt with contribution branch name", async ({
+  test("walks About you through dual prompts with contribution branch", async ({
     page,
   }) => {
     await page.goto("/");
 
-    await expectStep(page, "step-overview");
+    await expectStep(page, "step-about");
+    await page.getByTestId("about-persona-engineer").click();
     await clickNext(page);
 
+    await advancePastStep(page, "step-overview");
     await advancePastStep(page, "step-graph");
 
     const stack = page.getByTestId("step-stack");
@@ -65,21 +59,29 @@ test.describe("onboarding wizard", () => {
     await advancePastStep(page, "step-tour");
 
     await completeQuiz(page);
-
-    const engineerFlag = page.getByTestId("engineer-flag");
-    if (await engineerFlag.isVisible().catch(() => false)) {
-      await engineerFlag.click();
-    }
     await clickNext(page);
 
     await expectStep(page, "step-issues");
+    await expect(page.getByTestId("issue-recommended")).toBeVisible({
+      timeout: 60_000,
+    });
+    await expect(page.getByTestId("issue-alternative-0")).toBeVisible();
+    await expect(page.getByTestId("issue-alternative-1")).toBeVisible();
+
     const issueOption = page.locator('[data-testid^="issue-select-"]').first();
-    await expect(issueOption).toBeVisible({ timeout: 60_000 });
     await issueOption.click();
     await clickNext(page);
 
+    await expect(page.getByTestId("open-cursor-command")).toBeVisible({
+      timeout: 30_000,
+    });
     const prompt = page.getByTestId("cursor-prompt");
-    await expect(prompt).toBeVisible({ timeout: 30_000 });
+    await expect(prompt).toBeVisible();
     await expect(prompt).toContainText(BRANCH_NAME_PATTERN);
+    await clickNext(page);
+
+    await expectStep(page, "step-pr-help");
+    await expect(page.getByTestId("pr-help-prompt")).toBeVisible();
+    await expect(page.getByTestId("pr-checklist")).toHaveCount(0);
   });
 });
