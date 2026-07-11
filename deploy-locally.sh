@@ -69,11 +69,8 @@ run_phase "start-onboarding-ui" "$SCRIPTS_DIR/start-onboarding-ui.sh"
 if [[ "$SKIP_E2E" -eq 1 ]]; then
   echo ""
   echo "==> Phase: run-e2e (skipped via --skip-e2e)"
-elif [[ -x "$SCRIPTS_DIR/run-e2e.sh" ]]; then
-  run_phase "run-e2e" "$SCRIPTS_DIR/run-e2e.sh"
 else
-  echo ""
-  echo "==> Phase: run-e2e (skipped — scripts/run-e2e.sh not implemented yet, workstream E)"
+  run_phase "run-e2e" "$SCRIPTS_DIR/run-e2e.sh"
 fi
 
 if [[ "$NONINTERACTIVE" -eq 1 ]]; then

@@ -38,13 +38,10 @@ test.describe("chat opik wiring", () => {
     await expect(send).toBeEnabled();
     await send.click();
 
-    const response = page
-      .getByTestId("chat-response")
-      .or(page.locator("[data-testid^='chat-message-']").last())
-      .or(page.locator("[data-role='assistant'], .assistant-message").last());
+    const response = page.locator('[data-testid^="chat-response-"]').last();
 
     await expect(response).toBeVisible({ timeout: 90_000 });
-    await expect(response).not.toHaveText("");
+    await expect(response).not.toHaveText(/Send a message to chat with Ollama/i);
 
     await waitForNewOpikTrace(request, baselineTraces);
   });

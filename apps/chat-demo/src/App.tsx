@@ -61,7 +61,9 @@ export default function App() {
             key={index}
             className={`message ${msg.role}${msg.role === "assistant" ? " assistant-message" : ""}`}
             data-testid={
-              msg.role === "assistant" ? "chat-response" : `chat-message-${index}`
+              msg.role === "assistant"
+                ? `chat-response-${index}`
+                : `chat-message-${index}`
             }
             {...(msg.role === "assistant" ? { "data-role": "assistant" } : {})}
           >

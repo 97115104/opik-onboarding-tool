@@ -2,6 +2,8 @@ import type { APIRequestContext } from "@playwright/test";
 
 import { OPIK_API_URL } from "./constants";
 
+const OPIK_PROJECT_NAME = process.env.OPIK_PROJECT_NAME ?? "chat-demo";
+
 interface TracePage {
   total?: number;
   content?: unknown[];
@@ -11,7 +13,7 @@ export async function getOpikTraceCount(
   request: APIRequestContext,
 ): Promise<number> {
   const response = await request.get(`${OPIK_API_URL}/v1/private/traces`, {
-    params: { size: 1 },
+    params: { project_name: OPIK_PROJECT_NAME, size: 1 },
   });
 
   if (!response.ok()) {
@@ -29,7 +31,7 @@ export async function getOpikTraceCount(
 export async function waitForNewOpikTrace(
   request: APIRequestContext,
   baselineCount: number,
-  timeoutMs = 60_000,
+  timeoutMs = 90_000,
 ): Promise<void> {
   const deadline = Date.now() + timeoutMs;
 

@@ -96,10 +96,36 @@ start_background_service() {
       echo "$name already running (pid $old_pid)"
       return 0
     fi
+    rm -f "$pf"
   fi
 
   echo "Starting $name (log: $lf)"
   nohup "$@" >>"$lf" 2>&1 &
   echo $! >"$pf"
   echo "$name started (pid $(cat "$pf"))"
+}
+
+# Restart service if pid is stale or health URL fails.
+ensure_background_service() {
+  local name="$1"
+  local url="$2"
+  shift 2
+
+  if curl -fsS -o /dev/null "$url" 2>/dev/null; then
+    echo "$name healthy at $url"
+    return 0
+  fi
+
+  local pf
+  pf="$(pid_file "$name")"
+  if [[ -f "$pf" ]]; then
+    local old_pid
+    old_pid="$(cat "$pf")"
+    if kill -0 "$old_pid" 2>/dev/null; then
+      kill "$old_pid" 2>/dev/null || true
+    fi
+    rm -f "$pf"
+  fi
+
+  start_background_service "$name" "$@"
 }

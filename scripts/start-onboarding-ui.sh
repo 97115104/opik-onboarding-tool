@@ -13,14 +13,14 @@ if [[ ! -f "$ONBOARDING_DIR/package.json" ]]; then
   exit 0
 fi
 
-if curl -fsS -o /dev/null "http://localhost:$ONBOARDING_UI_PORT/" 2>/dev/null; then
+if curl -fsS -o /dev/null "http://127.0.0.1:$ONBOARDING_UI_PORT/" 2>/dev/null; then
   echo "Onboarding UI already up on port $ONBOARDING_UI_PORT"
 else
-  start_background_service onboarding-ui bash -lc "
+  ensure_background_service onboarding-ui "http://127.0.0.1:$ONBOARDING_UI_PORT/" bash -lc "
     cd \"$ONBOARDING_DIR\" &&
-    bun run dev -- --port \"$ONBOARDING_UI_PORT\" --host 127.0.0.1
+    exec bun run dev -- --port \"$ONBOARDING_UI_PORT\" --host 127.0.0.1
   "
-  wait_for_url "http://localhost:$ONBOARDING_UI_PORT/" 120 "Onboarding UI" || {
+  wait_for_url "http://127.0.0.1:$ONBOARDING_UI_PORT/" 120 "Onboarding UI" || {
     tail -n 50 "$(log_file onboarding-ui)" >&2 || true
     exit 1
   }
