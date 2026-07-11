@@ -22,6 +22,25 @@ export_tool_defaults() {
   export OPIK_PROJECT_NAME="${OPIK_PROJECT_NAME:-chat-demo}"
 }
 
+# Resolve GitHub username for Opik contribution branches.
+# Prefer CONTRIBUTOR_ID when set; otherwise use authenticated gh login.
+resolve_contributor_username() {
+  if [[ -n "${CONTRIBUTOR_ID:-}" ]]; then
+    printf '%s\n' "$CONTRIBUTOR_ID"
+    return 0
+  fi
+  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    local login
+    login="$(gh api user --jq '.login' 2>/dev/null || true)"
+    if [[ -n "$login" ]]; then
+      printf '%s\n' "$login"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+
 state_dir() {
   printf '%s\n' "${XDG_STATE_HOME:-$HOME/.local/state}/opik-onboarding-tool"
 }

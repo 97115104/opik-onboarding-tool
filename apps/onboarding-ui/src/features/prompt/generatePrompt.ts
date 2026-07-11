@@ -1,5 +1,5 @@
 import type { Persona, RankedIssue } from "../issues/types";
-import { DEFAULT_OPIK_PATH } from "../issues/types";
+import { BRANCH_NAME_MATCH, DEFAULT_OPIK_PATH } from "../issues/types";
 
 /** Official Cursor deeplink URL length budget (scheme + path + query). */
 export const CURSOR_DEEPLINK_MAX_URL_LENGTH = 8000;
@@ -151,7 +151,7 @@ export function generatePrHelpPrompt(
   const issueLine = issue
     ? `Issue #${issue.number} (${issue.title}) at ${issue.url}`
     : "Use the issue already assigned in this onboarding session";
-  const branch = branchName ?? "opik-onboarding-tool-97115104-contribution-<N>";
+  const branch = branchName ?? "{username}/issue-<N>-onboarding";
 
   return `Help me open a draft pull request for my Opik contribution.
 
@@ -173,5 +173,4 @@ Keep instructions short and actionable. Point out anything still missing before 
 `;
 }
 
-export const CURSOR_PROMPT_BRANCH_REGEX =
-  /opik-onboarding-tool-97115104-contribution-\d+/;
+export const CURSOR_PROMPT_BRANCH_REGEX = BRANCH_NAME_MATCH;

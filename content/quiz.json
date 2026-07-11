@@ -54,11 +54,11 @@
       "options": [
         "main-only commits with no branches",
         "feature/random-uuid",
-        "opik-onboarding-tool-97115104-contribution-{N}",
+        "{username}/{ticket}-{summary}",
         "dependabot/npm_and_yarn"
       ],
       "correctIndex": 2,
-      "explanation": "create-contribution-branch.sh creates branches on the Opik repo (not this tool repo) matching opik-onboarding-tool-97115104-contribution-{N}, incrementing N until a free name is found."
+      "explanation": "create-contribution-branch.sh creates branches on the Opik repo (not this tool repo) matching Opik CONTRIBUTING: {username}/{ticket}-{summary}, where username is your GitHub login (or CONTRIBUTOR_ID), ticket is issue-{N} or NA, and summary is a slug from the issue title."
     }
   ],
   "passThreshold": 4,

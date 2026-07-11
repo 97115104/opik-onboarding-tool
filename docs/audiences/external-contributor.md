@@ -30,7 +30,7 @@ When deploy succeeds, work through the wizard at http://127.0.0.1:4310.
 ## Where your code goes
 
 - `97115104/opik-onboarding-tool`: this wizard (only change if improving onboarding)
-- `comet-ml/opik`: your contribution lives here. This wizard creates branch `opik-onboarding-tool-97115104-contribution-{N}`; Opik CONTRIBUTING also accepts `{username}/{ticket}-{summary}` where `{username}` is your GitHub handle
+- `comet-ml/opik`: your contribution lives here. This wizard creates branch `{username}/{ticket}-{summary}` where `{username}` is your GitHub handle
 
 ## Contribution norms
 

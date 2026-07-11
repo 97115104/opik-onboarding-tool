@@ -19,7 +19,7 @@ For backend, frontend, ML, and platform engineers contributing code to **comet-m
 
 ## Contributing
 
-1. Branch: this wizard uses `opik-onboarding-tool-97115104-contribution-{N}`; Opik CONTRIBUTING also accepts `{username}/{ticket}-{summary}` where `{username}` is your GitHub handle
+1. Branch: `{username}/{ticket}-{summary}` where `{username}` is your GitHub handle (this wizard creates it)
 2. Link the issue with `Fixes #1234`
 3. Run formatters, linters, and tests for touched packages
 4. Open a draft PR: `gh pr create --draft`

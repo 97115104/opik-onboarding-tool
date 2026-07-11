@@ -5,6 +5,7 @@ import {
   type ReactNode,
 } from "react";
 import { contributionStore, useContributionStore } from "./contributionStore";
+import { buildOpikBranchName, slugifySummary } from "./types";
 import type { Persona, RankedIssue } from "./types";
 
 interface ContributionContextValue {
@@ -51,10 +52,13 @@ export function useSelectIssue() {
   const selectIssue = useCallback(
     async (issue: RankedIssue) => {
       setSelectedIssue(issue);
+      const summary = slugifySummary(issue.title);
       try {
-        const res = await fetch(
-          `/api/contribution-branch?issue=${encodeURIComponent(String(issue.number))}`,
-        );
+        const params = new URLSearchParams({
+          issue: String(issue.number),
+          summary,
+        });
+        const res = await fetch(`/api/contribution-branch?${params.toString()}`);
         if (res.ok) {
           const data = (await res.json()) as { branch: string };
           setBranchName(data.branch);
@@ -64,7 +68,24 @@ export function useSelectIssue() {
         /* API may be unavailable outside dev */
       }
 
-      const fallback = `opik-onboarding-tool-97115104-contribution-${issue.number}`;
+      let username = "";
+      try {
+        const userRes = await fetch("/api/contributor");
+        if (userRes.ok) {
+          const data = (await userRes.json()) as { username?: string };
+          username = data.username?.trim() ?? "";
+        }
+      } catch {
+        /* ignore — last-resort fallback below */
+      }
+
+      if (!username) {
+        // Do not invent a green-passable fake handle when we cannot resolve identity.
+        setBranchName(null);
+        return null;
+      }
+
+      const fallback = buildOpikBranchName(issue.number, issue.title, username);
       setBranchName(fallback);
       return fallback;
     },

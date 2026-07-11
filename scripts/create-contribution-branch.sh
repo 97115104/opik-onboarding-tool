@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Usage: create-contribution-branch.sh [--issue NUMBER]
+# Usage: create-contribution-branch.sh [--issue NUMBER] [--summary SLUG]
 # Output: branch name on stdout; creates branch in OPIK_PATH from origin/main
-# Pattern: opik-onboarding-tool-97115104-contribution-{N}
+# Pattern: {username}/{ticket}-{summary} (Opik CONTRIBUTING convention)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,18 +10,47 @@ source "${SCRIPT_DIR}/common.sh"
 
 export_tool_defaults
 
-CONTRIBUTOR_ID="${CONTRIBUTOR_ID:-97115104}"
-BRANCH_PREFIX="${BRANCH_PREFIX:-opik-onboarding-tool-${CONTRIBUTOR_ID}-contribution}"
 ISSUE_NUMBER=""
+SUMMARY=""
 
 usage() {
   cat <<EOF
-Usage: create-contribution-branch.sh [--issue NUMBER]
+Usage: create-contribution-branch.sh [--issue NUMBER] [--summary SLUG]
 
 Create a contribution branch in OPIK_PATH from origin/main.
-Branch pattern: ${BRANCH_PREFIX}-{N}
-Prints branch name on stdout.
+Branch pattern: {username}/{ticket}-{summary}
+  username = CONTRIBUTOR_ID if set, else gh api user login
+  ticket   = issue-{NUMBER} when --issue is set, else NA
+  summary  = slug from --summary (default: onboarding)
+Prints branch name on stdout. Idempotent: checks out existing local branch,
+or tracks origin/{branch} when remote-only, else creates from origin/main.
 EOF
+}
+
+slugify_summary() {
+  local raw="${1:-onboarding}"
+  local slug
+  slug="$(
+    printf '%s' "$raw" \
+      | tr '[:upper:]' '[:lower:]' \
+      | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//; s/-+/-/g' \
+      | cut -c1-40 \
+      | sed -E 's/-+$//'
+  )"
+  if [[ -z "$slug" ]]; then
+    slug="onboarding"
+  fi
+  printf '%s\n' "$slug"
+}
+
+resolve_username() {
+  local login
+  if login="$(resolve_contributor_username)"; then
+    printf '%s\n' "$login"
+    return
+  fi
+  echo "Unable to resolve GitHub username. Set CONTRIBUTOR_ID or run gh auth login." >&2
+  exit 1
 }
 
 while [[ $# -gt 0 ]]; do
@@ -32,6 +61,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --issue)
       ISSUE_NUMBER="${2:?--issue requires a number}"
+      shift 2
+      ;;
+    --summary)
+      SUMMARY="${2:?--summary requires a value}"
       shift 2
       ;;
     *)
@@ -56,36 +89,27 @@ fi
 
 git fetch origin main --quiet 2>/dev/null || git fetch origin --quiet
 
-find_free_n() {
-  local n=1
-  local branch
-  while true; do
-    branch="${BRANCH_PREFIX}-${n}"
-    if ! git show-ref --verify --quiet "refs/heads/${branch}" \
-      && ! git ls-remote --exit-code origin "refs/heads/${branch}" >/dev/null 2>&1; then
-      echo "$n"
-      return
-    fi
-    n=$((n + 1))
-  done
-}
-
+USERNAME="$(resolve_username)"
 if [[ -n "$ISSUE_NUMBER" ]]; then
-  candidate="${BRANCH_PREFIX}-${ISSUE_NUMBER}"
-  if git show-ref --verify --quiet "refs/heads/${candidate}" \
-    || git ls-remote --exit-code origin "refs/heads/${candidate}" >/dev/null 2>&1; then
-    n="$(find_free_n)"
-  else
-    n="$ISSUE_NUMBER"
-  fi
+  TICKET="issue-${ISSUE_NUMBER}"
 else
-  n="$(find_free_n)"
+  TICKET="NA"
 fi
 
-branch="${BRANCH_PREFIX}-${n}"
+if [[ -n "$SUMMARY" ]]; then
+  SUMMARY="$(slugify_summary "$SUMMARY")"
+else
+  SUMMARY="onboarding"
+fi
+
+branch="${USERNAME}/${TICKET}-${SUMMARY}"
 
 if git show-ref --verify --quiet "refs/heads/${branch}"; then
   git checkout "$branch" --quiet
+elif git ls-remote --exit-code origin "refs/heads/${branch}" >/dev/null 2>&1; then
+  # Remote exists but local does not: fetch and check out that tip (do not recreate from main).
+  git fetch origin "refs/heads/${branch}:refs/remotes/origin/${branch}" --quiet
+  git checkout -B "$branch" "origin/${branch}" --quiet
 else
   git checkout -b "$branch" origin/main --quiet
 fi

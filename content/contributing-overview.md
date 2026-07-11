@@ -10,7 +10,7 @@ This content describes the **upstream Opik repository** ([comet-ml/opik](https:/
 1. **What contributing means**: Welcome. Tracked issue, focused PR, maintainer review. Open and sign the CLA (button). Soft note that AI help is welcome and the human stays accountable.
 2. **How the codebase is organized**: Prose naming `apps/`, `sdks/`, `tests_end_to_end/`, and `deployment/` (no bullets).
 3. **Component areas**: Stay in the area your issue targets; text links to Backend, Frontend, Python SDK, TypeScript SDK, Documentation, and Agent optimizer guides.
-4. **How to contribute**: Fixes #.... Opik handle convention `{username}/{ticket}-{summary}` (`{username}` = GitHub handle). This wizard creates/uses `opik-onboarding-tool-97115104-contribution-{N}`. Scoped PR, local checks (prose).
+4. **How to contribute**: Fixes #.... Opik convention `{username}/{ticket}-{summary}` (`{username}` = GitHub handle; ticket = `issue-{N}` or `NA`; summary = title slug). This wizard creates that branch. Scoped PR, local checks (prose).
 5. **GitHub Actions and quality**: Actions as CI in the SDLC; workflows; pre-commit / `make hooks`; Verify later.
 6. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
 

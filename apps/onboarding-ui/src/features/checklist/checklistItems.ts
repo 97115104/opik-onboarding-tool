@@ -13,9 +13,9 @@ export const PR_CHECKLIST_ITEMS: ChecklistItem[] = [
   },
   {
     id: "branch-name",
-    label: "Branch follows Opik or onboarding naming convention",
+    label: "Branch follows Opik naming convention",
     detail:
-      "Opik {username}/{ticket}-{summary} ({username} = your GitHub handle) or this wizard's opik-onboarding-tool-97115104-contribution-{N}",
+      "Opik {username}/{ticket}-{summary} ({username} = your GitHub handle; ticket = issue-{N} or NA)",
   },
   {
     id: "draft-pr",

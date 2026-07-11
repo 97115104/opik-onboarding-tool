@@ -124,17 +124,18 @@ Owned by **workstream A** (`apps/chat-demo/**` + related scripts).
 
 ## Contribution branch (Opik repo only)
 
-Pattern: `opik-onboarding-tool-97115104-contribution-{N}`
+Pattern: `{username}/{ticket}-{summary}` (Opik CONTRIBUTING)
 
 `scripts/create-contribution-branch.sh` (workstream C):
 
 1. `cd "$OPIK_PATH"`
-2. With `--issue NUMBER`: prefer `…-contribution-{NUMBER}` when that name is free locally and on origin; otherwise fall back to the lowest free `N`
-3. Without `--issue`: find lowest free `N` where branch does not exist on origin
-4. `git fetch origin main && git checkout -b <branch> origin/main` (or checkout if the branch already exists locally)
-5. Print branch name for UI + Cursor prompt
+2. Resolve `username` from `CONTRIBUTOR_ID` if set, else authenticated `gh` login
+3. With `--issue NUMBER`: ticket = `issue-{NUMBER}`; without: ticket = `NA`
+4. Summary from `--summary` (slugified; default `onboarding`)
+5. `git fetch origin main && git checkout -b <branch> origin/main` (or checkout if the branch already exists locally)
+6. Print branch name for UI + Cursor prompt
 
-No commits required in this pass — branch creation only. Opik's own CONTRIBUTING naming (`{username}/{ticket}-{summary}`, where `{username}` is the contributor's GitHub handle) remains valid; this tool uses the onboarding pattern above for the contribution path.
+No commits required in this pass — branch creation only.
 
 ## Cloud agent workstreams
 

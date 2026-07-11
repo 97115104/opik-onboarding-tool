@@ -39,5 +39,8 @@ while ! gh auth status >/dev/null 2>&1; do
   elapsed=$((elapsed + 2))
 done
 
-gh api user --jq '.login' >/dev/null
-echo "GitHub auth verified: $(gh api user --jq '.login')"
+GH_USERNAME="$(gh api user --jq '.login')"
+export GH_USERNAME
+# Default contributor id for Opik branch names to the authenticated GitHub login.
+export CONTRIBUTOR_ID="${CONTRIBUTOR_ID:-$GH_USERNAME}"
+echo "GitHub auth verified: ${GH_USERNAME}"

@@ -16,10 +16,9 @@ Manual steps only: sudo for package installs, GitHub device-code paste, Docker D
 
 The tool deploys Opik + Ollama + demo UIs, walks an onboarding wizard, assigns a ranked Opik GitHub issue, and emits a Cursor prompt for work in the **Opik** repo.
 
-**Dual branch conventions (Opik repo only):**
+**Opik contribution branch convention:**
 
-- Opik CONTRIBUTING: `{username}/{ticket}-{summary}` where `{username}` is the contributor's **GitHub handle** (not the numeric `97115104` id).
-- This wizard's contribution path: `opik-onboarding-tool-97115104-contribution-{N}` (created/used by the onboarding tool).
+- `{username}/{ticket}-{summary}` where `{username}` is the contributor's **GitHub handle** (override with `CONTRIBUTOR_ID`). Ticket is `issue-{N}` when an issue is selected, else `NA`. Summary is a slug from the issue title (default `onboarding`).
 
 **Out of scope:** Opening a PR against Opik from this repo.
 

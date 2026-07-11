@@ -1,4 +1,5 @@
 import type { RankedIssue } from "../issues/types";
+import { BRANCH_NAME_PATTERN } from "../issues/types";
 
 export type VerifyArea =
   | "frontend"
@@ -248,12 +249,11 @@ function classifyFromIssue(issue: RankedIssue): { area: VerifyArea; rationale: s
   };
 }
 
-const CONTRIBUTION_BRANCH_RE = /^opik-onboarding-tool-97115104-contribution-\d+$/;
-
 /**
  * Map a selected issue (and optional changed paths) to a focused verify plan.
  * Changed paths override label/title heuristics only when they match a known area
- * and (when provided) the checkout looks like the contribution branch.
+ * and (when provided) the checkout looks like a contribution branch
+ * (Opik `{username}/{ticket}-{summary}` or legacy onboarding pattern).
  */
 export function mapIssueToVerifyPlan(
   issue: RankedIssue,
@@ -263,8 +263,7 @@ export function mapIssueToVerifyPlan(
   const branchOk =
     !options.branch ||
     options.branch === "HEAD" ||
-    CONTRIBUTION_BRANCH_RE.test(options.branch) ||
-    options.branch.includes("contribution");
+    BRANCH_NAME_PATTERN.test(options.branch);
 
   const fromPaths = branchOk ? classifyFromPaths(changedPaths) : null;
   const classified = fromPaths ?? classifyFromIssue(issue);

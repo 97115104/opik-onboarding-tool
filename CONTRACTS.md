@@ -15,8 +15,7 @@
 | `OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama HTTP API |
 | `OLLAMA_MODEL` | `llama3.1:latest` | Chat model |
 | `GITHUB_REPO` | `comet-ml/opik` | Issue source for ranking |
-| `CONTRIBUTOR_ID` | `97115104` | Embedded in branch names |
-| `BRANCH_PREFIX` | `opik-onboarding-tool-97115104-contribution` | Opik branch prefix |
+| `CONTRIBUTOR_ID` | authenticated `gh` login | Opik branch `{username}` segment (override) |
 
 Resolve tool root:
 
@@ -306,12 +305,25 @@ Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked
 
 Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to the script.
 
+Vite plugin contribution APIs (C):
+
+| Endpoint | Response | Notes |
+|----------|----------|-------|
+| `GET /api/contribution-branch?issue={N}&summary={slug}` | `{ branch }` | Creates/checks out Opik branch via `create-contribution-branch.sh` |
+| `GET /api/contributor` | `{ username }` | `CONTRIBUTOR_ID` if set, else authenticated `gh` login |
+| `GET /api/opik-path` | `{ path }` | Resolved `OPIK_PATH` |
+| `GET /api/contribution-diff` | `{ paths, branch }` | Diff vs `origin/main` (see Verify step) |
+
 ### `scripts/create-contribution-branch.sh` (C)
 
 ```bash
-# Usage: create-contribution-branch.sh [--issue NUMBER]
+# Usage: create-contribution-branch.sh [--issue NUMBER] [--summary SLUG]
 # Output: branch name on stdout; creates branch in OPIK_PATH from origin/main
-# Pattern: opik-onboarding-tool-97115104-contribution-{N}
+# Pattern: {username}/{ticket}-{summary} (Opik CONTRIBUTING)
+#   username = CONTRIBUTOR_ID if set, else gh api user login
+#   ticket   = issue-{NUMBER} when --issue is set, else NA
+#   summary  = slug from --summary (default: onboarding)
+# Idempotent: checkout local branch, or track origin/{branch} if remote-only, else create from origin/main
 ```
 
 ### `scripts/run-e2e.sh` (E)
@@ -448,7 +460,7 @@ Primary prompt step must include:
 - Copyable open-repo command (`open-cursor-command`), e.g. `cursor "$OPIK_PATH"` plus `cd` fallback, using real path from contribution API / env
 - Copy prompt button (`copy-prompt`) as fallback
 - Assigned issue number, title, URL
-- Branch name matching `opik-onboarding-tool-97115104-contribution-\d+`
+- Branch name matching Opik `{username}/{ticket}-{summary}` (`ticket` = `issue-{N}`, `OPIK-{N}`, or `NA`; legacy `opik-onboarding-tool-*-contribution-\d+` still accepted in soft checks)
 - Opik clone path `OPIK_PATH`
 - Steps: implement fix and commit; stop before draft PR (verify + PR-help cover checks and `gh pr create --draft`)
 - AI disclosure note (full disclosure happens in PR template)
@@ -477,7 +489,7 @@ Step `pr-help` (`step-pr-help`):
 No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 
 1. Tracked issue linked (`Fixes #...` or `Resolves #...`)
-2. Branch name: onboarding branch `opik-onboarding-tool-97115104-contribution-{N}`, or Opik `{username}/{ticket}-{summary}` where `{username}` is the contributor's GitHub handle
+2. Branch name: Opik `{username}/{ticket}-{summary}` where `{username}` is the contributor's GitHub handle (`CONTRIBUTOR_ID` override allowed)
 3. Draft PR: `gh pr create --draft`
 4. Fill `.github/pull_request_template.md`
 5. Run formatters/linters/tests for touched area

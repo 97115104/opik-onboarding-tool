@@ -13,6 +13,7 @@ export { explainIssue, usefulLabels } from "./explainIssue";
 export {
   CONTRIBUTION_WIZARD_STEPS,
   BRANCH_NAME_PATTERN,
+  BRANCH_NAME_MATCH,
   DEFAULT_OPIK_PATH,
 } from "./integration";
 export type { ContributionState, Persona, RankedIssue } from "./types";
@@ -22,4 +23,6 @@ export {
   QUIZ_FINISHED_STORAGE_KEY,
   isEngineerPersona,
   parsePersona,
+  slugifySummary,
+  buildOpikBranchName,
 } from "./types";

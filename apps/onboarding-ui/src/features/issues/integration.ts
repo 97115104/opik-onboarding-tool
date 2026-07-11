@@ -39,5 +39,5 @@ export const CONTRIBUTION_WIZARD_STEPS: WizardStepDefinition[] = [
   { key: "pr-help", label: "PR help", testId: "step-pr-help" },
 ];
 
-export { BRANCH_NAME_PATTERN, DEFAULT_OPIK_PATH } from "./types";
+export { BRANCH_NAME_PATTERN, BRANCH_NAME_MATCH, DEFAULT_OPIK_PATH } from "./types";
 export type { ContributionState, Persona, RankedIssue } from "./types";

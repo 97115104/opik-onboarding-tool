@@ -26,6 +26,20 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
     return result.stdout.trim();
   };
 
+  const resolveContributorUsername = () => {
+    if (process.env.CONTRIBUTOR_ID?.trim()) {
+      return process.env.CONTRIBUTOR_ID.trim();
+    }
+    const result = spawnSync("gh", ["api", "user", "--jq", ".login"], {
+      encoding: "utf-8",
+      env: process.env,
+    });
+    if (result.status === 0 && result.stdout.trim()) {
+      return result.stdout.trim();
+    }
+    throw new Error(result.stderr || "Unable to resolve GitHub username");
+  };
+
   return {
     name: "contribution-api",
     configureServer(server) {
@@ -52,6 +66,26 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
         }
       });
 
+      server.middlewares.use("/api/contributor", (req, res) => {
+        if (req.method !== "GET") {
+          res.statusCode = 405;
+          res.end("Method not allowed");
+          return;
+        }
+        try {
+          const username = resolveContributorUsername();
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify({ username }));
+        } catch (err) {
+          res.statusCode = 500;
+          res.end(
+            JSON.stringify({
+              error: err instanceof Error ? err.message : "contributor failed",
+            }),
+          );
+        }
+      });
+
       server.middlewares.use("/api/contribution-branch", (req, res) => {
         if (req.method !== "GET") {
           res.statusCode = 405;
@@ -61,7 +95,10 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
         try {
           const url = new URL(req.url ?? "", "http://localhost");
           const issue = url.searchParams.get("issue");
-          const args = issue ? ["--issue", issue] : [];
+          const summary = url.searchParams.get("summary");
+          const args: string[] = [];
+          if (issue) args.push("--issue", issue);
+          if (summary) args.push("--summary", summary);
           const branch = runScript("create-contribution-branch.sh", args);
           res.setHeader("Content-Type", "application/json");
           res.end(JSON.stringify({ branch }));
