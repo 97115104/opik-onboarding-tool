@@ -5,6 +5,9 @@ import { BRANCH_NAME_PATTERN } from "../helpers/constants";
 /** correctIndex per question in content/quiz.json */
 const QUIZ_CORRECT = [0, 1, 1, 1, 2];
 
+/** correctIndex per question in content/contributing-quiz.json */
+const CONTRIBUTING_QUIZ_CORRECT = [0, 1, 1, 1, 2];
+
 /** Node order from content/knowledge-graph.json */
 const GRAPH_NODE_IDS = [
   "opik-platform",
@@ -140,20 +143,54 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
   await expect(page.getByTestId("contributing-slide-prev")).toBeDisabled();
 
+  // Slide 1: CLA CTA required before Next slide unlocks.
+  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
+  const cla = page.getByTestId("contributing-open-cla");
+  await expect(cla).toHaveAttribute(
+    "href",
+    "https://github.com/comet-ml/opik/blob/main/CLA.md",
+  );
+  page.on("popup", (popup) => {
+    void popup.close();
+  });
+  await cla.click();
+  await expect(page.getByTestId("contributing-slide-next")).toBeEnabled();
+  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+
   for (let i = 0; i < CONTRIBUTING_SLIDE_IDS.length; i++) {
     await expect(
       page.getByTestId(`contributing-slide-${CONTRIBUTING_SLIDE_IDS[i]}`),
     ).toBeVisible();
     if (i < CONTRIBUTING_SLIDE_IDS.length - 1) {
+      await expect(page.getByTestId("wizard-next")).toHaveCount(0);
       await page.getByTestId("contributing-slide-next").click();
       await expect(page.getByTestId("contributing-slide-prev")).toBeEnabled();
     }
   }
 
-  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast.
+  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast + claOpened.
   await expect(page.getByTestId("contributing-slide-next")).toHaveCount(0);
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await clickNext(page);
+}
+
+async function completeContributingQuiz(page: Page): Promise<void> {
+  await expectStep(page, "step-contributing-quiz");
+  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+
+  // Intentionally score below passThreshold (4); finish must still unlock Next.
+  for (let q = 0; q < CONTRIBUTING_QUIZ_CORRECT.length; q++) {
+    const wrong = (CONTRIBUTING_QUIZ_CORRECT[q]! + 1) % 4;
+    await page.getByTestId(`contributing-quiz-option-${wrong}`).click();
+    await expect(page.getByTestId("contributing-quiz-next-question")).toBeVisible();
+    await expect(page.getByTestId("contributing-quiz-submit")).toHaveCount(0);
+    await page.getByTestId("contributing-quiz-next-question").click();
+  }
+
+  await expect(page.getByTestId("contributing-quiz-results")).toBeVisible();
+  await expect(page.getByTestId("contributing-quiz-results")).toContainText(
+    "did not reach the pass threshold",
+  );
 }
 
 async function completeVerify(page: Page): Promise<void> {
@@ -208,6 +245,10 @@ test.describe("onboarding wizard", () => {
     await clickNext(page);
 
     await completeContributingOverviewSlides(page);
+
+    await completeContributingQuiz(page);
+    await expect(page.getByTestId("wizard-next")).toBeVisible();
+    await clickNext(page);
 
     await expectStep(page, "step-issues");
     await expect(page.getByTestId("issue-recommended")).toBeVisible({

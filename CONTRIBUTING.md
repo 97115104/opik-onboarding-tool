@@ -16,9 +16,10 @@ Thank you for improving the onboarding experience. This repo orchestrates local 
 |------|---------|-------------|
 | `overview.md` | Product overview markdown | Wizard overview step |
 | `contributing-overview.md` | Opik upstream contributing walkthrough | Wizard contributing overview step |
+| `contributing-quiz.json` | Five-question contributing quiz | Wizard contributing quiz step |
 | `knowledge-graph.json` | Navigable concept graph | Wizard graph step |
 | `onboarding-tour.md` | Guided tour copy | Wizard tour step |
-| `quiz.json` | Five-question quiz | Wizard quiz step (see schema in CONTRACTS) |
+| `quiz.json` | Five-question product quiz | Wizard quiz step (see schema in CONTRACTS) |
 
 **Adding a graph node:** Edit `knowledge-graph.json`: add a `nodes` entry with unique `id`, `label`, `summary`, and optional `details` / `links`. Connect it with an `edges` entry (`source` → `target`, optional `label`). Set `rootId` to the entry node for first paint.
 

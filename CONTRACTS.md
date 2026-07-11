@@ -197,6 +197,8 @@ interface ContributionSnapshot {
   quizPassed: boolean
   /** True after quiz results panel; B hides wizard-next while quiz is active and this is false */
   quizFinished: boolean
+  /** True after contributing quiz results; B hides wizard-next while that step is active and this is false */
+  contributingQuizFinished: boolean
 }
 ```
 
@@ -214,6 +216,7 @@ interface ContributionSnapshot {
 | Try Opik | `tour` | `step-tour` | B |
 | Quiz | `quiz` | `step-quiz` | C |
 | Contributing overview | `contributing-overview` | `step-contributing-overview` | C |
+| Contributing quiz | `contributing-quiz` | `step-contributing-quiz` | C |
 | Issues (1+2) | `issues` | `step-issues` | C |
 | Cursor prompt | `prompt` | `step-prompt` | C |
 | Verify | `verify` | `step-verify` | C |
@@ -230,7 +233,8 @@ interface ContributionSnapshot {
 | `graph` | Hidden until every Opik Features node is reviewed (modal close) |
 | `tour` | Hidden until all tour steps are done (CTA click auto-completes; checkbox still works) |
 | `quiz` | Hidden until quiz results (`quizFinished`) |
-| `contributing-overview` | Hidden until the last contributing overview slide is reached |
+| `contributing-overview` | Hidden until the last contributing overview slide is reached **and** the CLA CTA was opened (`claOpened`) |
+| `contributing-quiz` | Hidden until contributing quiz results (`contributingQuizFinished`); finish unlocks even if the score is below threshold |
 | `issues` | Next disabled until an issue is confirmed |
 | `verify` | Hidden until checklist (`verify-check-ran-local` + `verify-check-matches-issue`) |
 | `extend` | Footer label is **Finish**; advances to celebration |
@@ -238,7 +242,7 @@ interface ContributionSnapshot {
 
 Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned).
 
-Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo.
+Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide 1 includes a CLA CTA (`contributing-open-cla`); **Next slide** stays disabled until that link is opened. Optional `cta` / `links` fields render as a Tour-style button and wrapped text anchors.
 
 Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
 
@@ -350,6 +354,11 @@ Vite plugin: `GET /api/ranked-issues?limit=10&persona=pm` forwards `persona` to 
 | Contributing slides | `contributing-slides` |
 | Contributing slide | `contributing-slide-{id}` |
 | Contributing slide prev/next | `contributing-slide-prev`, `contributing-slide-next` |
+| Contributing CLA CTA | `contributing-open-cla` |
+| Contributing quiz panel | `step-contributing-quiz` |
+| Contributing quiz option | `contributing-quiz-option-{index}` |
+| Contributing quiz next question | `contributing-quiz-next-question` |
+| Contributing quiz results | `contributing-quiz-results` |
 | Issues panel | `step-issues` |
 | Issue list | `issue-list` |
 | Recommended issue | `issue-recommended` |
@@ -412,6 +421,13 @@ Behavior:
 - While quiz step is active and not finished, wizard footer **Next** (`wizard-next`) is hidden or disabled.
 - After results, footer Next continues the wizard.
 
+## Contributing quiz contract (`content/contributing-quiz.json`)
+
+Same JSON shape and auto-grade behavior as `content/quiz.json` (`passThreshold` 4, five questions). Topics cover CLA, `Fixes #...` issue linking, GitHub Actions in the SDLC, staying in the component area, and human accountability for AI-assisted work.
+
+- Testids: `step-contributing-quiz`, `contributing-quiz-option-{index}`, `contributing-quiz-next-question`, `contributing-quiz-results`.
+- Gate: `contributingQuizFinished` (contribution store + `opik-contributing-quiz-finished` localStorage). Finish unlocks footer Next even if the score is below threshold.
+
 ## Issues UI contract (C)
 
 - Fetch ranked list (limit ~5–10).
@@ -470,7 +486,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA CTA unlocks Next slide; Next gated) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -497,4 +513,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.3.0** (UX polish + Verify step between Cursor prompt and PR help)
+Contract version: **1.4.0** (Contributing overview CLA gate + contributing quiz step)

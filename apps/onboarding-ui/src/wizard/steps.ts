@@ -13,6 +13,12 @@ export const WIZARD_STEPS: WizardStepConfig[] = [
     testId: 'step-contributing-overview',
     owner: 'C',
   },
+  {
+    id: 'contributing-quiz',
+    label: 'Contributing quiz',
+    testId: 'step-contributing-quiz',
+    owner: 'C',
+  },
   { id: 'issues', label: 'Issues', testId: 'step-issues', owner: 'C' },
   { id: 'prompt', label: 'Cursor prompt', testId: 'step-prompt', owner: 'C' },
   { id: 'verify', label: 'Verify', testId: 'step-verify', owner: 'C' },

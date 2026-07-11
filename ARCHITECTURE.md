@@ -101,6 +101,7 @@ Single-page wizard with light (white/black) aesthetic. Steps:
 | Tour | `tour` | `content/onboarding-tour.md` | B |
 | Quiz | `quiz` | `content/quiz.json` (auto-grade) | C |
 | Contributing overview | `contributing-overview` | `contributingSlides.ts` (+ `content/contributing-overview.md`) | C |
+| Contributing quiz | `contributing-quiz` | `content/contributing-quiz.json` (auto-grade) | C |
 | Issues (1+2) | `issues` | `scripts/rank-issues.sh` + persona | C |
 | Cursor prompt | `prompt` | Generated + open-Cursor command | C |
 | Verify | `verify` | Area plan + checklist | C |
@@ -109,7 +110,7 @@ Single-page wizard with light (white/black) aesthetic. Steps:
 | Finish | `finish` | Celebration | B |
 
 Shell, routing, design system, About you, health proxy, and non-C steps → **workstream B**.  
-Quiz, issues, Cursor prompts, verify, and PR-help → **workstream C** under `src/features/`. Contributing overview (owner C) lives in `src/steps/ContributingOverviewStep.tsx` with slides in `src/content/contributingSlides.ts`.
+Quiz, contributing quiz, issues, Cursor prompts, verify, and PR-help → **workstream C** under `src/features/`. Contributing overview (owner C) lives in `src/steps/ContributingOverviewStep.tsx` with slides in `src/content/contributingSlides.ts`.
 
 ## Chat demo
 

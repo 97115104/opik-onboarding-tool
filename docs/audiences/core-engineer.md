@@ -5,7 +5,7 @@ For backend, frontend, ML, and platform engineers contributing code to **comet-m
 ## Focus in the wizard
 
 - Overview, knowledge graph, and tour: prioritize tracing, spans, and SDK integration
-- Pass the quiz (4/5), walk the contributing overview, then pick a ranked GitHub issue
+- Finish the product quiz (aim for 4/5), walk the contributing overview (open the CLA), finish the contributing quiz, then pick a ranked GitHub issue
 - Copy the Cursor prompt (includes `OPIK_PATH`, branch name, and PR steps)
 - Implement in the **Opik repo** (`OPIK_PATH`), not this tool repo
 

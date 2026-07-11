@@ -7,6 +7,7 @@
  *
  * Lazy imports in lazyFeatures.ts should use:
  *   () => import('@/features/quiz/QuizStep')
+ *   () => import('@/features/quiz/ContributingQuizStep')
  *   () => import('@/features/issues/IssuesStep')
  *   () => import('@/features/prompt/PromptStep')
  *   () => import('@/features/verify/VerifyStep')
@@ -26,6 +27,11 @@ export const CONTRIBUTION_WIZARD_STEPS: WizardStepDefinition[] = [
     key: "contributing-overview",
     label: "Contributing",
     testId: "step-contributing-overview",
+  },
+  {
+    key: "contributing-quiz",
+    label: "Contributing quiz",
+    testId: "step-contributing-quiz",
   },
   { key: "issues", label: "Issues", testId: "step-issues" },
   { key: "prompt", label: "Cursor prompt", testId: "step-prompt" },

@@ -1,0 +1,66 @@
+{
+  "questions": [
+    {
+      "id": "cq1",
+      "text": "What should you do before opening your first Opik pull request?",
+      "options": [
+        "Sign the Contributor License Agreement (CLA)",
+        "Open a draft PR with no linked issue",
+        "Skip local tests if CI looks green later",
+        "Push directly to main on comet-ml/opik"
+      ],
+      "correctIndex": 0,
+      "explanation": "Opik requires the CLA so maintainers can accept your contribution. Open and sign it before your first PR."
+    },
+    {
+      "id": "cq2",
+      "text": "How should a pull request connect to the GitHub issue it fixes?",
+      "options": [
+        "Mention the issue only in a Slack message",
+        "Use Fixes #... or Resolves #... in the PR description",
+        "Put the issue number only in the branch name",
+        "Close the issue manually before opening the PR"
+      ],
+      "correctIndex": 1,
+      "explanation": "Linking with Fixes #... or Resolves #... ties the PR to the tracked issue and helps maintainers review and close work correctly."
+    },
+    {
+      "id": "cq3",
+      "text": "What role do GitHub Actions play in Opik contribution?",
+      "options": [
+        "They replace code review entirely",
+        "They are continuous integration checks in the software development lifecycle",
+        "They only run after a PR is merged",
+        "They host the Opik production UI"
+      ],
+      "correctIndex": 1,
+      "explanation": "GitHub Actions workflows under .github/workflows/ run CI checks on pull requests as part of Opik's SDLC."
+    },
+    {
+      "id": "cq4",
+      "text": "When you pick an issue, where should most of your changes land?",
+      "options": [
+        "Across every SDK and the backend in one PR",
+        "In the component area the issue targets",
+        "Only in this onboarding-tool repository",
+        "In deployment/ for every bugfix"
+      ],
+      "correctIndex": 1,
+      "explanation": "Stay in the component area your issue targets so the PR stays reviewable and matches the right guide and CI workflows."
+    },
+    {
+      "id": "cq5",
+      "text": "If you use AI while contributing, who is accountable for correctness, licensing, and security?",
+      "options": [
+        "The AI model vendor",
+        "GitHub Actions alone",
+        "You, the human author",
+        "Whoever merges the PR without reading it"
+      ],
+      "correctIndex": 2,
+      "explanation": "AI assistance is welcome, but a human author stays accountable for correctness, licensing, and security. Run local checks before you open the PR."
+    }
+  ],
+  "passThreshold": 4,
+  "totalQuestions": 5
+}

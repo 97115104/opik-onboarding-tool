@@ -14,6 +14,9 @@ function lazyDefault(
 
 /** Lazy route imports for workstream C features. */
 export const QuizStep = lazyDefault(() => import('@/features/quiz/QuizStep'))
+export const ContributingQuizStep = lazyDefault(
+  () => import('@/features/quiz/ContributingQuizStep'),
+)
 export const IssuesStep = lazyDefault(() => import('@/features/issues/IssuesStep'))
 export const PromptStep = lazyDefault(() => import('@/features/prompt/PromptStep'))
 export const VerifyStep = lazyDefault(() => import('@/features/verify/VerifyStep'))

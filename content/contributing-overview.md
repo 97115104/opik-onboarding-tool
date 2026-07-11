@@ -7,12 +7,12 @@ This content describes the **upstream Opik repository** ([comet-ml/opik](https:/
 
 ## Slides
 
-1. **What contributing means**: Tracked issue, focused PR, maintainer review. Sign the Contributor License Agreement (CLA). Human accountability for AI-assisted work.
-2. **How the codebase is organized**: `apps/`, `sdks/`, `tests_end_to_end/`, `deployment/` (Docker and Kubernetes/Helm assets) from Opik CONTRIBUTING.md.
-3. **Component areas**: Backend, frontend, Python/TS SDKs, docs, agent optimizer. Each area has its own guide.
-4. **How to contribute**: Fast path: Fixes #..., branch naming, scoped PR, tests; draft PR and template come later in this wizard.
-5. **GitHub Actions and quality**: Workflows under `.github/workflows/` (area workflows such as Frontend/Backend/SDK plus Code Quality); install pre-commit then `make hooks`; Verify step names workflows for the chosen issue.
-6. **What comes next in this wizard**: Choose issue → Cursor prompt → verify/CI → PR checklist.
+1. **What contributing means**: Welcome. Tracked issue, focused PR, maintainer review. Open and sign the CLA (button). Soft note that AI help is welcome and the human stays accountable.
+2. **How the codebase is organized**: Prose naming `apps/`, `sdks/`, `tests_end_to_end/`, and `deployment/` (no bullets).
+3. **Component areas**: Stay in the area your issue targets; text links to Backend, Frontend, Python SDK, TypeScript SDK, Documentation, and Agent optimizer guides.
+4. **How to contribute**: Fixes #..., branch naming, scoped PR, local checks (prose).
+5. **GitHub Actions and quality**: Actions as CI in the SDLC; workflows; pre-commit / `make hooks`; Verify later.
+6. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
 
 ## Learn more
 

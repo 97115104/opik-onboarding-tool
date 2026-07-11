@@ -1,6 +1,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import type { Persona, RankedIssue } from "./types";
 import {
+  CONTRIBUTING_QUIZ_FINISHED_STORAGE_KEY,
   PERSONA_STORAGE_KEY,
   QUIZ_FINISHED_STORAGE_KEY,
   isEngineerPersona,
@@ -15,6 +16,7 @@ export interface ContributionSnapshot {
   branchName: string | null;
   quizPassed: boolean;
   quizFinished: boolean;
+  contributingQuizFinished: boolean;
 }
 
 function readStoredPersona(): Persona | null {
@@ -28,6 +30,14 @@ function readStoredPersona(): Persona | null {
 function readStoredQuizFinished(): boolean {
   try {
     return localStorage.getItem(QUIZ_FINISHED_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function readStoredContributingQuizFinished(): boolean {
+  try {
+    return localStorage.getItem(CONTRIBUTING_QUIZ_FINISHED_STORAGE_KEY) === "1";
   } catch {
     return false;
   }
@@ -64,6 +74,25 @@ function persistQuizFinished(finished: boolean) {
   }
 }
 
+function persistContributingQuizFinished(finished: boolean) {
+  try {
+    if (finished) {
+      localStorage.setItem(CONTRIBUTING_QUIZ_FINISHED_STORAGE_KEY, "1");
+    } else {
+      localStorage.removeItem(CONTRIBUTING_QUIZ_FINISHED_STORAGE_KEY);
+    }
+  } catch {
+    /* ignore quota / private mode */
+  }
+  try {
+    window.dispatchEvent(
+      new CustomEvent("opik-contributing-quiz-state", { detail: { finished } }),
+    );
+  } catch {
+    /* ignore non-browser */
+  }
+}
+
 const initialPersona = readStoredPersona();
 
 let snapshot: ContributionSnapshot = {
@@ -73,6 +102,7 @@ let snapshot: ContributionSnapshot = {
   branchName: null,
   quizPassed: false,
   quizFinished: readStoredQuizFinished(),
+  contributingQuizFinished: readStoredContributingQuizFinished(),
 };
 
 const listeners = new Set<() => void>();
@@ -119,6 +149,10 @@ export const contributionStore = {
     persistQuizFinished(finished);
     setSnapshot({ quizFinished: finished });
   },
+  setContributingQuizFinished: (finished: boolean) => {
+    persistContributingQuizFinished(finished);
+    setSnapshot({ contributingQuizFinished: finished });
+  },
 };
 
 export function useContributionStore() {
@@ -152,6 +186,10 @@ export function useContributionStore() {
     (finished: boolean) => contributionStore.setQuizFinished(finished),
     [],
   );
+  const setContributingQuizFinished = useCallback(
+    (finished: boolean) => contributionStore.setContributingQuizFinished(finished),
+    [],
+  );
 
   return {
     ...state,
@@ -161,5 +199,6 @@ export function useContributionStore() {
     setBranchName,
     setQuizPassed,
     setQuizFinished,
+    setContributingQuizFinished,
   };
 }

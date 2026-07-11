@@ -8,6 +8,7 @@ import { OverviewStep } from '@/steps/OverviewStep'
 import { StackStep } from '@/steps/StackStep'
 import { TourStep } from '@/steps/TourStep'
 import {
+  ContributingQuizStep,
   IssuesStep,
   PrHelpStep,
   PromptStep,
@@ -29,6 +30,7 @@ export const STEP_REGISTRY: StepEntry[] = [
   { id: 'tour', Component: TourStep },
   { id: 'quiz', Component: QuizStep, lazy: true },
   { id: 'contributing-overview', Component: ContributingOverviewStep },
+  { id: 'contributing-quiz', Component: ContributingQuizStep, lazy: true },
   { id: 'issues', Component: IssuesStep, lazy: true },
   { id: 'prompt', Component: PromptStep, lazy: true },
   { id: 'verify', Component: VerifyStep, lazy: true },

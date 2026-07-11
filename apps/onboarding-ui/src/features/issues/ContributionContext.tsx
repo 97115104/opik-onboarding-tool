@@ -14,12 +14,14 @@ interface ContributionContextValue {
   branchName: string | null;
   quizPassed: boolean;
   quizFinished: boolean;
+  contributingQuizFinished: boolean;
   setPersona: (persona: Persona | null) => void;
   setIsEngineer: (value: boolean) => void;
   setSelectedIssue: (issue: RankedIssue | null) => void;
   setBranchName: (name: string | null) => void;
   setQuizPassed: (passed: boolean) => void;
   setQuizFinished: (finished: boolean) => void;
+  setContributingQuizFinished: (finished: boolean) => void;
 }
 
 const ContributionContext = createContext<ContributionContextValue | null>(null);

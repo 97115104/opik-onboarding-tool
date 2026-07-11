@@ -20,6 +20,7 @@ export interface ContributionState {
   branchName: string | null;
   quizPassed: boolean;
   quizFinished: boolean;
+  contributingQuizFinished: boolean;
 }
 
 export const BRANCH_NAME_PATTERN = /^opik-onboarding-tool-97115104-contribution-\d+$/;
@@ -29,6 +30,7 @@ export const DEFAULT_OPIK_PATH = "../opik";
 
 export const PERSONA_STORAGE_KEY = "opik-onboarding-persona";
 export const QUIZ_FINISHED_STORAGE_KEY = "opik-quiz-finished";
+export const CONTRIBUTING_QUIZ_FINISHED_STORAGE_KEY = "opik-contributing-quiz-finished";
 
 export function isEngineerPersona(persona: Persona | null): boolean {
   return persona === "engineer" || persona === "external";

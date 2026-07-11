@@ -103,7 +103,7 @@ flowchart TD
 | **Prep** | ARCHITECTURE.md, CONTRACTS.md, AGENT_KICKOFF.md |
 | **A** | deploy-locally.sh, scripts/* (except C scripts), apps/chat-demo |
 | **B** | onboarding UI shell, design, overview/graph/tour/stack/extend |
-| **C** | quiz, contributing overview, issues, Cursor prompt, verify, PR help, rank/branch scripts |
+| **C** | quiz, contributing overview, contributing quiz, issues, Cursor prompt, verify, PR help, rank/branch scripts |
 | **D** | README, CONTRIBUTING, content/, docs/ |
 | **E** | e2e/, run-e2e.sh |
 | **Smoke** | `./deploy-locally.sh` green + Playwright pass |
@@ -172,7 +172,7 @@ On smoke failure, open fix issues labeled `workstream:fix` + parent workstream l
 
 - [ ] `./deploy-locally.sh` one-shot works (Bun, gh auth, Opik, Ollama, UIs, e2e, browsers)
 - [ ] Playwright suite passes in deploy and smoke
-- [ ] Wizard: About you → overview → graph → stack → tour → quiz → contributing-overview → issues → prompt → verify → pr-help → extend → finish
+- [ ] Wizard: About you → overview → graph → stack → tour → quiz → contributing-overview → contributing-quiz → issues → prompt → verify → pr-help → extend → finish
 - [ ] Quiz auto-grades; issues show 1 recommended + 2 alternatives; dual Cursor prompts
 - [ ] Every implement issue closed with two addressed review passes
 - [ ] Issue board shows Prep → implement → Smoke with no path conflicts

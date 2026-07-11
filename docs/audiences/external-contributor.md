@@ -19,7 +19,9 @@ When deploy succeeds, work through the wizard at http://localhost:4310.
 - Read Overview and explore the knowledge graph
 - Confirm Local stack is green
 - Complete the Tour (chat demo to trace in Opik UI)
-- Pass the Quiz (4 of 5 correct)
+- Finish the product quiz (aim for 4 of 5; you can continue after results either way)
+- Walk the Contributing overview and open the CLA
+- Finish the contributing quiz (CLA, issue links, CI, scope)
 - Select an assigned issue and copy the Cursor prompt
 - Create work in the **Opik repo**, not this tool repo
 

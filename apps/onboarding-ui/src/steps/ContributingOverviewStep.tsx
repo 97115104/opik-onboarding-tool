@@ -9,17 +9,25 @@ import {
 export function ContributingOverviewStep() {
   const saved = getContributingOverviewProgress()
   const [slideIndex, setSlideIndex] = useState(saved.slideIndex)
+  const [claOpened, setClaOpened] = useState(saved.claOpened)
   const total = CONTRIBUTING_SLIDES.length
   const slide = CONTRIBUTING_SLIDES[slideIndex]!
   const isLast = slideIndex === total - 1
+  const isFirst = slideIndex === 0
+  const nextDisabled = isFirst && !claOpened
 
   useEffect(() => {
     const prev = getContributingOverviewProgress()
     setContributingOverviewProgress({
       slideIndex,
       reachedLast: prev.reachedLast || isLast,
+      claOpened: prev.claOpened || claOpened,
     })
-  }, [slideIndex, isLast])
+  }, [slideIndex, isLast, claOpened])
+
+  function onClaClick() {
+    setClaOpened(true)
+  }
 
   return (
     <StepPanel testId="step-contributing-overview" title="Contributing overview">
@@ -35,6 +43,36 @@ export function ContributingOverviewStep() {
         >
           <h3 className="font-display text-2xl text-slate-950">{slide.title}</h3>
           <p className="text-sm leading-relaxed text-slate-600">{slide.body}</p>
+          {slide.cta ? (
+            <a
+              href={slide.cta.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid={slide.cta.testId}
+              onClick={onClaClick}
+              className="inline-flex rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+            >
+              {slide.cta.label}
+            </a>
+          ) : null}
+          {slide.links && slide.links.length > 0 ? (
+            <p className="text-sm leading-relaxed text-slate-600">
+              {slide.links.map((link, index) => (
+                <span key={link.href}>
+                  {index > 0 ? ', ' : null}
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-900 underline underline-offset-2 hover:text-slate-700"
+                  >
+                    {link.label}
+                  </a>
+                </span>
+              ))}
+              .
+            </p>
+          ) : null}
           {slide.bullets && slide.bullets.length > 0 ? (
             <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-600">
               {slide.bullets.map((bullet) => (
@@ -58,8 +96,9 @@ export function ContributingOverviewStep() {
             <button
               type="button"
               data-testid="contributing-slide-next"
+              disabled={nextDisabled}
               onClick={() => setSlideIndex((index) => Math.min(total - 1, index + 1))}
-              className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+              className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-35"
             >
               Next slide
             </button>

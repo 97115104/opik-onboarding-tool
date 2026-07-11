@@ -1,9 +1,8 @@
 import { useCallback, useState } from "react";
-import quizData from "@content/quiz.json";
 import type { QuizAnswerState, QuizData } from "./types";
 
-export function useQuiz() {
-  const [quiz] = useState<QuizData>(() => quizData as QuizData);
+export function useQuiz(quizData: QuizData) {
+  const [quiz] = useState<QuizData>(() => quizData);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswerState[]>(() =>
     quizData.questions.map((q) => ({

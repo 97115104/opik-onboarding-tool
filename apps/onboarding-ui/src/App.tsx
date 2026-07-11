@@ -13,6 +13,7 @@ import { WizardShell } from '@/components/WizardShell'
 import { ContributionProvider } from '@/features/issues/ContributionContext'
 import { contributionStore } from '@/features/issues'
 import {
+  isContributingQuizFinishedInStorage,
   isQuizFinishedInStorage,
   PERSONA_CHANGED_EVENT,
   readPersona,
@@ -97,6 +98,39 @@ function useQuizFinished() {
   return storeFinished || storageFinished
 }
 
+/**
+ * Hide wizard Next on the contributing quiz step until finished.
+ * Prefer contributionStore.contributingQuizFinished; also accept localStorage
+ * `opik-contributing-quiz-finished=1` and `opik-contributing-quiz-state` events.
+ */
+function useContributingQuizFinished() {
+  const snapshot = useSyncExternalStore(
+    contributionStore.subscribe,
+    contributionStore.getSnapshot,
+    contributionStore.getSnapshot,
+  )
+  const [storageFinished, setStorageFinished] = useState(() =>
+    isContributingQuizFinishedInStorage(),
+  )
+
+  useEffect(() => {
+    const sync = () => setStorageFinished(isContributingQuizFinishedInStorage())
+    const onQuizState = (event: Event) => {
+      const detail = (event as CustomEvent<{ finished?: boolean }>).detail
+      if (detail?.finished) setStorageFinished(true)
+      else sync()
+    }
+    window.addEventListener('storage', sync)
+    window.addEventListener('opik-contributing-quiz-state', onQuizState)
+    return () => {
+      window.removeEventListener('storage', sync)
+      window.removeEventListener('opik-contributing-quiz-state', onQuizState)
+    }
+  }, [])
+
+  return Boolean(snapshot.contributingQuizFinished) || storageFinished
+}
+
 function useWizardGates() {
   return useSyncExternalStore(
     subscribeWizardGates,
@@ -110,6 +144,7 @@ export default function App() {
   const [boundaryKey, setBoundaryKey] = useState(0)
   const personaSelected = usePersonaSelected()
   const quizFinished = useQuizFinished()
+  const contributingQuizFinished = useContributingQuizFinished()
   const gates = useWizardGates()
 
   const step = STEP_REGISTRY[currentIndex]
@@ -130,6 +165,7 @@ export default function App() {
     (stepId === 'tour' && !gates.tour) ||
     (stepId === 'quiz' && !quizFinished) ||
     (stepId === 'contributing-overview' && !gates.contributingOverview) ||
+    (stepId === 'contributing-quiz' && !contributingQuizFinished) ||
     (stepId === 'verify' && !gates.verify)
 
   const issueSelected = useSyncExternalStore(
@@ -143,13 +179,28 @@ export default function App() {
     !hideNext &&
     !(stepId === 'issues' && !issueSelected)
 
+  /** Clear quiz finished flags before entering a quiz step so stale localStorage cannot unlock Next during lazy Suspense. */
+  function clearQuizGateForStep(nextId: string | undefined) {
+    if (nextId === 'quiz') {
+      contributionStore.setQuizFinished(false)
+      contributionStore.setQuizPassed(false)
+    }
+    if (nextId === 'contributing-quiz') {
+      contributionStore.setContributingQuizFinished(false)
+    }
+  }
+
   const goBack = useCallback(() => {
-    setCurrentIndex((index) => Math.max(0, index - 1))
-  }, [])
+    const nextIndex = Math.max(0, currentIndex - 1)
+    clearQuizGateForStep(WIZARD_STEPS[nextIndex]?.id)
+    setCurrentIndex(nextIndex)
+  }, [currentIndex])
 
   const goNext = useCallback(() => {
-    setCurrentIndex((index) => Math.min(STEP_REGISTRY.length - 1, index + 1))
-  }, [])
+    const nextIndex = Math.min(STEP_REGISTRY.length - 1, currentIndex + 1)
+    clearQuizGateForStep(WIZARD_STEPS[nextIndex]?.id)
+    setCurrentIndex(nextIndex)
+  }, [currentIndex])
 
   const stepKey = useMemo(() => WIZARD_STEPS[currentIndex]?.id ?? 'unknown', [currentIndex])
 

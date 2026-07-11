@@ -3,6 +3,8 @@ export type Persona = 'engineer' | 'pm' | 'support' | 'external'
 export const PERSONA_STORAGE_KEY = 'opik-onboarding-persona'
 /** C should set this to `1` when the quiz results panel is shown. */
 export const QUIZ_FINISHED_KEY = 'opik-quiz-finished'
+/** C should set this to `1` when the contributing quiz results panel is shown. */
+export const CONTRIBUTING_QUIZ_FINISHED_KEY = 'opik-contributing-quiz-finished'
 export const PERSONA_CHANGED_EVENT = 'opik-persona-changed'
 
 export const PERSONA_OPTIONS: { id: Persona; label: string; testId: string }[] = [
@@ -37,6 +39,14 @@ export function writePersona(persona: Persona): void {
 export function isQuizFinishedInStorage(): boolean {
   try {
     return localStorage.getItem(QUIZ_FINISHED_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function isContributingQuizFinishedInStorage(): boolean {
+  try {
+    return localStorage.getItem(CONTRIBUTING_QUIZ_FINISHED_KEY) === '1'
   } catch {
     return false
   }

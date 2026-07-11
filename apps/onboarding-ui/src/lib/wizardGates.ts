@@ -27,6 +27,8 @@ export type OverviewProgress = {
 export type ContributingOverviewProgress = {
   slideIndex: number
   reachedLast: boolean
+  /** True after the user opens the CLA CTA on slide 1. */
+  claOpened: boolean
 }
 
 export type TourProgress = {
@@ -42,6 +44,7 @@ let overviewProgress: OverviewProgress = { slideIndex: 0, reachedLast: false }
 let contributingOverviewProgress: ContributingOverviewProgress = {
   slideIndex: 0,
   reachedLast: false,
+  claOpened: false,
 }
 let graphReviewedIds: string[] = []
 let tourProgress: TourProgress = { done: {}, revealedCount: 1 }
@@ -90,7 +93,10 @@ export function getContributingOverviewProgress(): ContributingOverviewProgress 
 
 export function setContributingOverviewProgress(next: ContributingOverviewProgress) {
   contributingOverviewProgress = { ...next }
-  syncGate('contributingOverview', contributingOverviewProgress.reachedLast)
+  syncGate(
+    'contributingOverview',
+    contributingOverviewProgress.reachedLast && contributingOverviewProgress.claOpened,
+  )
 }
 
 export function getGraphReviewedIds(): string[] {
