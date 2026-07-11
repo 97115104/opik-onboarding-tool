@@ -9,27 +9,22 @@
  *   () => import('@/features/quiz/QuizStep')
  *   () => import('@/features/issues/IssuesStep')
  *   () => import('@/features/prompt/PromptStep')
- *   () => import('@/features/checklist/ChecklistStep')
+ *   () => import('@/features/checklist/ChecklistStep')  // PrHelpStep / ChecklistStep
  */
-import type { ComponentType } from "react";
-import ChecklistStep from "../checklist/ChecklistStep";
-import IssuesStep from "./IssuesStep";
-import QuizStep from "../quiz/QuizStep";
-import PromptStep from "../prompt/PromptStep";
 
 export interface WizardStepDefinition {
   key: string;
   label: string;
   testId: string;
-  Component: ComponentType;
 }
 
+/** Metadata only. Components are lazy-loaded by B via lazyFeatures.ts. */
 export const CONTRIBUTION_WIZARD_STEPS: WizardStepDefinition[] = [
-  { key: "quiz", label: "Quiz", testId: "step-quiz", Component: QuizStep },
-  { key: "issues", label: "Issues", testId: "step-issues", Component: IssuesStep },
-  { key: "prompt", label: "Cursor prompt", testId: "step-prompt", Component: PromptStep },
-  { key: "checklist", label: "PR checklist", testId: "step-checklist", Component: ChecklistStep },
+  { key: "quiz", label: "Quiz", testId: "step-quiz" },
+  { key: "issues", label: "Issues", testId: "step-issues" },
+  { key: "prompt", label: "Cursor prompt", testId: "step-prompt" },
+  { key: "pr-help", label: "PR help", testId: "step-pr-help" },
 ];
 
 export { BRANCH_NAME_PATTERN, DEFAULT_OPIK_PATH } from "./types";
-export type { ContributionState, RankedIssue } from "./types";
+export type { ContributionState, Persona, RankedIssue } from "./types";

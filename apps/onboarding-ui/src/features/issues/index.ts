@@ -1,5 +1,3 @@
-export { default as IssuesStep } from "./IssuesStep";
-export { IssueListStep } from "./IssuesStep";
 export {
   ContributionProvider,
   useContribution,
@@ -7,12 +5,20 @@ export {
   useSelectIssue,
   contributionStore,
 } from "./ContributionContext";
+export { useContributionStore } from "./contributionStore";
 export { useRankedIssues } from "./useRankedIssues";
 export { contributionApiPlugin } from "./contributionApiPlugin";
+export { explainIssue, usefulLabels } from "./explainIssue";
 export {
   CONTRIBUTION_WIZARD_STEPS,
   BRANCH_NAME_PATTERN,
   DEFAULT_OPIK_PATH,
 } from "./integration";
-export type { ContributionState, RankedIssue } from "./types";
+export type { ContributionState, Persona, RankedIssue } from "./types";
 export type { WizardStepDefinition } from "./integration";
+export {
+  PERSONA_STORAGE_KEY,
+  QUIZ_FINISHED_STORAGE_KEY,
+  isEngineerPersona,
+  parsePersona,
+} from "./types";

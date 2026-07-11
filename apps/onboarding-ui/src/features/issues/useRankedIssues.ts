@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import type { RankedIssue } from "./types";
+import type { Persona, RankedIssue } from "./types";
 
 const RANKED_ISSUES_API = "/api/ranked-issues";
 
 interface UseRankedIssuesOptions {
-  isEngineer?: boolean;
+  persona?: Persona | null;
   limit?: number;
 }
 
-export function useRankedIssues({ isEngineer = false, limit = 10 }: UseRankedIssuesOptions = {}) {
+export function useRankedIssues({ persona = null, limit = 8 }: UseRankedIssuesOptions = {}) {
   const [issues, setIssues] = useState<RankedIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,7 @@ export function useRankedIssues({ isEngineer = false, limit = 10 }: UseRankedIss
       setError(null);
       try {
         const params = new URLSearchParams({ limit: String(limit) });
-        if (isEngineer) params.set("engineer", "1");
+        if (persona) params.set("persona", persona);
         const res = await fetch(`${RANKED_ISSUES_API}?${params}`);
         if (!res.ok) throw new Error(`Failed to load issues (${res.status})`);
         const data = (await res.json()) as RankedIssue[];
@@ -31,7 +31,7 @@ export function useRankedIssues({ isEngineer = false, limit = 10 }: UseRankedIss
           setError(
             e instanceof Error
               ? e.message
-              : "Could not load ranked issues — ensure rank-issues.sh API is wired",
+              : "Could not load ranked issues. Ensure rank-issues.sh API is wired.",
           );
           setIssues([]);
         }
@@ -43,7 +43,7 @@ export function useRankedIssues({ isEngineer = false, limit = 10 }: UseRankedIss
     return () => {
       cancelled = true;
     };
-  }, [isEngineer, limit]);
+  }, [persona, limit]);
 
   return { issues, loading, error };
 }

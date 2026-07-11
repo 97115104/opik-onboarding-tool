@@ -1,56 +1,86 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution } from "../issues/ContributionContext";
-import { PR_CHECKLIST_ITEMS } from "./checklistItems";
+import { DEFAULT_OPIK_PATH } from "../issues/types";
+import { generatePrHelpPrompt } from "../prompt/generatePrompt";
 
 function ChecklistStepContent() {
   const { selectedIssue, branchName } = useContribution();
-  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [copied, setCopied] = useState(false);
+  const [opikPath, setOpikPath] = useState(DEFAULT_OPIK_PATH);
 
-  const toggle = useCallback((id: string) => {
-    setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/opik-path");
+        if (!res.ok) return;
+        const data = (await res.json()) as { path: string };
+        if (!cancelled && data.path) setOpikPath(data.path);
+      } catch {
+        /* fall back */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const allChecked = PR_CHECKLIST_ITEMS.every((item) => checked[item.id]);
+  const prompt = useMemo(
+    () => generatePrHelpPrompt(selectedIssue, branchName, opikPath),
+    [selectedIssue, branchName, opikPath],
+  );
+
+  const copyPrompt = useCallback(async () => {
+    await navigator.clipboard.writeText(prompt);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }, [prompt]);
 
   return (
     <StepPanel
-      testId="step-checklist"
-      title="PR checklist"
-      subtitle="Aligned with Opik CONTRIBUTING.md — complete before opening your draft PR."
+      testId="step-pr-help"
+      title="Open your draft PR"
+      subtitle="A pull request is how you propose your change for review."
     >
-      {selectedIssue && (
-        <p className="text-xs text-slate-500">
-          Issue #{selectedIssue.number} · branch {branchName ?? "not set"}
-        </p>
-      )}
+      <div className="space-y-4">
+        <div className="space-y-2 text-sm text-slate-700">
+          <p className="font-medium text-slate-900">What is a PR?</p>
+          <p>
+            A pull request (PR) asks maintainers to review and merge your branch into the main
+            project. You open it as a draft first so checks and review can happen before it is
+            ready.
+          </p>
+          <p>
+            Your PR should link the tracked issue, follow the Opik template, disclose AI help if
+            used, and confirm you remain accountable for the change.
+          </p>
+        </div>
 
-      <ul data-testid="pr-checklist" className="mt-4 space-y-3">
-        {PR_CHECKLIST_ITEMS.map((item) => (
-          <li key={item.id}>
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
-              <input
-                type="checkbox"
-                checked={Boolean(checked[item.id])}
-                onChange={() => toggle(item.id)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-600 accent-sky-500"
-              />
-              <span>
-                <span className="block text-sm text-slate-100">{item.label}</span>
-                {item.detail && (
-                  <span className="mt-1 block text-xs text-slate-500">{item.detail}</span>
-                )}
-              </span>
-            </label>
-          </li>
-        ))}
-      </ul>
+        {selectedIssue && (
+          <p className="text-xs text-slate-500">
+            Issue #{selectedIssue.number}
+            {branchName ? ` · branch ${branchName}` : ""}
+          </p>
+        )}
 
-      {allChecked && (
-        <p className="mt-4 text-sm font-medium text-emerald-400">
-          Checklist complete — ready to open your draft PR.
-        </p>
-      )}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-slate-900">PR help prompt for Cursor</p>
+          <pre
+            data-testid="pr-help-prompt"
+            className="max-h-96 overflow-auto rounded-lg border border-[var(--color-border)] bg-slate-50 p-4 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap"
+          >
+            {prompt}
+          </pre>
+          <button
+            type="button"
+            onClick={() => void copyPrompt()}
+            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+          >
+            {copied ? "Copied!" : "Copy PR help prompt"}
+          </button>
+        </div>
+      </div>
     </StepPanel>
   );
 }
@@ -60,3 +90,4 @@ export default function ChecklistStep() {
 }
 
 export { ChecklistStepContent as ChecklistStep };
+export { ChecklistStepContent as PrHelpStep };

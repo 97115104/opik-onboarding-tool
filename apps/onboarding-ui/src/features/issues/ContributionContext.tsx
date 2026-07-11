@@ -5,22 +5,26 @@ import {
   type ReactNode,
 } from "react";
 import { contributionStore, useContributionStore } from "./contributionStore";
-import type { RankedIssue } from "./types";
+import type { Persona, RankedIssue } from "./types";
 
 interface ContributionContextValue {
+  persona: Persona | null;
   isEngineer: boolean;
   selectedIssue: RankedIssue | null;
   branchName: string | null;
   quizPassed: boolean;
+  quizFinished: boolean;
+  setPersona: (persona: Persona | null) => void;
   setIsEngineer: (value: boolean) => void;
   setSelectedIssue: (issue: RankedIssue | null) => void;
   setBranchName: (name: string | null) => void;
   setQuizPassed: (passed: boolean) => void;
+  setQuizFinished: (finished: boolean) => void;
 }
 
 const ContributionContext = createContext<ContributionContextValue | null>(null);
 
-/** Optional provider — shared state works via contributionStore without it. */
+/** Optional provider. Shared state works via contributionStore without it. */
 export function ContributionProvider({ children }: { children: ReactNode }) {
   const value = useContributionStore();
   return (

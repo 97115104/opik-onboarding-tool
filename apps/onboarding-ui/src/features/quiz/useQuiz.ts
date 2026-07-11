@@ -13,60 +13,44 @@ export function useQuiz() {
       showAnswer: false,
     })),
   );
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [showResults, setShowResults] = useState(false);
 
   const currentQuestion = quiz.questions[currentIndex] ?? null;
   const currentAnswer = answers[currentIndex] ?? null;
+  const graded = currentAnswer?.isCorrect !== null;
 
-  const submitAnswer = useCallback(() => {
-    if (!currentQuestion || selectedIndex === null) return;
-    const isCorrect = selectedIndex === currentQuestion.correctIndex;
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[currentIndex] = {
-        ...next[currentIndex],
-        selectedIndex,
-        isCorrect,
-        showAnswer: false,
-      };
-      return next;
-    });
-  }, [currentIndex, currentQuestion, selectedIndex]);
-
-  const showAnswer = useCallback(() => {
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[currentIndex] = {
-        ...next[currentIndex],
-        showAnswer: true,
-        isCorrect: next[currentIndex].isCorrect ?? false,
-      };
-      return next;
-    });
-  }, [currentIndex]);
-
-  const retryQuestion = useCallback(() => {
-    setSelectedIndex(null);
-    setAnswers((prev) => {
-      const next = [...prev];
-      next[currentIndex] = {
-        questionId: next[currentIndex].questionId,
-        selectedIndex: null,
-        isCorrect: null,
-        showAnswer: false,
-      };
-      return next;
-    });
-  }, [currentIndex]);
+  const selectOption = useCallback(
+    (index: number) => {
+      if (!currentQuestion || graded || showResults) return;
+      const isCorrect = index === currentQuestion.correctIndex;
+      setAnswers((prev) => {
+        const next = [...prev];
+        next[currentIndex] = {
+          ...next[currentIndex],
+          selectedIndex: index,
+          isCorrect,
+          showAnswer: !isCorrect,
+        };
+        return next;
+      });
+    },
+    [currentIndex, currentQuestion, graded, showResults],
+  );
 
   const nextQuestion = useCallback(() => {
-    setSelectedIndex(null);
+    if (!graded) return;
+    if (currentIndex >= quiz.questions.length - 1) {
+      setShowResults(true);
+      return;
+    }
     setCurrentIndex((i) => Math.min(i + 1, quiz.questions.length - 1));
-  }, [quiz.questions.length]);
+  }, [currentIndex, graded, quiz.questions.length]);
 
   const correctCount = answers.filter((a) => a.isCorrect === true).length;
   const passed = correctCount >= quiz.passThreshold;
-  const allAnswered = answers.every((a) => a.isCorrect !== null || a.showAnswer);
+  const missed = answers
+    .map((a, i) => ({ answer: a, question: quiz.questions[i] }))
+    .filter(({ answer }) => answer.isCorrect === false);
 
   return {
     quiz,
@@ -75,15 +59,14 @@ export function useQuiz() {
     currentIndex,
     currentQuestion,
     currentAnswer,
-    selectedIndex,
-    setSelectedIndex,
-    submitAnswer,
-    showAnswer,
-    retryQuestion,
+    selectedIndex: currentAnswer?.selectedIndex ?? null,
+    selectOption,
     nextQuestion,
+    graded,
+    showResults,
     correctCount,
     passed,
-    allAnswered,
+    missed,
     totalQuestions: quiz.questions.length,
   };
 }

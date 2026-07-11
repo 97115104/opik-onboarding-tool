@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution } from "../issues/ContributionContext";
-import { EngineerFlag } from "./EngineerFlag";
 import { useQuiz } from "./useQuiz";
 
 function QuizStepContent() {
@@ -10,37 +9,80 @@ function QuizStepContent() {
     currentIndex,
     currentQuestion,
     currentAnswer,
-    selectedIndex,
-    setSelectedIndex,
-    submitAnswer,
-    showAnswer,
-    retryQuestion,
+    selectOption,
     nextQuestion,
+    graded,
+    showResults,
     correctCount,
     passed,
-    allAnswered,
+    missed,
     totalQuestions,
   } = useQuiz();
 
-  const { setQuizPassed } = useContribution();
+  const { setQuizPassed, setQuizFinished } = useContribution();
 
   useEffect(() => {
+    // Reset so WizardNav hides Next until this visit reaches results.
+    setQuizFinished(false);
+    setQuizPassed(false);
+  }, [setQuizFinished, setQuizPassed]);
+
+  useEffect(() => {
+    if (!showResults) return;
     setQuizPassed(passed);
-  }, [passed, setQuizPassed]);
+    setQuizFinished(true);
+  }, [showResults, passed, setQuizPassed, setQuizFinished]);
 
   if (!currentQuestion || !quiz) {
     return (
       <StepPanel testId="step-quiz" title="Knowledge quiz" subtitle="Quiz unavailable.">
-        <p className="text-sm text-slate-400">Could not load content/quiz.json.</p>
+        <p className="text-sm text-slate-500">Could not load content/quiz.json.</p>
       </StepPanel>
     );
   }
 
-  const answered = currentAnswer?.isCorrect !== null;
-  const wrong = currentAnswer?.isCorrect === false;
-  const showExplanation = wrong || currentAnswer?.showAnswer;
-  const canAdvance =
-    currentAnswer?.isCorrect === true || currentAnswer?.showAnswer === true;
+  if (showResults) {
+    return (
+      <StepPanel
+        testId="step-quiz"
+        title="Quiz results"
+        subtitle={`You need ${quiz.passThreshold} of ${quiz.totalQuestions} correct to pass.`}
+      >
+        <div data-testid="quiz-results" className="space-y-4">
+          <p className={`text-base font-medium ${passed ? "text-emerald-700" : "text-amber-700"}`}>
+            Score: {correctCount} / {totalQuestions}.{" "}
+            {passed ? "You passed." : "You did not reach the pass threshold yet."}
+          </p>
+
+          {missed.length > 0 ? (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-slate-900">Missed questions</p>
+              <ul className="space-y-3">
+                {missed.map(({ question }) => (
+                  <li
+                    key={question.id}
+                    className="rounded-lg border border-[var(--color-border)] bg-white px-4 py-3"
+                  >
+                    <p className="text-sm text-slate-900">{question.text}</p>
+                    <p className="mt-2 text-sm text-slate-500">{question.explanation}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500">No missed questions.</p>
+          )}
+
+          <p className="text-sm text-slate-500">
+            Use the wizard Next button to continue to issue assignment.
+          </p>
+        </div>
+      </StepPanel>
+    );
+  }
+
+  const isCorrect = currentAnswer?.isCorrect === true;
+  const isWrong = currentAnswer?.isCorrect === false;
 
   return (
     <StepPanel
@@ -53,32 +95,35 @@ function QuizStepContent() {
           <p className="text-xs uppercase tracking-widest text-slate-500">
             Question {currentIndex + 1} of {totalQuestions}
           </p>
-          <p className="text-base text-slate-100">{currentQuestion.text}</p>
+          <p className="text-base text-slate-900">{currentQuestion.text}</p>
           <p className="text-sm text-slate-500">
-            Score: {correctCount} / {quiz.passThreshold} required
+            Score so far: {correctCount} / {quiz.passThreshold} required
           </p>
         </div>
 
         <div className="space-y-2" role="radiogroup" aria-label="Quiz options">
           {currentQuestion.options.map((option, index) => {
-            const isSelected = selectedIndex === index;
+            const isSelected = currentAnswer?.selectedIndex === index;
             const isCorrectOption = index === currentQuestion.correctIndex;
-            const revealCorrect = showExplanation && isCorrectOption;
+            const revealCorrect = graded && isCorrectOption;
+            const revealWrong = isWrong && isSelected;
 
             return (
               <button
                 key={index}
                 type="button"
                 data-testid={`quiz-option-${index}`}
-                disabled={answered && !wrong}
-                onClick={() => !answered && setSelectedIndex(index)}
+                disabled={graded}
+                onClick={() => selectOption(index)}
                 className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
                   revealCorrect
-                    ? "border-emerald-500/60 bg-emerald-500/10 text-emerald-200"
-                    : isSelected
-                      ? "border-sky-500/50 bg-sky-500/10 text-slate-100"
-                      : "border-[var(--color-border)] bg-[var(--color-surface)] text-slate-300 hover:border-slate-600"
-                } ${answered && !wrong ? "cursor-default opacity-70" : "cursor-pointer"}`}
+                    ? "border-emerald-500/60 bg-emerald-50 text-emerald-900"
+                    : revealWrong
+                      ? "border-amber-500/60 bg-amber-50 text-amber-900"
+                      : isSelected
+                        ? "border-slate-900 bg-slate-50 text-slate-900"
+                        : "border-[var(--color-border)] bg-white text-slate-800 hover:border-slate-400"
+                } ${graded ? "cursor-default" : "cursor-pointer"}`}
               >
                 {option}
               </button>
@@ -86,65 +131,35 @@ function QuizStepContent() {
           })}
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          {!answered && (
-            <button
-              type="button"
-              data-testid="quiz-submit"
-              disabled={selectedIndex === null}
-              onClick={submitAnswer}
-              className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-slate-950 disabled:opacity-40"
-            >
-              Submit
-            </button>
-          )}
-
-          {wrong && !currentAnswer?.showAnswer && (
-            <>
-              <button
-                type="button"
-                data-testid="quiz-show-answer"
-                onClick={showAnswer}
-                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm text-slate-200"
-              >
-                Show answer
-              </button>
-              <button
-                type="button"
-                onClick={retryQuestion}
-                className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm text-slate-200"
-              >
-                Try again
-              </button>
-            </>
-          )}
-        </div>
-
-        {showExplanation && (
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-            {currentQuestion.explanation}
+        {graded && (
+          <div
+            className={`rounded-lg border px-4 py-3 text-sm ${
+              isCorrect
+                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                : "border-amber-200 bg-amber-50 text-amber-900"
+            }`}
+          >
+            {isCorrect ? (
+              <p>Correct. {currentQuestion.explanation}</p>
+            ) : (
+              <>
+                <p className="font-medium">Incorrect.</p>
+                <p className="mt-1">{currentQuestion.explanation}</p>
+              </>
+            )}
           </div>
         )}
 
-        {canAdvance && currentIndex < totalQuestions - 1 && (
+        {graded && (
           <button
             type="button"
+            data-testid="quiz-next-question"
             onClick={nextQuestion}
-            className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-900"
+            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
           >
-            Next question
+            {currentIndex >= totalQuestions - 1 ? "See results" : "Next question"}
           </button>
         )}
-
-        {allAnswered && (
-          <p className={`text-sm font-medium ${passed ? "text-emerald-400" : "text-amber-400"}`}>
-            {passed
-              ? "Quiz passed — continue to issue assignment."
-              : `Keep reviewing — ${correctCount}/${quiz.passThreshold} correct.`}
-          </p>
-        )}
-
-        <EngineerFlag className="border-t border-[var(--color-border)] pt-4" />
       </div>
     </StepPanel>
   );

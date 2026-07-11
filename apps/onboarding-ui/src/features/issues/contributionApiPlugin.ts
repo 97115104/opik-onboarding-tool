@@ -10,6 +10,11 @@ import type { Plugin } from "vite";
 export function contributionApiPlugin(toolRoot?: string): Plugin {
   const root = toolRoot ?? path.resolve(__dirname, "../../../../..");
 
+  const resolveOpikPath = () => {
+    if (process.env.OPIK_PATH) return process.env.OPIK_PATH;
+    return path.resolve(root, "..", "opik");
+  };
+
   const runScript = (script: string, args: string[] = []) => {
     const result = spawnSync("bash", [path.join(root, "scripts", script), ...args], {
       encoding: "utf-8",
@@ -34,8 +39,10 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
           const url = new URL(req.url ?? "", "http://localhost");
           const limit = url.searchParams.get("limit") ?? "10";
           const label = url.searchParams.get("label");
+          const persona = url.searchParams.get("persona");
           const args = ["--limit", limit];
           if (label) args.push("--label", label);
+          if (persona) args.push("--persona", persona);
           const body = runScript("rank-issues.sh", args);
           res.setHeader("Content-Type", "application/json");
           res.end(body);
@@ -64,6 +71,16 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
             JSON.stringify({ error: err instanceof Error ? err.message : "branch failed" }),
           );
         }
+      });
+
+      server.middlewares.use("/api/opik-path", (req, res) => {
+        if (req.method !== "GET") {
+          res.statusCode = 405;
+          res.end("Method not allowed");
+          return;
+        }
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify({ path: resolveOpikPath() }));
       });
     },
   };
