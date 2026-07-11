@@ -1,0 +1,83 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --color-surface: #0a0f14;
+  --color-surface-elevated: rgba(15, 23, 32, 0.72);
+  --color-border: rgba(148, 163, 184, 0.14);
+  --color-muted: #94a3b8;
+  --color-accent: #38bdf8;
+  --color-accent-soft: rgba(56, 189, 248, 0.12);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: #e2e8f0;
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.markdown-body h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  color: #f8fafc;
+}
+
+.markdown-body h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem;
+  color: #f1f5f9;
+}
+
+.markdown-body p,
+.markdown-body li {
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.markdown-body ul {
+  padding-left: 1.25rem;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.markdown-body th {
+  background: rgba(15, 23, 32, 0.6);
+  color: #f8fafc;
+}
+
+.markdown-body code {
+  font-size: 0.85em;
+  background: rgba(56, 189, 248, 0.08);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  color: #7dd3fc;
+}
