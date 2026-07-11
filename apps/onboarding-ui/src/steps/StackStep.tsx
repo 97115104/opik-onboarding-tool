@@ -17,11 +17,11 @@ function statusLabel(status: ServiceHealth['status']) {
 function statusClasses(status: ServiceHealth['status']) {
   switch (status) {
     case 'healthy':
-      return 'bg-emerald-400/15 text-emerald-300 ring-emerald-400/25'
+      return 'bg-emerald-50 text-emerald-800 ring-emerald-200'
     case 'unhealthy':
-      return 'bg-rose-400/15 text-rose-300 ring-rose-400/25'
+      return 'bg-rose-50 text-rose-800 ring-rose-200'
     default:
-      return 'bg-amber-400/15 text-amber-200 ring-amber-400/25'
+      return 'bg-amber-50 text-amber-800 ring-amber-200'
   }
 }
 
@@ -62,10 +62,10 @@ export function StackStep() {
         {services.map((service) => (
           <li
             key={service.id}
-            className="flex flex-col gap-2 rounded-xl border border-[var(--color-border)] bg-slate-900/35 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-2 rounded-xl border border-[var(--color-border)] bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <p className="text-sm font-medium text-slate-100">{service.name}</p>
+              <p className="text-sm font-medium text-slate-900">{service.name}</p>
               <p className="mt-1 font-mono text-xs text-slate-500">{service.url}</p>
               {service.detail ? (
                 <p className="mt-1 text-xs text-slate-500">{service.detail}</p>

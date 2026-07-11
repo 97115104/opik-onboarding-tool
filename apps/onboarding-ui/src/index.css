@@ -3,12 +3,12 @@
 @theme {
   --font-display: 'Instrument Serif', Georgia, serif;
   --font-sans: 'Geist', system-ui, sans-serif;
-  --color-surface: #0a0f14;
-  --color-surface-elevated: rgba(15, 23, 32, 0.72);
-  --color-border: rgba(148, 163, 184, 0.14);
-  --color-muted: #94a3b8;
-  --color-accent: #38bdf8;
-  --color-accent-soft: rgba(56, 189, 248, 0.12);
+  --color-surface: #fafafa;
+  --color-surface-elevated: #ffffff;
+  --color-border: rgba(15, 23, 42, 0.1);
+  --color-muted: #64748b;
+  --color-accent: #0f172a;
+  --color-accent-soft: rgba(15, 23, 42, 0.06);
 }
 
 html,
@@ -20,7 +20,7 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: #e2e8f0;
+  color: #0f172a;
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
 }
@@ -35,20 +35,20 @@ body {
   font-weight: 400;
   letter-spacing: -0.02em;
   margin: 0 0 1rem;
-  color: #f8fafc;
+  color: #0f172a;
 }
 
 .markdown-body h2 {
   font-size: 1.125rem;
   font-weight: 600;
   margin: 1.5rem 0 0.75rem;
-  color: #f1f5f9;
+  color: #1e293b;
 }
 
 .markdown-body p,
 .markdown-body li {
   line-height: 1.7;
-  color: #cbd5e1;
+  color: #334155;
 }
 
 .markdown-body ul {
@@ -70,14 +70,25 @@ body {
 }
 
 .markdown-body th {
-  background: rgba(15, 23, 32, 0.6);
-  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.04);
+  color: #0f172a;
 }
 
 .markdown-body code {
   font-size: 0.85em;
-  background: rgba(56, 189, 248, 0.08);
+  background: rgba(15, 23, 42, 0.06);
   padding: 0.15em 0.4em;
   border-radius: 0.25rem;
-  color: #7dd3fc;
+  color: #1e293b;
+}
+
+.markdown-body a {
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(15, 23, 42, 0.3);
+}
+
+.markdown-body a:hover {
+  text-decoration-color: #0f172a;
 }

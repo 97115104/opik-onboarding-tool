@@ -10,6 +10,7 @@ export const IssuesStep: LazyExoticComponent<ComponentType> = lazy(
 export const PromptStep: LazyExoticComponent<ComponentType> = lazy(
   () => import('@/features/prompt/PromptStep'),
 )
-export const ChecklistStep: LazyExoticComponent<ComponentType> = lazy(
+/** C may rename ChecklistStep to PrHelpStep; keep ChecklistStep import until then. */
+export const PrHelpStep: LazyExoticComponent<ComponentType> = lazy(
   () => import('@/features/checklist/ChecklistStep'),
 )

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import graphData from '@content/knowledge-graph.json'
 import { StepPanel } from '../components/StepPanel'
+import { personaSubtitle } from '../lib/persona'
 import type { KnowledgeGraph } from '../types'
 
 const graph = graphData as KnowledgeGraph
@@ -21,12 +22,16 @@ export function GraphStep() {
     [selectedId],
   )
 
+  const subtitle = personaSubtitle({
+    default: graph.description,
+    engineer: 'Explore how Opik pieces connect before you dig into the stack.',
+    pm: 'Browse the product map in plain language. Click a topic for more detail.',
+    support: 'A simple map of Opik topics you can reference while helping contributors.',
+    external: 'Click topics to learn how Opik fits together before the local tour.',
+  })
+
   return (
-    <StepPanel
-      testId="step-graph"
-      title={graph.title}
-      subtitle={graph.description}
-    >
+    <StepPanel testId="step-graph" title={graph.title} subtitle={subtitle}>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
           {graph.nodes.map((node) => {
@@ -38,12 +43,16 @@ export function GraphStep() {
                   onClick={() => setSelectedId(node.id)}
                   className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                     active
-                      ? 'border-sky-400/50 bg-sky-400/10 text-sky-100'
-                      : 'border-[var(--color-border)] bg-slate-900/35 text-slate-300 hover:border-slate-600'
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : 'border-[var(--color-border)] bg-white text-slate-700 hover:border-slate-400'
                   }`}
                 >
                   <span className="font-medium">{node.label}</span>
-                  <span className="mt-1 block text-xs text-slate-500">{node.summary}</span>
+                  <span
+                    className={`mt-1 block text-xs ${active ? 'text-slate-300' : 'text-slate-500'}`}
+                  >
+                    {node.summary}
+                  </span>
                 </button>
               </li>
             )
@@ -51,9 +60,9 @@ export function GraphStep() {
         </ul>
 
         {selectedNode ? (
-          <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-slate-950/40 p-5">
-            <h3 className="font-display text-2xl text-slate-50">{selectedNode.label}</h3>
-            <p className="text-sm leading-relaxed text-slate-300">{selectedNode.details}</p>
+          <div className="space-y-4 rounded-xl border border-[var(--color-border)] bg-slate-50 p-5">
+            <h3 className="font-display text-2xl text-slate-950">{selectedNode.label}</h3>
+            <p className="text-sm leading-relaxed text-slate-600">{selectedNode.details}</p>
 
             {selectedNode.links.length > 0 ? (
               <div className="space-y-2">
@@ -65,7 +74,7 @@ export function GraphStep() {
                         href={link.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm text-sky-300 underline decoration-sky-400/30 underline-offset-4 hover:text-sky-200"
+                        className="text-sm text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
                       >
                         {link.label}
                       </a>
@@ -78,7 +87,7 @@ export function GraphStep() {
             {relatedEdges.length > 0 ? (
               <div className="space-y-2 border-t border-[var(--color-border)] pt-4">
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Connections</p>
-                <ul className="space-y-1 text-sm text-slate-400">
+                <ul className="space-y-1 text-sm text-slate-600">
                   {relatedEdges.map((edge) => (
                     <li key={`${edge.source}-${edge.target}-${edge.label}`}>
                       {edge.source === selectedId ? (
@@ -86,7 +95,7 @@ export function GraphStep() {
                           {edge.label}{' '}
                           <button
                             type="button"
-                            className="text-sky-300 hover:text-sky-200"
+                            className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
                             onClick={() => setSelectedId(edge.target)}
                           >
                             {graph.nodes.find((n) => n.id === edge.target)?.label ?? edge.target}
@@ -96,7 +105,7 @@ export function GraphStep() {
                         <>
                           <button
                             type="button"
-                            className="text-sky-300 hover:text-sky-200"
+                            className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-900"
                             onClick={() => setSelectedId(edge.source)}
                           >
                             {graph.nodes.find((n) => n.id === edge.source)?.label ?? edge.source}

@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { contributionApiPlugin } from './src/features/issues/contributionApiPlugin.ts'
+import { healthApiPlugin } from './src/lib/healthApiPlugin.ts'
 import { contentPlugin, quizContributionAliasPlugin } from './vite.devApiPlugin.ts'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -17,6 +18,7 @@ export default defineConfig({
     quizContributionAliasPlugin(uiRoot),
     contentPlugin(toolRoot),
     contributionApiPlugin(toolRoot),
+    healthApiPlugin(),
   ],
   resolve: {
     alias: {

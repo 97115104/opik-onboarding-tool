@@ -1,13 +1,27 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { Suspense, useCallback, useMemo, useState, type ReactNode } from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react'
 import { WizardShell } from '@/components/WizardShell'
 import { ContributionProvider } from '@/features/issues/ContributionContext'
+import { contributionStore } from '@/features/issues'
+import {
+  isQuizFinishedInStorage,
+  PERSONA_CHANGED_EVENT,
+  readPersona,
+} from '@/lib/persona'
 import { STEP_REGISTRY } from '@/wizard/stepRegistry'
 import { WIZARD_STEPS } from '@/wizard/steps'
 
 function StepFallback() {
   return (
-    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-8 text-sm text-slate-500">
+    <div className="rounded-2xl border border-[var(--color-border)] bg-white p-8 text-sm text-slate-500">
       Loading step…
     </div>
   )
@@ -27,15 +41,73 @@ function StepTransition({ stepKey, children }: { stepKey: string; children: Reac
   )
 }
 
+function usePersonaSelected() {
+  const [persona, setPersona] = useState(() => readPersona())
+
+  useEffect(() => {
+    const sync = () => setPersona(readPersona())
+    window.addEventListener(PERSONA_CHANGED_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(PERSONA_CHANGED_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  return persona !== null
+}
+
+/**
+ * Hide wizard Next on the quiz step until finished.
+ * Prefer contributionStore.quizFinished / quizPassed; also accept localStorage
+ * `opik-quiz-finished=1` and optional `opik-quiz-state` events.
+ */
+function useQuizFinished() {
+  const snapshot = useSyncExternalStore(
+    contributionStore.subscribe,
+    contributionStore.getSnapshot,
+    contributionStore.getSnapshot,
+  )
+  const [storageFinished, setStorageFinished] = useState(() => isQuizFinishedInStorage())
+
+  useEffect(() => {
+    const sync = () => setStorageFinished(isQuizFinishedInStorage())
+    const onQuizState = (event: Event) => {
+      const detail = (event as CustomEvent<{ finished?: boolean }>).detail
+      if (detail?.finished) setStorageFinished(true)
+      else sync()
+    }
+    window.addEventListener('storage', sync)
+    window.addEventListener('opik-quiz-state', onQuizState)
+    return () => {
+      window.removeEventListener('storage', sync)
+      window.removeEventListener('opik-quiz-state', onQuizState)
+    }
+  }, [])
+
+  const storeFinished =
+    snapshot.quizPassed ||
+    ('quizFinished' in snapshot && Boolean((snapshot as { quizFinished?: boolean }).quizFinished))
+
+  return storeFinished || storageFinished
+}
+
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const personaSelected = usePersonaSelected()
+  const quizFinished = useQuizFinished()
 
   const step = STEP_REGISTRY[currentIndex]
   const StepComponent = step?.Component
+  const stepId = WIZARD_STEPS[currentIndex]?.id
 
   const canGoBack = currentIndex > 0
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
   const isLastStep = currentIndex === STEP_REGISTRY.length - 1
+
+  // Gate Next: about requires persona; quiz hides Next until finished.
+  const hideNext =
+    (stepId === 'about' && !personaSelected) || (stepId === 'quiz' && !quizFinished)
 
   const goBack = useCallback(() => {
     setCurrentIndex((index) => Math.max(0, index - 1))
@@ -54,7 +126,8 @@ export default function App() {
         onBack={goBack}
         onNext={goNext}
         canGoBack={canGoBack}
-        canGoNext={canGoNext}
+        canGoNext={canGoNext && !hideNext}
+        hideNext={hideNext}
         nextLabel={isLastStep ? 'Finish' : 'Next'}
       >
         <AnimatePresence mode="wait">

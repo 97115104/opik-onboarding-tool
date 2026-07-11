@@ -1,23 +1,20 @@
 import type { ServiceHealth } from '../types'
 
-const OPIK_FRONTEND_URL = import.meta.env.VITE_OPIK_FRONTEND_URL ?? 'http://localhost:5173'
-const OPIK_API_URL = import.meta.env.VITE_OPIK_API_URL ?? 'http://localhost:5173/api'
-const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL ?? 'http://localhost:11434'
-const CHAT_DEMO_URL = import.meta.env.VITE_CHAT_DEMO_URL ?? 'http://localhost:4311'
+const OPIK_FRONTEND_URL = import.meta.env.VITE_OPIK_FRONTEND_URL ?? 'http://127.0.0.1:5173'
+const OPIK_API_URL = import.meta.env.VITE_OPIK_API_URL ?? 'http://127.0.0.1:5173/api'
+const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL ?? 'http://127.0.0.1:11434'
+const CHAT_DEMO_URL = import.meta.env.VITE_CHAT_DEMO_URL ?? 'http://127.0.0.1:4311'
 
-async function probe(
-  url: string,
-  options?: { method?: string; ok?: (response: Response) => boolean },
-): Promise<{ ok: boolean; detail: string }> {
+type HealthServiceId = 'opik-ui' | 'opik-api' | 'ollama' | 'chat-demo'
+
+async function probeViaProxy(serviceId: HealthServiceId): Promise<{ ok: boolean; detail: string }> {
   try {
-    const response = await fetch(url, {
-      method: options?.method ?? 'GET',
-      mode: 'cors',
-    })
-    const isOk = options?.ok ? options.ok(response) : response.ok
+    const response = await fetch(`/api/health/${serviceId}`)
+    const data = (await response.json()) as { ok?: boolean; detail?: string; status?: number }
+    const ok = Boolean(data.ok)
     return {
-      ok: isOk,
-      detail: isOk ? `${response.status} OK` : `${response.status} ${response.statusText}`,
+      ok,
+      detail: data.detail ?? (ok ? `${data.status ?? response.status} OK` : 'Unreachable'),
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unreachable'
@@ -27,33 +24,30 @@ async function probe(
 
 export const STACK_SERVICES = [
   {
-    id: 'opik-ui',
+    id: 'opik-ui' as const,
     name: 'Opik UI',
     url: OPIK_FRONTEND_URL,
-    probe: () => probe(OPIK_FRONTEND_URL),
+    probe: () => probeViaProxy('opik-ui'),
   },
   {
-    id: 'opik-api',
+    id: 'opik-api' as const,
     name: 'Opik API',
     url: OPIK_API_URL,
-    probe: () =>
-      probe(`${OPIK_API_URL}/v1/private/projects`, {
-        ok: (response) => response.status === 200 || response.status === 401,
-      }),
+    probe: () => probeViaProxy('opik-api'),
   },
   {
-    id: 'ollama',
+    id: 'ollama' as const,
     name: 'Ollama',
     url: OLLAMA_URL,
-    probe: () => probe(`${OLLAMA_URL}/api/tags`),
+    probe: () => probeViaProxy('ollama'),
   },
   {
-    id: 'chat-demo',
+    id: 'chat-demo' as const,
     name: 'Chat demo',
     url: CHAT_DEMO_URL,
-    probe: () => probe(CHAT_DEMO_URL),
+    probe: () => probeViaProxy('chat-demo'),
   },
-] as const
+]
 
 export async function checkStackHealth(): Promise<ServiceHealth[]> {
   const results = await Promise.all(
