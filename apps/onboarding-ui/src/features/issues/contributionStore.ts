@@ -102,7 +102,15 @@ export const contributionStore = {
   },
   /** @deprecated Prefer setPersona. Kept for callers that only flip engineer mode. */
   setIsEngineer: (value: boolean) => {
-    contributionStore.setPersona(value ? "engineer" : null);
+    if (value) {
+      contributionStore.setPersona("engineer");
+      return;
+    }
+    // Do not wipe an existing non-engineer persona (pm/support/external).
+    const current = contributionStore.getSnapshot().persona;
+    if (current === "engineer") {
+      contributionStore.setPersona(null);
+    }
   },
   setSelectedIssue: (issue: RankedIssue | null) => setSnapshot({ selectedIssue: issue }),
   setBranchName: (name: string | null) => setSnapshot({ branchName: name }),
