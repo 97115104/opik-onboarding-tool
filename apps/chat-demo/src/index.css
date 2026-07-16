@@ -218,6 +218,16 @@ body {
   border-radius: 0.25rem;
 }
 
+.status-project-link {
+  color: inherit;
+}
+
+.status-project-link:hover code {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .site-credit {
   display: flex;
   flex-direction: column;
@@ -226,15 +236,24 @@ body {
   border-top: 1px solid var(--border);
   padding-top: 0.75rem;
   color: #64748b;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   line-height: 1.5;
 }
 
 @media (min-width: 480px) {
   .site-credit {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
+  }
+
+  .site-credit > * {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .site-credit > :nth-child(2) {
+    text-align: center;
   }
 
   .site-credit > :last-child {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { StepPanel } from '../components/StepPanel'
 import { LearnMoreLink } from '../components/LearnMoreLink'
-import { opikHomeUrl, opikProjectRedirectUrl, OPIK_TOUR_PROJECT_NAME } from '../lib/opikUrls'
+import { opikProjectRedirectUrl, OPIK_TOUR_PROJECT_NAME } from '../lib/opikUrls'
 import { personaSubtitle } from '../lib/persona'
 import { getTourProgress, setTourProgress } from '../lib/wizardGates'
 
@@ -20,7 +20,11 @@ const TOUR_ITEMS: TourItem[] = [
     id: 'open-opik',
     title: 'Open the Opik dashboard',
     instruction: 'Open Opik in a new tab. You should see your local projects and a place to browse traces.',
-    cta: { label: 'Open Opik UI', href: opikHomeUrl(), testId: 'tour-open-opik' },
+    cta: {
+      label: 'Open Opik UI',
+      href: opikProjectRedirectUrl(OPIK_TOUR_PROJECT_NAME),
+      testId: 'tour-open-opik',
+    },
   },
   {
     id: 'send-chat',

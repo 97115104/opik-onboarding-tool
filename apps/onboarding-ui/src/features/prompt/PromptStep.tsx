@@ -99,7 +99,7 @@ function PromptStepContent() {
           Confirm the prompt in Cursor after it opens. Open the Opik folder first if that workspace
           is not already open.
         </p>
-        <LearnMoreLink href="https://www.comet.com/docs/opik/llms.txt">
+        <LearnMoreLink href="https://www.comet.com/docs/opik/latest/contributing/overview#developer-tooling--ai-assistance">
           Read the Opik AI guidance
         </LearnMoreLink>
 

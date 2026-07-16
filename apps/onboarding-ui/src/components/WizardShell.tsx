@@ -89,7 +89,7 @@ export function WizardShell({
             nextLabel={nextLabel}
             center={navCenter}
           />
-          <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[11px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[10px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="sm:flex-1">
               Built with <span aria-hidden>♥</span> for{' '}
               <a

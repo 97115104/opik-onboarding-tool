@@ -2,6 +2,9 @@ import { FormEvent, useState } from "react";
 import { Markdown } from "./Markdown";
 
 const ATTESTATION_SHORT_URL = "https://attest.97115104.com/s/pz7r8cho";
+const OPIK_FRONTEND = import.meta.env.VITE_OPIK_FRONTEND_URL ?? "http://127.0.0.1:5173";
+const OPIK_PROJECT_NAME = import.meta.env.VITE_OPIK_PROJECT_NAME ?? "chat-demo";
+const CHAT_DEMO_PROJECT_URL = `${OPIK_FRONTEND.replace(/\/$/, "")}/default/redirect/projects?name=${encodeURIComponent(OPIK_PROJECT_NAME)}`;
 
 interface ChatMessage {
   role: "user" | "assistant" | "error";
@@ -98,7 +101,15 @@ export default function App() {
       </form>
 
       <p className="status">
-        Traces land in Opik project <code>chat-demo</code>.
+        Traces land in Opik project{" "}
+        <a
+          href={CHAT_DEMO_PROJECT_URL}
+          className="status-project-link"
+          data-testid="chat-status-project-link"
+        >
+          <code>{OPIK_PROJECT_NAME}</code>
+        </a>
+        .
       </p>
       <footer className="site-credit">
         <div>

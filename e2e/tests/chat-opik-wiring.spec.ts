@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-import { CHAT_DEMO_URL } from "../helpers/constants";
+import { CHAT_DEMO_URL, OPIK_PROJECT_NAME } from "../helpers/constants";
 import { getOpikTraceCount, waitForNewOpikTrace } from "../helpers/opik";
 
 const CHAT_MESSAGE = "e2e wiring check: reply with one short word.";
@@ -29,6 +29,11 @@ test.describe("chat opik wiring", () => {
     const baselineTraces = await getOpikTraceCount(request);
 
     await page.goto(CHAT_DEMO_URL);
+
+    await expect(page.getByTestId("chat-status-project-link")).toHaveAttribute(
+      "href",
+      new RegExp(`/default/redirect/projects\\?name=${encodeURIComponent(OPIK_PROJECT_NAME)}$`),
+    );
 
     const input = await chatInput(page);
     await expect(input).toBeVisible();

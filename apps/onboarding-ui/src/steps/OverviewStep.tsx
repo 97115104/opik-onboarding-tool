@@ -151,7 +151,7 @@ export function OverviewStep() {
                         onClick={() =>
                           setSelectedRole((current) => (current?.id === role.id ? null : role))
                         }
-                        className="w-full px-4 py-3.5 text-left hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                        className="w-full flex-1 px-4 py-3.5 text-left hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                       >
                         <span className="font-medium text-slate-900">{role.label}</span>
                         <span className="mt-1 block text-xs leading-relaxed text-slate-500">

@@ -13,9 +13,12 @@ if [[ ! -f "$CHAT_DEMO_DIR/package.json" ]]; then
   exit 1
 fi
 
-export OLLAMA_URL OLLAMA_MODEL OPIK_API_URL OPIK_PROJECT_NAME
+export OLLAMA_URL OLLAMA_MODEL OPIK_API_URL OPIK_FRONTEND_URL OPIK_PROJECT_NAME
 export VITE_OLLAMA_URL="$OLLAMA_URL"
 export VITE_OPIK_API_URL="$OPIK_API_URL"
+# Browser project link in App.tsx reads this at build/dev time.
+export VITE_OPIK_FRONTEND_URL="$OPIK_FRONTEND_URL"
+export VITE_OPIK_PROJECT_NAME="$OPIK_PROJECT_NAME"
 
 if curl -fsS -o /dev/null "http://127.0.0.1:$CHAT_DEMO_PORT/" 2>/dev/null; then
   echo "Chat demo already up on port $CHAT_DEMO_PORT"
@@ -23,7 +26,10 @@ else
   ensure_background_service chat-demo "http://127.0.0.1:$CHAT_DEMO_PORT/" bash -lc "
     cd \"$CHAT_DEMO_DIR\" &&
     export OLLAMA_URL=\"$OLLAMA_URL\" OLLAMA_MODEL=\"$OLLAMA_MODEL\" &&
-    export OPIK_API_URL=\"$OPIK_API_URL\" OPIK_PROJECT_NAME=\"$OPIK_PROJECT_NAME\" &&
+    export OPIK_API_URL=\"$OPIK_API_URL\" OPIK_FRONTEND_URL=\"$OPIK_FRONTEND_URL\" &&
+    export OPIK_PROJECT_NAME=\"$OPIK_PROJECT_NAME\" &&
+    export VITE_OLLAMA_URL=\"$VITE_OLLAMA_URL\" VITE_OPIK_API_URL=\"$VITE_OPIK_API_URL\" &&
+    export VITE_OPIK_FRONTEND_URL=\"$VITE_OPIK_FRONTEND_URL\" VITE_OPIK_PROJECT_NAME=\"$VITE_OPIK_PROJECT_NAME\" &&
     exec bun run dev -- --port \"$CHAT_DEMO_PORT\" --host 127.0.0.1
   "
   wait_for_url "http://127.0.0.1:$CHAT_DEMO_PORT/" 120 "Chat demo" || {

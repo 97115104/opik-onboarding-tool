@@ -135,7 +135,9 @@ async function completeTour(page: Page): Promise<void> {
   await expect(page.getByTestId("tour-open-opik")).toBeVisible();
   await expect(page.getByTestId("tour-open-opik")).toHaveAttribute(
     "href",
-    /\/default\/home$/,
+    new RegExp(
+      `/default/redirect/projects\\?name=${OPIK_PROJECT_NAME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+    ),
   );
   await expect(page.getByTestId("tour-open-chat")).toHaveCount(0);
   await expect(page.getByTestId("tour-open-traces")).toHaveCount(0);
@@ -356,6 +358,7 @@ test.describe("onboarding wizard", () => {
       "href",
       "https://www.comet.com/docs/opik/integrations/overview",
     );
+    await expect(page.getByTestId("copy-sdk-snippet")).toBeVisible();
     await clickNext(page);
 
     await completeTour(page);
@@ -403,6 +406,10 @@ test.describe("onboarding wizard", () => {
     await expect(page.getByTestId("open-cursor-command")).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole("link", { name: "Read the Opik AI guidance →" })).toHaveAttribute(
+      "href",
+      "https://www.comet.com/docs/opik/latest/contributing/overview#developer-tooling--ai-assistance",
+    );
     const prompt = page.getByTestId("cursor-prompt");
     await expect(prompt).toBeVisible();
     await expect(prompt).toContainText(BRANCH_NAME_PATTERN);

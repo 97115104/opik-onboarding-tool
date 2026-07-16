@@ -1,7 +1,26 @@
+import { useCallback, useState } from 'react'
 import { LearnMoreLink } from '../components/LearnMoreLink'
 import { StepPanel } from '../components/StepPanel'
 
+const SDK_SNIPPET = `bun add opik
+
+import { Opik } from 'opik'
+
+const opik = new Opik({ projectName: 'my-app' })`
+
 export function AddingOpikStep() {
+  const [copied, setCopied] = useState(false)
+
+  const copySnippet = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(SDK_SNIPPET)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard access can be denied in non-secure or embedded contexts.
+    }
+  }, [])
+
   return (
     <StepPanel
       testId="step-adding-opik"
@@ -11,12 +30,18 @@ export function AddingOpikStep() {
       <div className="space-y-6">
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-3">
-            <h3 className="font-medium text-slate-900">Install and initialize the SDK</h3>
-            <pre className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-slate-50 p-4 text-xs leading-relaxed text-slate-800">{`bun add opik
-
-import { Opik } from 'opik'
-
-const opik = new Opik({ projectName: 'my-app' })`}</pre>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-medium text-slate-900">Install and initialize the SDK</h3>
+              <button
+                type="button"
+                data-testid="copy-sdk-snippet"
+                onClick={() => void copySnippet()}
+                className="shrink-0 rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm text-slate-800"
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+            <pre className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-slate-50 p-4 text-xs leading-relaxed text-slate-800">{SDK_SNIPPET}</pre>
           </div>
           <div className="space-y-3">
             <h3 className="font-medium text-slate-900">See it in this repository</h3>
@@ -47,8 +72,8 @@ const opik = new Opik({ projectName: 'my-app' })`}</pre>
               <text x="360" y="40">Ollama LLM</text>
             </g>
             <g className="lifecycle-node lifecycle-node-later">
-              <rect x="570" y="15" width="134" height="40" rx="10" />
-              <text x="637" y="40">Opik SDK</text>
+              <rect x="503" y="15" width="134" height="40" rx="10" />
+              <text x="570" y="40">Opik SDK</text>
             </g>
             <g className="lifecycle-node lifecycle-node-final">
               <rect x="275" y="67" width="170" height="36" rx="10" />

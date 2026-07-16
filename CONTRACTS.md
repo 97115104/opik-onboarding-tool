@@ -272,8 +272,8 @@ Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked
 Each listed step renders one secondary `Learn more` link. The Video, Opik Features, and Finish steps
 link to the Opik University overview; Local stack links to local deployment; Adding Opik links to
 integrations; Try Opik links to quickstart; Contributing overview links to contributing overview; and
-Cursor prompt links to `llms.txt`. Slide dots stay in the footer-center navigation rather than inside
-slide cards.
+Cursor prompt links to the contributing overview's developer tooling and AI assistance guidance. Slide
+dots stay in the footer-center navigation rather than inside slide cards.
 
 ## Script contracts
 
@@ -300,7 +300,8 @@ slide cards.
 
 ### `scripts/start-chat-demo.sh` (A)
 
-- Start chat-demo on `CHAT_DEMO_PORT` with `OLLAMA_URL` / `OPIK_API_URL`
+- Start chat-demo on `CHAT_DEMO_PORT` with `OLLAMA_URL` / `OPIK_API_URL` / `OPIK_FRONTEND_URL` / `OPIK_PROJECT_NAME`
+- Maps browser `VITE_OLLAMA_URL`, `VITE_OPIK_API_URL`, `VITE_OPIK_FRONTEND_URL`, and `VITE_OPIK_PROJECT_NAME` from those server env vars
 
 ### `scripts/start-onboarding-ui.sh` (A)
 
@@ -386,6 +387,7 @@ Vite plugin contribution APIs (C):
 | Stack service URL | `stack-url-{service}` |
 | Stack fix button | `stack-fix-{service}` |
 | Adding Opik panel | `step-adding-opik` |
+| Adding Opik SDK snippet copy button | `copy-sdk-snippet` |
 | Tour panel | `step-tour` |
 | Tour checklist | `tour-checklist` |
 | Tour progress | `tour-progress` |
@@ -549,7 +551,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
