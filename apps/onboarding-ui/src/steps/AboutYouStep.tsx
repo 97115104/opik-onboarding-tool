@@ -56,7 +56,7 @@ export function AboutYouStep() {
                 onClick={() => onSelect(option.id)}
                 className={`w-full rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition ${
                   active
-                    ? 'border-slate-900 ring-1 ring-slate-900 bg-white text-slate-900'
+                    ? 'border-[var(--color-accent)] ring-1 ring-[var(--color-accent)] bg-white text-slate-900'
                     : 'border-[var(--color-border)] bg-white text-slate-800 hover:border-slate-400'
                 }`}
               >

@@ -116,7 +116,7 @@ export function TourStep() {
                     rel="noopener noreferrer"
                     data-testid={item.cta.testId}
                     onClick={() => onCtaClick(item.id)}
-                    className="mt-3 inline-flex rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+                    className="mt-3 inline-flex btn-primary px-3 py-1.5"
                   >
                     {item.cta.label}
                   </a>

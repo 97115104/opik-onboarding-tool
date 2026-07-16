@@ -168,7 +168,7 @@ function IssuesStepContent() {
                   void selectIssue(detailIssue);
                   setDetailIssue(null);
                 }}
-                className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+                className="btn-primary px-3 py-1.5"
               >
                 Choose this issue
               </button>

@@ -143,7 +143,7 @@ export function QuizPanel({
                     : revealWrong
                       ? "border-amber-500/60 bg-amber-50 text-amber-900"
                       : isSelected
-                        ? "border-slate-900 bg-slate-50 text-slate-900"
+                        ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)] text-slate-900"
                         : "border-[var(--color-border)] bg-white text-slate-800 hover:border-slate-400"
                 } ${graded ? "cursor-default" : "cursor-pointer"}`}
               >
@@ -177,7 +177,7 @@ export function QuizPanel({
             type="button"
             data-testid={testIds.nextQuestion}
             onClick={nextQuestion}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white"
+            className="btn-primary px-4 py-2 font-medium"
           >
             {currentIndex >= totalQuestions - 1 ? "See results" : "Next question"}
           </button>

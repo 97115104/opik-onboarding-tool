@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { OVERVIEW_SLIDES } from '../content/overviewSlides'
+import { DidYouKnow } from '../components/DidYouKnow'
 import { StepPanel } from '../components/StepPanel'
 import { getOverviewProgress, setOverviewProgress } from '../lib/wizardGates'
 
@@ -30,14 +31,21 @@ export function OverviewStep() {
           data-testid={`overview-slide-${slide.id}`}
           className="min-h-[10rem] space-y-3"
         >
-          <h3 className="font-display text-2xl text-slate-950">{slide.title}</h3>
-          <p className="text-sm leading-relaxed text-slate-600">{slide.body}</p>
+          <h3 className="font-display text-2xl font-semibold text-slate-950">{slide.title}</h3>
+          {slide.paragraphs.map((paragraph) => (
+            <p key={paragraph} className="text-sm leading-relaxed text-slate-600">
+              {paragraph}
+            </p>
+          ))}
           {slide.bullets && slide.bullets.length > 0 ? (
             <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-600">
               {slide.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+          ) : null}
+          {slide.didYouKnow ? (
+            <DidYouKnow title={slide.didYouKnow.title} body={slide.didYouKnow.body} />
           ) : null}
         </div>
 
@@ -56,7 +64,7 @@ export function OverviewStep() {
               type="button"
               data-testid="overview-slide-next"
               onClick={() => setSlideIndex((index) => Math.min(total - 1, index + 1))}
-              className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-800"
+              className="btn-primary px-3 py-1.5"
             >
               Next slide
             </button>

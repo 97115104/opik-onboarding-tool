@@ -29,6 +29,8 @@ export type ContributingOverviewProgress = {
   reachedLast: boolean
   /** True after the user opens the CLA CTA on slide 1. */
   claOpened: boolean
+  /** True after the Verify-style “I have viewed and read the CLA” checkbox. */
+  claAcknowledged: boolean
 }
 
 export type TourProgress = {
@@ -45,6 +47,7 @@ let contributingOverviewProgress: ContributingOverviewProgress = {
   slideIndex: 0,
   reachedLast: false,
   claOpened: false,
+  claAcknowledged: false,
 }
 let graphReviewedIds: string[] = []
 let tourProgress: TourProgress = { done: {}, revealedCount: 1 }
@@ -95,7 +98,9 @@ export function setContributingOverviewProgress(next: ContributingOverviewProgre
   contributingOverviewProgress = { ...next }
   syncGate(
     'contributingOverview',
-    contributingOverviewProgress.reachedLast && contributingOverviewProgress.claOpened,
+    contributingOverviewProgress.reachedLast &&
+      contributingOverviewProgress.claOpened &&
+      contributingOverviewProgress.claAcknowledged,
   )
 }
 

@@ -98,9 +98,9 @@ export function GraphStep() {
                   !unlocked
                     ? 'pointer-events-none border-slate-200 bg-slate-100 text-slate-400 opacity-55'
                     : active || current
-                      ? 'border-slate-900 ring-1 ring-slate-900 bg-white text-slate-900'
+                      ? 'border-[var(--color-accent)] ring-1 ring-[var(--color-accent)] bg-white text-slate-900'
                       : reviewed
-                        ? 'border-slate-900 ring-1 ring-slate-900 bg-white text-slate-900'
+                        ? 'border-[var(--color-accent)] ring-1 ring-[var(--color-accent)] bg-white text-slate-900'
                         : 'border-[var(--color-border)] bg-white text-slate-700 hover:border-slate-400'
                 }`}
               >

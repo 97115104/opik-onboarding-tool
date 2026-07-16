@@ -236,7 +236,7 @@ interface ContributionSnapshot {
 | `graph` | Hidden until every Opik Features node is reviewed (modal close) |
 | `tour` | Hidden until all tour steps are done (CTA click auto-completes; checkbox still works) |
 | `quiz` | Hidden until quiz results (`quizFinished`) |
-| `contributing-overview` | Hidden until the last contributing overview slide is reached **and** the CLA CTA was opened (`claOpened`) |
+| `contributing-overview` | Hidden until the last contributing overview slide is reached **and** the CLA was opened **and** acknowledged (`claOpened` + `claAcknowledged`) |
 | `contributing-quiz` | Hidden until contributing quiz results (`contributingQuizFinished`); finish unlocks even if the score is below threshold |
 | `issues` | Next disabled until an issue is confirmed |
 | `verify` | Hidden until checklist (`verify-check-ran-local` + `verify-check-matches-issue`) |
@@ -245,7 +245,7 @@ interface ContributionSnapshot {
 
 Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned).
 
-Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide 1 includes a CLA CTA (`contributing-open-cla`); **Next slide** stays disabled until that link is opened. Optional `cta` / `links` fields render as a Tour-style button and wrapped text anchors.
+Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide 1 includes a CLA CTA (`contributing-open-cla`); after it is opened, a Verify-style checkbox (`contributing-check-cla`, label “I have viewed and read the CLA.”) appears. **Next slide** stays disabled until the link is opened **and** the checkbox is checked. Optional `cta` / `links` fields render as a Tour-style button and wrapped text anchors.
 
 Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
 
@@ -371,6 +371,11 @@ Vite plugin contribution APIs (C):
 | Contributing slide | `contributing-slide-{id}` |
 | Contributing slide prev/next | `contributing-slide-prev`, `contributing-slide-next` |
 | Contributing CLA CTA | `contributing-open-cla` |
+| Contributing CLA acknowledgment checklist | `contributing-cla-checklist` |
+| Contributing CLA acknowledgment checkbox | `contributing-check-cla` |
+| Overview Did you know | `slide-did-you-know` |
+| Opik brand logo (header) | `opik-brand-logo` |
+| Contributing CLA opened-elsewhere control | `contributing-cla-opened-elsewhere` |
 | Contributing quiz panel | `step-contributing-quiz` |
 | Contributing quiz option | `contributing-quiz-option-{index}` |
 | Contributing quiz next question | `contributing-quiz-next-question` |
@@ -502,7 +507,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA CTA unlocks Next slide; Next gated) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (Next gated; no Last slide button) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA CTA + acknowledgment checkbox unlocks Next slide; Next gated) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -529,4 +534,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.4.0** (Contributing overview CLA gate + contributing quiz step)
+Contract version: **1.5.0** (Opik docs branding + Did you know + CLA acknowledgment checkbox)

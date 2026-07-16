@@ -24,7 +24,7 @@ export function WizardProgress({ currentIndex }: WizardProgressProps) {
       </div>
       <div className="h-1 overflow-hidden rounded-full bg-slate-200">
         <motion.div
-          className="h-full rounded-full bg-slate-950"
+          className="h-full rounded-full bg-[var(--color-accent)]"
           initial={false}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}

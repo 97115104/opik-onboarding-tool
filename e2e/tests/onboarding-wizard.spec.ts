@@ -44,7 +44,9 @@ async function expectStep(page: Page, testId: string): Promise<void> {
 
 async function completeOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-overview");
+  await expect(page.getByTestId("opik-brand-logo")).toBeVisible();
   await expect(page.getByTestId("overview-slides")).toBeVisible();
+  await expect(page.getByTestId("slide-did-you-know")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
   for (let i = 0; i < OVERVIEW_SLIDE_COUNT - 1; i++) {
@@ -143,8 +145,9 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
   await expect(page.getByTestId("contributing-slide-prev")).toBeDisabled();
 
-  // Slide 1: CLA CTA required before Next slide unlocks.
+  // Slide 1: CLA CTA + acknowledgment checkbox required before Next slide unlocks.
   await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
+  await expect(page.getByTestId("contributing-check-cla")).toHaveCount(0);
   const cla = page.getByTestId("contributing-open-cla");
   await expect(cla).toHaveAttribute(
     "href",
@@ -154,6 +157,14 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
     void popup.close();
   });
   await cla.click();
+  await expect(page.getByTestId("contributing-cla-checklist")).toBeVisible();
+  await expect(page.getByTestId("contributing-check-cla")).toBeVisible();
+  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
+  await page.getByTestId("contributing-check-cla").check();
+  await expect(page.getByTestId("contributing-slide-next")).toBeEnabled();
+  await page.getByTestId("contributing-check-cla").uncheck();
+  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
+  await page.getByTestId("contributing-check-cla").check();
   await expect(page.getByTestId("contributing-slide-next")).toBeEnabled();
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
@@ -168,7 +179,7 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
     }
   }
 
-  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast + claOpened.
+  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast + CLA open + acknowledge.
   await expect(page.getByTestId("contributing-slide-next")).toHaveCount(0);
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await clickNext(page);

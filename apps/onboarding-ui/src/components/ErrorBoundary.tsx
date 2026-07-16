@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             type="button"
             data-testid="step-error-retry"
             onClick={this.handleReset}
-            className="mt-5 rounded-lg border border-slate-900 bg-slate-900 px-4 py-2 text-sm text-white hover:bg-slate-800"
+            className="btn-primary mt-5 px-4 py-2"
           >
             Try again
           </button>

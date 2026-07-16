@@ -221,7 +221,7 @@ export function StackStep() {
                     type="button"
                     data-testid={`stack-fix-${service.id}`}
                     onClick={() => void onFix(id)}
-                    className="rounded-lg border border-slate-900 bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
+                    className="btn-primary px-3 py-1.5 text-xs font-medium"
                   >
                     Fix this
                   </button>

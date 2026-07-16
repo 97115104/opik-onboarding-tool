@@ -34,7 +34,7 @@ export function WizardNav({
           data-testid="wizard-next"
           onClick={onNext}
           disabled={!canGoNext}
-          className="rounded-full bg-slate-950 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-35"
+          className="rounded-full border border-[var(--color-accent)] bg-[var(--color-accent)] px-6 py-2.5 text-sm font-semibold text-white transition hover:border-[var(--color-accent-hover)] hover:bg-[var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-35"
         >
           {nextLabel}
         </button>

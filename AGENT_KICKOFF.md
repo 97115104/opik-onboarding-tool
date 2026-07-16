@@ -201,4 +201,4 @@ Issue numbers are referenced in GitHub — run `gh issue list --repo 97115104/op
 
 ---
 
-*Contract version 1.4.0 (Contributing overview CLA gate + contributing quiz step)*
+*Contract version 1.5.0 (Opik docs branding + Did you know + CLA acknowledgment checkbox)*

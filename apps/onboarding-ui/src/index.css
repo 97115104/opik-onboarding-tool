@@ -1,24 +1,27 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Times New Roman', Times, serif;
-  --font-sans: 'Times New Roman', Times, serif;
-  --color-surface: #fafafa;
+  --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Opik docs light theme (fern/docs.yml) */
+  --color-surface: #ffffff;
   --color-surface-elevated: #ffffff;
-  --color-border: rgba(15, 23, 42, 0.1);
+  --color-border: rgba(0, 0, 0, 0.08);
   --color-muted: #64748b;
-  --color-accent: #0f172a;
-  --color-accent-soft: rgba(15, 23, 42, 0.06);
-  --radius-xs: 0;
-  --radius-sm: 0;
-  --radius-md: 0;
-  --radius-lg: 0;
-  --radius-xl: 0;
-  --radius-2xl: 0;
-  --radius-3xl: 0;
-  --radius-4xl: 0;
-  --radius: 0;
-  --radius-full: 0;
+  --color-accent: #2e8555;
+  --color-accent-hover: #166534;
+  --color-accent-soft: rgba(46, 133, 85, 0.1);
+  --color-foreground: #1a1a1a;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 1rem;
+  --radius-4xl: 1.5rem;
+  --radius: 0.5rem;
+  --radius-full: 9999px;
 }
 
 html,
@@ -30,7 +33,7 @@ body,
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: #0f172a;
+  color: var(--color-foreground);
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
 }
@@ -39,13 +42,35 @@ body {
   font-family: var(--font-display);
 }
 
+/* Shared primary CTA matching Opik docs accent green */
+.btn-primary {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
 .markdown-body h1 {
   font-family: var(--font-display);
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: -0.02em;
   margin: 0 0 1rem;
-  color: #0f172a;
+  color: var(--color-foreground);
 }
 
 .markdown-body h2 {
@@ -90,25 +115,26 @@ body {
 }
 
 .markdown-body th {
-  background: rgba(15, 23, 42, 0.04);
-  color: #0f172a;
+  background: var(--color-accent-soft);
+  color: var(--color-foreground);
 }
 
 .markdown-body code {
   font-size: 0.85em;
   background: rgba(15, 23, 42, 0.06);
   padding: 0.15em 0.4em;
-  border-radius: 0;
+  border-radius: var(--radius-sm);
   color: #1e293b;
 }
 
 .markdown-body a {
-  color: #0f172a;
+  color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(15, 23, 42, 0.3);
+  text-decoration-color: rgba(46, 133, 85, 0.35);
 }
 
 .markdown-body a:hover {
-  text-decoration-color: #0f172a;
+  color: var(--color-accent-hover);
+  text-decoration-color: var(--color-accent-hover);
 }
