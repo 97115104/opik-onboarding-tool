@@ -447,6 +447,9 @@ Vite plugin contribution APIs (C):
 | Verify checklist items | `verify-check-ran-local`, `verify-check-matches-issue` |
 | PR help step | `step-pr-help` |
 | PR help prompt | `pr-help-prompt` |
+| Open PR help prompt in Cursor | `open-pr-help-prompt` |
+| Open PR help prompt truncated notice | `open-pr-help-prompt-truncated` |
+| Copy PR help prompt | `copy-pr-help-prompt` |
 | Extend panel | `step-extend` |
 | Finish celebration | `step-finish` |
 | Finish fireworks canvas | `finish-fireworks` |
@@ -535,7 +538,7 @@ Optional API: `GET /api/contribution-diff` returns `{ paths: string[], branch: s
 Step `pr-help` (`step-pr-help`):
 
 1. Brief plain-language "What is a PR?" (2–3 sentences).
-2. Secondary copy-paste Cursor prompt (`pr-help-prompt`) that walks: checkout branch, run checks, `gh pr create --draft`, fill template, `## AI Assistance` disclosure block (when AI used), and `npx attest-client` CLI instructions (prompt-only; no server API).
+2. PR help Cursor prompt (`pr-help-prompt` / `open-pr-help-prompt` / `copy-pr-help-prompt`): open CTA uses the same Opik-in-Cursor confirm modal + `POST /api/open-opik-in-cursor`, then fires the PR help prompt deeplink (parity with Verify). Truncation notice: `open-pr-help-prompt-truncated`. Prompt walks: checkout branch, run checks, `gh pr create --draft`, fill template, `## AI Assistance` disclosure block (when AI used), and `npx attest-client` CLI instructions (prompt-only; no server API).
 
 No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 
@@ -553,7 +556,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` + `lifecycle-explanation` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates; `developer-tooling-ai` and `community-feature-requests` visible) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → cursor prompt contains llms.txt/MCP → verify plan + checklist unlocks Next → PR-help prompts include `## AI Assistance` + attest-client instructions → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` + `lifecycle-explanation` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates; `developer-tooling-ai` and `community-feature-requests` visible) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → cursor prompt contains llms.txt/MCP → verify plan + checklist unlocks Next → PR-help `open-pr-help-prompt` confirm modal + `copy-pr-help-prompt` + prompt includes `## AI Assistance` + attest-client instructions → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -580,4 +583,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.8.0** (Opik AI context in prompts, contributing slides, lifecycle explanation, PR attest instructions)
+Contract version: **1.8.1** (PR-help Open + Copy Cursor CTAs; quiz Next/See results right-aligned)

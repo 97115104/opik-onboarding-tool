@@ -173,14 +173,16 @@ export function QuizPanel({
         )}
 
         {graded && (
-          <button
-            type="button"
-            data-testid={testIds.nextQuestion}
-            onClick={nextQuestion}
-            className="btn-primary px-4 py-2 font-medium"
-          >
-            {currentIndex >= totalQuestions - 1 ? "See results" : "Next question"}
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              data-testid={testIds.nextQuestion}
+              onClick={nextQuestion}
+              className="btn-primary px-4 py-2 font-medium"
+            >
+              {currentIndex >= totalQuestions - 1 ? "See results" : "Next question"}
+            </button>
+          </div>
         )}
       </div>
     </StepPanel>

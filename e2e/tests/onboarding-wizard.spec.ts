@@ -492,6 +492,25 @@ test.describe("onboarding wizard", () => {
     await expect(page.getByTestId("pr-help-prompt")).toContainText("Human verification:");
     await expect(page.getByTestId("pr-help-prompt")).toContainText("npx attest-client");
     await expect(page.getByTestId("pr-help-prompt")).toContainText("shortUrl/verifyUrl");
+    await expect(page.getByTestId("open-pr-help-prompt")).toBeVisible();
+    await expect(page.getByTestId("copy-pr-help-prompt")).toBeVisible();
+    await expect(page.getByTestId("open-pr-help-prompt")).toHaveAttribute(
+      "href",
+      /^cursor:\/\/anysphere\.cursor-deeplink\/prompt\?text=/,
+    );
+
+    // PR-help Open CTA: confirm modal → open API (same path as cursor/verify prompts).
+    await page.getByTestId("open-pr-help-prompt").click();
+    await expect(page.getByTestId("open-opik-confirm-modal")).toBeVisible();
+    await expect(page.getByTestId("open-opik-path")).toHaveText(/^\//);
+    const prHelpOpenRequest = page.waitForRequest(
+      (req) =>
+        req.url().includes("/api/open-opik-in-cursor") && req.method() === "POST",
+    );
+    await page.getByTestId("open-opik-confirm").click();
+    await prHelpOpenRequest;
+    await expect(page.getByTestId("open-opik-confirm-modal")).toHaveCount(0);
+
     await expect(page.getByTestId("pr-checklist")).toHaveCount(0);
     await clickNext(page);
 
