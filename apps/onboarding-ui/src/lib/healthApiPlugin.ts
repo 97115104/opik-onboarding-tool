@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 import type { Connect, Plugin } from 'vite'
+import { opikProjectLogsUrl, opikProjectRedirectUrl } from './opikUrls.js'
 
 type HealthService = 'opik-ui' | 'opik-api' | 'ollama' | 'chat-demo'
 
@@ -109,6 +110,48 @@ function healthMiddleware(toolRoot: string): Connect.NextHandleFunction {
   return (req, res, next) => {
     const rawUrl = req.url ?? ''
     const pathOnly = rawUrl.split('?')[0] ?? ''
+
+    if (pathOnly === '/api/opik/project-url') {
+      if (req.method !== 'GET') {
+        res.statusCode = 405
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ found: false, detail: 'Method not allowed' }))
+        return
+      }
+
+      const requestUrl = new URL(rawUrl, 'http://localhost')
+      const projectName = requestUrl.searchParams.get('project_name') ?? ''
+      const destination = requestUrl.searchParams.get('destination')
+      if (!projectName || destination !== 'logs') {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ found: false, detail: 'project_name and destination=logs are required' }))
+        return
+      }
+
+      const fallback = { found: false, url: opikProjectRedirectUrl(projectName) }
+      const opikApi = process.env.OPIK_API_URL ?? 'http://127.0.0.1:5173/api'
+      const retrieveUrl = `${opikApi.replace(/\/$/, '')}/v1/private/projects/retrieve`
+      void fetch(retrieveUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: projectName }),
+      })
+        .then(async (response) => {
+          if (!response.ok) return fallback
+          const project = (await response.json()) as { id?: unknown }
+          if (typeof project.id !== 'string' || !project.id) return fallback
+          return { found: true, url: opikProjectLogsUrl(project.id), projectId: project.id }
+        })
+        // A redirect remains useful while Opik starts or the project is first created.
+        .catch(() => fallback)
+        .then((result) => {
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify(result))
+        })
+      return
+    }
 
     const healMatch = pathOnly.match(/^\/api\/heal\/([^/]+)$/)
     if (healMatch) {

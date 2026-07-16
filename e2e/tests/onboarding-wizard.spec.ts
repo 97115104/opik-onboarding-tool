@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-import { BRANCH_NAME_PATTERN } from "../helpers/constants";
+import { BRANCH_NAME_PATTERN, OPIK_PROJECT_NAME } from "../helpers/constants";
 
 /** correctIndex per question in content/quiz.json */
 const QUIZ_CORRECT = [0, 1, 1, 1, 2];
@@ -119,6 +119,10 @@ async function completeTour(page: Page): Promise<void> {
 
   // Progressive reveal: only the first CTA is present initially.
   await expect(page.getByTestId("tour-open-opik")).toBeVisible();
+  await expect(page.getByTestId("tour-open-opik")).toHaveAttribute(
+    "href",
+    /\/default\/home$/,
+  );
   await expect(page.getByTestId("tour-open-chat")).toHaveCount(0);
   await expect(page.getByTestId("tour-open-traces")).toHaveCount(0);
   await expect(page.getByTestId("tour-open-spans")).toHaveCount(0);
@@ -137,6 +141,12 @@ async function completeTour(page: Page): Promise<void> {
   await page.getByTestId("tour-open-chat").click();
   await expect(page.getByTestId("tour-check-send-chat")).toBeChecked();
   await expect(page.getByTestId("tour-open-traces")).toBeVisible();
+  const tracesHrefPattern = new RegExp(
+    `/default/(?:projects/[^/]+/logs\\?logsType=traces|redirect/projects\\?name=${OPIK_PROJECT_NAME.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})$`,
+  );
+  await expect
+    .poll(async () => page.getByTestId("tour-open-traces").getAttribute("href"))
+    .toMatch(tracesHrefPattern);
 
   await expect(page.getByTestId("tour-item-find-trace")).toContainText("Metadata");
   await expect(page.getByTestId("tour-item-find-trace")).toContainText("Token usage");

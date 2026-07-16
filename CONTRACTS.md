@@ -71,6 +71,22 @@ When upstream returns a non-healthy status: `{ "ok": false, "status": <code>, "d
 
 Opik API: treat HTTP 200 or 401 as healthy.
 
+## Opik project URL proxy (onboarding UI)
+
+The tour resolves its `chat-demo` project through the same-origin Vite server:
+
+```
+GET /api/opik/project-url?project_name=chat-demo&destination=logs
+```
+
+The server sends `POST {OPIK_API_URL}/v1/private/projects/retrieve` with `{ "name": "<project_name>" }`. A resolved project returns:
+
+```json
+{ "found": true, "url": "http://127.0.0.1:5173/default/projects/<projectId>/logs?logsType=traces", "projectId": "<projectId>" }
+```
+
+If the project does not yet exist or Opik is unavailable, the endpoint still returns HTTP 200 with `{ "found": false, "url": "http://127.0.0.1:5173/default/redirect/projects?name=<project_name>" }`. The redirect lets the CTA work after the first chat trace creates the project.
+
 ## Heal endpoint (onboarding UI)
 
 When a stack service is unhealthy, the wizard may auto-heal and expose a Fix button:
@@ -279,7 +295,8 @@ Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked
 ### `scripts/start-onboarding-ui.sh` (A)
 
 - Start onboarding UI on `ONBOARDING_UI_PORT`
-- May pass `OPIK_FRONTEND_URL`, `OPIK_API_URL`, `OLLAMA_URL`, `CHAT_DEMO_URL` into the process env for the health proxy
+- May pass `OPIK_FRONTEND_URL`, `OPIK_API_URL`, `OLLAMA_URL`, `CHAT_DEMO_URL`, `OPIK_PROJECT_NAME` into the process env for the health proxy
+- Maps server env to browser `VITE_*` vars: `VITE_OPIK_FRONTEND_URL`, `VITE_OPIK_API_URL`, `VITE_OLLAMA_URL`, `VITE_CHAT_DEMO_URL`, `VITE_OPIK_PROJECT_NAME`
 
 ### `scripts/verify-opik-wiring.sh` (A)
 

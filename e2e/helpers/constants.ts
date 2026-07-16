@@ -7,6 +7,7 @@ export const OPIK_FRONTEND_URL =
   process.env.OPIK_FRONTEND_URL ?? "http://127.0.0.1:5173";
 export const OPIK_API_URL =
   process.env.OPIK_API_URL ?? "http://127.0.0.1:5173/api";
+export const OPIK_PROJECT_NAME = process.env.OPIK_PROJECT_NAME ?? "chat-demo";
 
 /** Keep in sync with apps/onboarding-ui BRANCH_NAME_MATCH (Opik + legacy). */
 const USERNAME_RE = "[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?";

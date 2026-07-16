@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { StepPanel } from '../components/StepPanel'
+import { opikHomeUrl, opikProjectRedirectUrl, OPIK_TOUR_PROJECT_NAME } from '../lib/opikUrls'
 import { personaSubtitle } from '../lib/persona'
 import { getTourProgress, setTourProgress } from '../lib/wizardGates'
 
-const OPIK_URL = import.meta.env.VITE_OPIK_FRONTEND_URL ?? 'http://127.0.0.1:5173'
 const CHAT_URL = import.meta.env.VITE_CHAT_DEMO_URL ?? 'http://127.0.0.1:4311'
 
 type TourItem = {
@@ -19,7 +19,7 @@ const TOUR_ITEMS: TourItem[] = [
     id: 'open-opik',
     title: 'Open the Opik dashboard',
     instruction: 'Open Opik in a new tab. You should see your local projects and a place to browse traces.',
-    cta: { label: 'Open Opik UI', href: OPIK_URL, testId: 'tour-open-opik' },
+    cta: { label: 'Open Opik UI', href: opikHomeUrl(), testId: 'tour-open-opik' },
   },
   {
     id: 'send-chat',
@@ -33,7 +33,11 @@ const TOUR_ITEMS: TourItem[] = [
     instruction:
       'Back in Opik, open Traces and click the newest row from the chat demo. In the trace view, check Metadata and Token usage. Duration is a useful secondary signal for how long the request took.',
     hint: 'A new row means your app sent work to Opik. Metadata and Token usage show what ran and how much it cost; duration shows speed.',
-    cta: { label: 'Open traces', href: OPIK_URL, testId: 'tour-open-traces' },
+    cta: {
+      label: 'Open traces',
+      href: opikProjectRedirectUrl(OPIK_TOUR_PROJECT_NAME),
+      testId: 'tour-open-traces',
+    },
   },
 ]
 
@@ -43,10 +47,56 @@ export function TourStep() {
   const saved = getTourProgress()
   const [done, setDone] = useState<Record<string, boolean>>(() => saved.done)
   const [revealedCount, setRevealedCount] = useState(() => saved.revealedCount)
+  const [tracesUrl, setTracesUrl] = useState(() => opikProjectRedirectUrl(OPIK_TOUR_PROJECT_NAME))
 
   useEffect(() => {
     setTourProgress(done, TOUR_IDS, revealedCount)
   }, [done, revealedCount])
+
+  useEffect(() => {
+    // Resolve after the traces step is revealed; poll until chat-demo exists.
+    if (revealedCount < TOUR_ITEMS.length) return
+
+    const controller = new AbortController()
+    let pollTimer: ReturnType<typeof setTimeout> | undefined
+
+    async function resolveTracesUrl(): Promise<boolean> {
+      try {
+        const response = await fetch(
+          `/api/opik/project-url?project_name=${encodeURIComponent(OPIK_TOUR_PROJECT_NAME)}&destination=logs`,
+          { signal: controller.signal },
+        )
+        if (!response.ok) return false
+        const result = (await response.json()) as { found?: boolean; url?: unknown }
+        if (typeof result.url === 'string') setTracesUrl(result.url)
+        return result.found === true
+      } catch {
+        return false
+      }
+    }
+
+    void (async () => {
+      const found = await resolveTracesUrl()
+      if (found || controller.signal.aborted) return
+
+      const poll = async () => {
+        const resolved = await resolveTracesUrl()
+        if (!resolved && !controller.signal.aborted) {
+          pollTimer = setTimeout(() => {
+            void poll()
+          }, 3000)
+        }
+      }
+      pollTimer = setTimeout(() => {
+        void poll()
+      }, 3000)
+    })()
+
+    return () => {
+      controller.abort()
+      if (pollTimer) clearTimeout(pollTimer)
+    }
+  }, [revealedCount])
 
   const subtitle = personaSubtitle({
     default: 'Hands-on walkthrough.',
@@ -111,7 +161,7 @@ export function TourStep() {
                 {item.hint ? <p className="mt-2 text-xs leading-relaxed text-slate-500">{item.hint}</p> : null}
                 {item.cta ? (
                   <a
-                    href={item.cta.href}
+                    href={item.id === 'find-trace' ? tracesUrl : item.cta.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     data-testid={item.cta.testId}

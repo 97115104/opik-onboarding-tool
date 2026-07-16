@@ -1,6 +1,6 @@
 import type { ServiceHealth } from '../types'
+import { opikHomeUrl } from './opikUrls'
 
-const OPIK_FRONTEND_URL = import.meta.env.VITE_OPIK_FRONTEND_URL ?? 'http://127.0.0.1:5173'
 const OPIK_API_URL = import.meta.env.VITE_OPIK_API_URL ?? 'http://127.0.0.1:5173/api'
 const OLLAMA_URL = import.meta.env.VITE_OLLAMA_URL ?? 'http://127.0.0.1:11434'
 const CHAT_DEMO_URL = import.meta.env.VITE_CHAT_DEMO_URL ?? 'http://127.0.0.1:4311'
@@ -33,7 +33,7 @@ export const STACK_SERVICES = [
   {
     id: 'opik-ui' as const,
     name: 'Opik UI',
-    url: OPIK_FRONTEND_URL,
+    url: opikHomeUrl(),
     blurb: SERVICE_BLURBS['opik-ui'],
     probe: () => probeViaProxy('opik-ui'),
   },
