@@ -1,5 +1,3 @@
-<!-- Canonical source: https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md. Vendored for onboarding honor-system read. -->
-
 # Contributing to Opik
 
 Thanks for your interest in contributing to Opik.

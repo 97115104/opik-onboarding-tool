@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import { attestation } from '../content/attestation'
 import { WizardNav } from './WizardNav'
 import { WizardProgress } from './WizardProgress'
 
@@ -77,6 +78,39 @@ export function WizardShell({
             hideNext={hideNext}
             nextLabel={nextLabel}
           />
+          <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[11px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              Built with <span aria-hidden>♥</span> for{' '}
+              <a
+                href="https://github.com/comet-ml/opik"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+              >
+                Opik Community
+              </a>{' '}
+              by{' '}
+              <a
+                href="https://links.97115104.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+              >
+                Austin H
+              </a>
+            </div>
+            <div>
+              Made with{' '}
+              <a
+                href={attestation.shortUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+              >
+                Cursor Agent (Auto)
+              </a>
+            </div>
+          </footer>
         </main>
       </div>
     </div>

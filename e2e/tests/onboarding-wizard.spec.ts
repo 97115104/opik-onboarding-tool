@@ -58,9 +58,31 @@ async function completeOverviewSlides(page: Page): Promise<void> {
   await expect(page.getByTestId("slide-did-you-know")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeEnabled();
+  await expect(
+    page.getByTestId("overview-slide-what-is-opik").getByRole("link", { name: "Comet" }),
+  ).toHaveAttribute("href", "https://www.comet.com");
+  await expect(
+    page.getByTestId("overview-slide-what-is-opik").getByRole("link", { name: "Comet" }),
+  ).toHaveAttribute("target", "_blank");
+  await expect(
+    page.getByTestId("overview-slide-what-is-opik").getByRole("link", { name: "Comet" }),
+  ).toHaveAttribute("rel", "noopener noreferrer");
 
   for (let i = 0; i < OVERVIEW_SLIDE_COUNT - 1; i++) {
     await clickNext(page);
+    if (i === 2) {
+      await expect(page.getByTestId("overview-slide-who-for")).toContainText("Opik is for everyone");
+      await page.getByTestId("overview-role-businesses").click();
+      await expect(page.getByTestId("overview-role-detail")).toBeVisible();
+      const cloudLink = page
+        .getByTestId("overview-role-detail")
+        .getByRole("link", { name: "Comet Cloud" });
+      await expect(cloudLink).toHaveAttribute("href", "https://www.comet.com/opik");
+      await expect(cloudLink).toHaveAttribute("target", "_blank");
+      await expect(cloudLink).toHaveAttribute("rel", "noopener noreferrer");
+      await page.getByTestId("overview-role-businesses").click();
+      await expect(page.getByTestId("overview-role-detail")).toHaveCount(0);
+    }
   }
 
   await expect(page.getByTestId("overview-slide-what-you-learn")).toBeVisible();

@@ -14,6 +14,7 @@ This content describes the **upstream Opik repository** ([comet-ml/opik](https:/
 5. **How to contribute**: Structured bullets (Fixes #..., branch convention, scope, local checks).
 6. **GitHub Actions and quality**: Structured bullets plus Did you know for pre-commit.
 7. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
+   - Did you know: SDLC is the software development lifecycle, from issue through design, implementation, testing, review, and release. The wizard gives this context before a first PR.
 
 Wizard footer Back/Next drives slide navigation. Step complete requires last slide plus `claAgreed` and `guidelinesAgreed`.
 

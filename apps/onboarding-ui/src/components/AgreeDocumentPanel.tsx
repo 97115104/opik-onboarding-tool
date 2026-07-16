@@ -22,6 +22,7 @@ export function AgreeDocumentPanel({
   const scrollRef = useRef<HTMLDivElement>(null)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const [scrolledToBottom, setScrolledToBottom] = useState(agreed)
+  const [layoutMeasured, setLayoutMeasured] = useState(false)
 
   useEffect(() => {
     if (agreed) setScrolledToBottom(true)
@@ -32,8 +33,13 @@ export function AgreeDocumentPanel({
     const sentinel = sentinelRef.current
     if (!root || !sentinel) return
 
+    setLayoutMeasured(false)
+    setScrolledToBottom(agreed)
+
     const markIfAtBottom = () => {
-      const atBottom = root.scrollTop + root.clientHeight >= root.scrollHeight - 4
+      const atBottom =
+        root.scrollHeight > root.clientHeight + 4 &&
+        root.scrollTop + root.clientHeight >= root.scrollHeight - 4
       if (atBottom) setScrolledToBottom(true)
     }
 
@@ -45,12 +51,17 @@ export function AgreeDocumentPanel({
     )
     observer.observe(sentinel)
     root.addEventListener('scroll', markIfAtBottom, { passive: true })
-    markIfAtBottom()
+    const frame = window.requestAnimationFrame(() => {
+      setLayoutMeasured(true)
+      if (root.scrollHeight <= root.clientHeight + 4) setScrolledToBottom(true)
+      else markIfAtBottom()
+    })
     return () => {
+      window.cancelAnimationFrame(frame)
       observer.disconnect()
       root.removeEventListener('scroll', markIfAtBottom)
     }
-  }, [markdown])
+  }, [markdown, agreed])
 
   const checkboxId = `${testIdPrefix}-agree-input`
 
@@ -82,7 +93,7 @@ export function AgreeDocumentPanel({
       <label
         htmlFor={checkboxId}
         className={`flex items-start gap-3 rounded-lg border px-3 py-2.5 ${
-          scrolledToBottom
+          layoutMeasured && scrolledToBottom
             ? 'border-[var(--color-border)] bg-white'
             : 'cursor-not-allowed border-slate-200 bg-slate-50 opacity-70'
         }`}
@@ -92,7 +103,7 @@ export function AgreeDocumentPanel({
           type="checkbox"
           data-testid={`${testIdPrefix}-agree`}
           checked={agreed}
-          disabled={!scrolledToBottom}
+          disabled={!layoutMeasured || !scrolledToBottom}
           onChange={(event) => {
             const checked = event.target.checked
             if (!checked) {

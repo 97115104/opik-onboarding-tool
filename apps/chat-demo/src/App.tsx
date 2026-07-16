@@ -1,5 +1,7 @@
 import { FormEvent, useState } from "react";
 
+const ATTESTATION_SHORT_URL = "https://attest.97115104.com/s/pz7r8cho";
+
 interface ChatMessage {
   role: "user" | "assistant" | "error";
   content: string;
@@ -88,6 +90,24 @@ export default function App() {
       <p className="status">
         Traces land in Opik project <code>chat-demo</code>.
       </p>
+      <footer className="site-credit">
+        <div>
+          Built with <span aria-hidden="true">♥</span> for{" "}
+          <a href="https://github.com/comet-ml/opik" target="_blank" rel="noopener noreferrer">
+            Opik Community
+          </a>{" "}
+          by{" "}
+          <a href="https://links.97115104.com" target="_blank" rel="noopener noreferrer">
+            Austin H
+          </a>
+        </div>
+        <div>
+          Made with{" "}
+          <a href={ATTESTATION_SHORT_URL} target="_blank" rel="noopener noreferrer">
+            Cursor Agent (Auto)
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }

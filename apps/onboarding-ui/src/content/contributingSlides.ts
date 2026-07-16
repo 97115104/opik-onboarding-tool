@@ -130,5 +130,9 @@ export const CONTRIBUTING_SLIDES: ContributingSlide[] = [
     paragraphs: [
       'This tool compresses the SDLC context you need before you contribute. Next is a short contributing quiz, then a ranked issue to work on.',
     ],
+    didYouKnow: {
+      title: 'Did you know?',
+      body: 'SDLC means software development lifecycle: the path from an issue through design, implementation, testing, review, and release. This wizard gives you that context before your first pull request so each step has a clear purpose.',
+    },
   },
 ]

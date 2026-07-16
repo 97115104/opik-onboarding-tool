@@ -5,6 +5,13 @@ export type OverviewBullet =
       href?: string
     }
 
+export type OverviewParagraph =
+  | string
+  | Array<{
+      text: string
+      href?: string
+    }>
+
 export type OverviewRole = {
   id: string
   label: string
@@ -17,8 +24,8 @@ export type OverviewRole = {
 export type OverviewSlide = {
   id: string
   title: string
-  /** Primary paragraphs shown under the title. */
-  paragraphs: string[]
+  /** Primary paragraphs shown under the title, optionally with inline links. */
+  paragraphs: OverviewParagraph[]
   bullets?: OverviewBullet[]
   roles?: OverviewRole[]
   didYouKnow?: { title?: string; body: string }
@@ -31,7 +38,12 @@ export const OVERVIEW_SLIDES: OverviewSlide[] = [
     title: 'What Opik is',
     paragraphs: [
       'Opik is an open-source platform for building, evaluating, and operating generative AI applications.',
-      'Comet is the company that builds and maintains Opik, along with tools for tracking machine learning experiments.',
+      [
+        { text: 'Comet', href: 'https://www.comet.com' },
+        {
+          text: ' is the company that builds and maintains Opik, along with tools for tracking machine learning experiments.',
+        },
+      ],
     ],
     didYouKnow: {
       body: 'Open source means the code is public: anyone can read it, use it, and help improve it under an open license. Opik is free to self-host and contribute to.',
@@ -63,8 +75,8 @@ export const OVERVIEW_SLIDES: OverviewSlide[] = [
   },
   {
     id: 'who-for',
-    title: 'Who Opik is for',
-    paragraphs: ['Tap a role to see how Opik helps. Opik supports individuals and teams shipping AI products.'],
+    title: 'Opik is for everyone',
+    paragraphs: ['Explore a role to see how Opik helps individuals and teams shipping AI products.'],
     roles: [
       {
         id: 'builders',
