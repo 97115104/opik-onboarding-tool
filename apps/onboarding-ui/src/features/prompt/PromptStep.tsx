@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { OpenOpikInCursorModal } from "@/components/OpenOpikInCursorModal";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution } from "../issues/ContributionContext";
 import { DEFAULT_OPIK_PATH } from "../issues/types";
@@ -8,11 +9,20 @@ import {
   openCursorCommands,
 } from "./generatePrompt";
 
+function fireDeeplink(href: string) {
+  const opener = window.open(href, "_blank", "noopener,noreferrer");
+  if (!opener) {
+    window.location.assign(href);
+  }
+}
+
 function PromptStepContent() {
   const { selectedIssue, branchName, persona } = useContribution();
   const [copied, setCopied] = useState(false);
   const [copiedCmd, setCopiedCmd] = useState(false);
   const [opikPath, setOpikPath] = useState(DEFAULT_OPIK_PATH);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeeplink, setPendingDeeplink] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,6 +66,11 @@ function PromptStepContent() {
     window.setTimeout(() => setCopiedCmd(false), 2000);
   }, [openCommand]);
 
+  const openConfirm = useCallback((deeplinkHref: string | null) => {
+    setPendingDeeplink(deeplinkHref);
+    setConfirmOpen(true);
+  }, []);
+
   if (!selectedIssue) {
     return (
       <StepPanel testId="step-prompt" title="Cursor prompt" subtitle="Select an issue first.">
@@ -97,11 +112,7 @@ function PromptStepContent() {
               data-testid="open-cursor-prompt"
               onClick={(event) => {
                 event.preventDefault();
-                // Prefer a new browsing context so a failed protocol handler does not replace the wizard.
-                const opener = window.open(deeplink.href, "_blank", "noopener,noreferrer");
-                if (!opener) {
-                  window.location.assign(deeplink.href);
-                }
+                openConfirm(deeplink.href);
               }}
               className="btn-primary px-4 py-2 font-medium"
             >
@@ -128,14 +139,36 @@ function PromptStepContent() {
         >
           {openCommand}
         </pre>
-        <button
-          type="button"
-          onClick={() => void copyCommand()}
-          className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm text-slate-800"
-        >
-          {copiedCmd ? "Copied command" : "Copy command"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            data-testid="open-opik-in-cursor"
+            onClick={() => openConfirm(null)}
+            className="btn-primary px-4 py-2 font-medium"
+          >
+            Open Opik repo in Cursor
+          </button>
+          <button
+            type="button"
+            onClick={() => void copyCommand()}
+            className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm text-slate-800"
+          >
+            {copiedCmd ? "Copied command" : "Copy command"}
+          </button>
+        </div>
       </div>
+
+      <OpenOpikInCursorModal
+        open={confirmOpen}
+        opikPath={opikPath}
+        onClose={() => {
+          setConfirmOpen(false);
+          setPendingDeeplink(null);
+        }}
+        onOpened={() => {
+          if (pendingDeeplink) fireDeeplink(pendingDeeplink);
+        }}
+      />
     </StepPanel>
   );
 }

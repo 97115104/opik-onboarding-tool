@@ -1,4 +1,5 @@
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
 
@@ -118,6 +119,76 @@ export function contributionApiPlugin(toolRoot?: string): Plugin {
         }
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify({ path: resolveOpikPath() }));
+      });
+
+      // Always use server OPIK_PATH; never trust a client-supplied folder.
+      server.middlewares.use("/api/open-opik-in-cursor", (req, res) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end("Method not allowed");
+          return;
+        }
+        res.setHeader("Content-Type", "application/json");
+        const opikPath = resolveOpikPath();
+        if (!fs.existsSync(opikPath) || !fs.statSync(opikPath).isDirectory()) {
+          res.statusCode = 404;
+          res.end(
+            JSON.stringify({
+              ok: false,
+              path: opikPath,
+              error: `Opik folder not found at ${opikPath}`,
+            }),
+          );
+          return;
+        }
+
+        // Fail fast if `cursor` is missing so we never claim success then lose a late spawn error.
+        const which = spawnSync("bash", ["-lc", "command -v cursor"], {
+          encoding: "utf-8",
+          env: process.env,
+        });
+        if (which.status !== 0 || !which.stdout.trim()) {
+          res.statusCode = 500;
+          res.end(
+            JSON.stringify({
+              ok: false,
+              path: opikPath,
+              error: "Could not start Cursor. Is the cursor command on your PATH?",
+            }),
+          );
+          return;
+        }
+
+        let settled = false;
+        const finish = (payload: { ok: boolean; path: string; error?: string }, status = 200) => {
+          if (settled) return;
+          settled = true;
+          res.statusCode = status;
+          res.end(JSON.stringify(payload));
+        };
+
+        const child = spawn("cursor", [opikPath], {
+          detached: true,
+          stdio: "ignore",
+          env: process.env,
+        });
+        child.on("error", (error) => {
+          finish(
+            {
+              ok: false,
+              path: opikPath,
+              error:
+                error.message ||
+                "Could not start Cursor. Is the cursor command on your PATH?",
+            },
+            500,
+          );
+        });
+        // Detached spawn: claim success briefly after start so the HTTP handler does not wait on Cursor.
+        setTimeout(() => {
+          finish({ ok: true, path: opikPath });
+        }, 150);
+        child.unref();
       });
 
       server.middlewares.use("/api/contribution-diff", (req, res) => {

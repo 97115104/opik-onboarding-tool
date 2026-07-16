@@ -21,11 +21,14 @@ let gatesSnapshot: Record<WizardGateId, boolean> = { ...gates }
 /** Persisted across step remounts so Back does not wipe gated progress. */
 export type OverviewProgress = {
   slideIndex: number
+  /** Highest slide index the user has opened (for clickable dots). */
+  maxReachedSlideIndex: number
   reachedLast: boolean
 }
 
 export type ContributingOverviewProgress = {
   slideIndex: number
+  maxReachedSlideIndex: number
   reachedLast: boolean
   claAgreed: boolean
   guidelinesAgreed: boolean
@@ -40,9 +43,14 @@ export type VerifyProgress = {
   done: Record<string, boolean>
 }
 
-let overviewProgress: OverviewProgress = { slideIndex: 0, reachedLast: false }
+let overviewProgress: OverviewProgress = {
+  slideIndex: 0,
+  maxReachedSlideIndex: 0,
+  reachedLast: false,
+}
 let contributingOverviewProgress: ContributingOverviewProgress = {
   slideIndex: 0,
+  maxReachedSlideIndex: 0,
   reachedLast: false,
   claAgreed: false,
   guidelinesAgreed: false,
@@ -84,7 +92,10 @@ export function getOverviewProgress(): OverviewProgress {
 }
 
 export function setOverviewProgress(next: OverviewProgress) {
-  overviewProgress = { ...next }
+  overviewProgress = {
+    ...next,
+    maxReachedSlideIndex: Math.max(next.slideIndex, next.maxReachedSlideIndex),
+  }
   syncGate('overview', overviewProgress.reachedLast)
 }
 
@@ -93,7 +104,10 @@ export function getContributingOverviewProgress(): ContributingOverviewProgress 
 }
 
 export function setContributingOverviewProgress(next: ContributingOverviewProgress) {
-  contributingOverviewProgress = { ...next }
+  contributingOverviewProgress = {
+    ...next,
+    maxReachedSlideIndex: Math.max(next.slideIndex, next.maxReachedSlideIndex),
+  }
   syncGate(
     'contributingOverview',
     contributingOverviewProgress.reachedLast &&

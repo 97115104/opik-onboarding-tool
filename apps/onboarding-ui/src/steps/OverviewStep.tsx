@@ -68,11 +68,16 @@ export function OverviewStep() {
   const total = OVERVIEW_SLIDES.length
   const slide = OVERVIEW_SLIDES[slideIndex]!
   const isLast = slideIndex === total - 1
+  const maxReachedSlideIndex = Math.max(
+    slideIndex,
+    saved.maxReachedSlideIndex ?? saved.slideIndex,
+  )
 
   useEffect(() => {
     const prev = getOverviewProgress()
     setOverviewProgress({
       slideIndex,
+      maxReachedSlideIndex: Math.max(prev.maxReachedSlideIndex ?? 0, slideIndex),
       reachedLast: prev.reachedLast || isLast,
     })
   }, [slideIndex, isLast])
@@ -87,6 +92,15 @@ export function OverviewStep() {
     setSelectedRole(null)
   }, [total])
 
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (index < 0 || index > maxReachedSlideIndex || index === slideIndex) return
+      setSlideIndex(index)
+      setSelectedRole(null)
+    },
+    [maxReachedSlideIndex, slideIndex],
+  )
+
   useLayoutEffect(() => {
     return registerSlideDeck('overview', {
       canPrevSlide: slideIndex > 0,
@@ -100,9 +114,41 @@ export function OverviewStep() {
   return (
     <StepPanel testId="step-overview" title="Product overview">
       <div className="space-y-5" data-testid="overview-slides">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-          Slide {slideIndex + 1} of {total}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+            Slide {slideIndex + 1} of {total}
+          </p>
+          <div
+            data-testid="overview-slide-nav"
+            className="flex flex-wrap gap-1.5"
+            role="tablist"
+            aria-label="Overview slides"
+          >
+            {OVERVIEW_SLIDES.map((entry, index) => {
+              const reached = index <= maxReachedSlideIndex
+              const current = index === slideIndex
+              return (
+                <button
+                  key={entry.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={current}
+                  aria-label={`Slide ${index + 1}`}
+                  data-testid={`overview-slide-dot-${index}`}
+                  disabled={!reached}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2.5 w-2.5 rounded-full transition ${
+                    current
+                      ? 'bg-[var(--color-accent)]'
+                      : reached
+                        ? 'bg-slate-300 hover:bg-slate-400'
+                        : 'cursor-not-allowed bg-slate-200'
+                  }`}
+                />
+              )
+            })}
+          </div>
+        </div>
 
         <div
           key={slide.id}

@@ -55,6 +55,9 @@ async function completeOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-overview");
   await expect(page.getByTestId("opik-brand-logo")).toBeVisible();
   await expect(page.getByTestId("overview-slides")).toBeVisible();
+  await expect(page.getByTestId("overview-slide-nav")).toBeVisible();
+  await expect(page.getByTestId("overview-slide-dot-0")).toBeEnabled();
+  await expect(page.getByTestId("overview-slide-dot-1")).toBeDisabled();
   await expect(page.getByTestId("slide-did-you-know")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeEnabled();
@@ -85,6 +88,11 @@ async function completeOverviewSlides(page: Page): Promise<void> {
     }
   }
 
+  await expect(page.getByTestId("overview-slide-what-you-learn")).toBeVisible();
+  await expect(page.getByTestId("overview-slide-dot-0")).toBeEnabled();
+  await page.getByTestId("overview-slide-dot-0").click();
+  await expect(page.getByTestId("overview-slide-what-is-opik")).toBeVisible();
+  await page.getByTestId("overview-slide-dot-5").click();
   await expect(page.getByTestId("overview-slide-what-you-learn")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeEnabled();
@@ -184,6 +192,7 @@ async function completeQuiz(page: Page): Promise<void> {
 async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-contributing-overview");
   await expect(page.getByTestId("contributing-slides")).toBeVisible();
+  await expect(page.getByTestId("contributing-slide-nav")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
 
   // Slide 1: CLA scroll + agree required before wizard Next advances.
@@ -191,6 +200,7 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expect(page.getByTestId("contributing-cla-document")).toBeVisible();
   await expect(page.getByTestId("contributing-cla-agree")).toBeDisabled();
   await expect(page.getByTestId("wizard-next")).toBeDisabled();
+  await expect(page.getByTestId("contributing-slide-dot-1")).toBeDisabled();
 
   await scrollAgreeDocument(page, "contributing-cla");
   await expect(page.getByTestId("contributing-cla-agree")).toBeEnabled();
@@ -222,6 +232,16 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
       await clickNext(page);
     }
   }
+
+  await expect(page.getByTestId("contributing-slide-dot-0")).toBeEnabled();
+  await page.getByTestId("contributing-slide-dot-0").click();
+  await expect(page.getByTestId("contributing-slide-what-contributing-means")).toBeVisible();
+  await page
+    .getByTestId(`contributing-slide-dot-${CONTRIBUTING_SLIDE_IDS.length - 1}`)
+    .click();
+  await expect(
+    page.getByTestId(`contributing-slide-${CONTRIBUTING_SLIDE_IDS[CONTRIBUTING_SLIDE_IDS.length - 1]}`),
+  ).toBeVisible();
 
   // Last slide: wizard Next unlocks via reachedLast + both agrees.
   await expect(page.getByTestId("wizard-next")).toBeVisible();
@@ -276,8 +296,30 @@ test.describe("onboarding wizard", () => {
     await page.goto("/");
 
     await expectStep(page, "step-about");
+    await expect(page.getByTestId("wizard-step-nav")).toBeVisible();
+    await expect(page.getByTestId("wizard-step-about")).toBeEnabled();
+    await expect(page.getByTestId("wizard-step-overview")).toBeDisabled();
+    const poweredBy = page.getByTestId("footer-powered-by");
+    await expect(poweredBy).toBeVisible();
+    await expect(poweredBy.getByRole("link", { name: "Llama 3.1 8B" })).toHaveAttribute(
+      "href",
+      "https://ollama.com/library/llama3.1:8b",
+    );
+    await expect(poweredBy.getByRole("link", { name: "Ollama" })).toHaveAttribute(
+      "href",
+      "https://github.com/ollama/ollama",
+    );
     await page.getByTestId("about-persona-engineer").click();
     await clickNext(page);
+
+    await expectStep(page, "step-overview");
+    await expect(page.getByTestId("wizard-step-about")).toBeEnabled();
+    await expect(page.getByTestId("wizard-step-overview")).toBeEnabled();
+    await expect(page.getByTestId("wizard-step-graph")).toBeDisabled();
+    await page.getByTestId("wizard-step-about").click();
+    await expectStep(page, "step-about");
+    await page.getByTestId("wizard-step-overview").click();
+    await expectStep(page, "step-overview");
 
     await completeOverviewSlides(page);
     await completeGraphUnlock(page);
@@ -338,11 +380,47 @@ test.describe("onboarding wizard", () => {
     await expect(prompt).toContainText("Do not open a PR yet");
     await expect(prompt).not.toContainText("gh pr create --draft");
     await expect(page.getByTestId("open-cursor-prompt")).toBeVisible();
+    await expect(page.getByTestId("open-opik-in-cursor")).toBeVisible();
     const deeplink = page.getByTestId("open-cursor-prompt");
     await expect(deeplink).toHaveAttribute(
       "href",
       /^cursor:\/\/anysphere\.cursor-deeplink\/prompt\?text=/,
     );
+
+    await page.route("**/api/open-opik-in-cursor", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, path: "/tmp/mock-opik" }),
+      });
+    });
+
+    // Primary prompt CTA: confirm modal → open API (deeplink fired after success).
+    await page.getByTestId("open-cursor-prompt").click();
+    await expect(page.getByTestId("open-opik-confirm-modal")).toBeVisible();
+    await expect(page.getByTestId("open-opik-path")).toBeVisible();
+    await expect(page.getByTestId("open-opik-path")).not.toHaveText("Loading path…");
+    await expect(page.getByTestId("open-opik-path")).toHaveText(/^\//);
+    const promptOpenRequest = page.waitForRequest(
+      (req) =>
+        req.url().includes("/api/open-opik-in-cursor") && req.method() === "POST",
+    );
+    await page.getByTestId("open-opik-confirm").click();
+    await promptOpenRequest;
+    await expect(page.getByTestId("open-opik-confirm-modal")).toHaveCount(0);
+
+    // Repo CTA uses the same confirm + API path.
+    await page.getByTestId("open-opik-in-cursor").click();
+    await expect(page.getByTestId("open-opik-confirm-modal")).toBeVisible();
+    await expect(page.getByTestId("open-opik-path")).toHaveText(/^\//);
+    const repoOpenRequest = page.waitForRequest(
+      (req) =>
+        req.url().includes("/api/open-opik-in-cursor") && req.method() === "POST",
+    );
+    await page.getByTestId("open-opik-confirm").click();
+    await repoOpenRequest;
+    await expect(page.getByTestId("open-opik-confirm-modal")).toHaveCount(0);
+
     await clickNext(page);
 
     await completeVerify(page);

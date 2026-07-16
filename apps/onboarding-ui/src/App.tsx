@@ -151,6 +151,7 @@ function useSlideDeckNav() {
 
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [maxReachedIndex, setMaxReachedIndex] = useState(0)
   const [boundaryKey, setBoundaryKey] = useState(0)
   const personaSelected = usePersonaSelected()
   const quizFinished = useQuizFinished()
@@ -168,6 +169,10 @@ export default function App() {
     setActiveSlideDeckStep(isSlideDeckStep ? stepId! : null)
     return () => setActiveSlideDeckStep(null)
   }, [isSlideDeckStep, stepId])
+
+  useEffect(() => {
+    setMaxReachedIndex((prev) => Math.max(prev, currentIndex))
+  }, [currentIndex])
 
   const canGoBack = currentIndex > 0 || Boolean(isSlideDeckStep && slideDeck?.canPrevSlide)
   const isFinishStep = stepId === 'finish'
@@ -230,7 +235,18 @@ export default function App() {
     const nextIndex = Math.min(STEP_REGISTRY.length - 1, currentIndex + 1)
     clearQuizGateForStep(WIZARD_STEPS[nextIndex]?.id)
     setCurrentIndex(nextIndex)
+    setMaxReachedIndex((prev) => Math.max(prev, nextIndex))
   }, [currentIndex])
+
+  /** Jump only to steps already reached; slide decks restore from wizardGates progress. */
+  const goToStep = useCallback(
+    (index: number) => {
+      if (index < 0 || index > maxReachedIndex || index === currentIndex) return
+      clearQuizGateForStep(WIZARD_STEPS[index]?.id)
+      setCurrentIndex(index)
+    },
+    [currentIndex, maxReachedIndex],
+  )
 
   const handleBack = useCallback(() => {
     if (isSlideDeckStep && slideDeck?.canPrevSlide) {
@@ -260,6 +276,8 @@ export default function App() {
     <ContributionProvider>
       <WizardShell
         currentIndex={currentIndex}
+        maxReachedIndex={maxReachedIndex}
+        onGoToStep={goToStep}
         onBack={handleBack}
         onNext={handleNext}
         canGoBack={canGoBack}

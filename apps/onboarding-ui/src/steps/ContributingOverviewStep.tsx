@@ -23,6 +23,10 @@ export function ContributingOverviewStep() {
   const slide = CONTRIBUTING_SLIDES[slideIndex]!
   const isLast = slideIndex === total - 1
   const slideId = slide.id
+  const maxReachedSlideIndex = Math.max(
+    slideIndex,
+    saved.maxReachedSlideIndex ?? saved.slideIndex,
+  )
 
   const claSlideBlocked = slideId === 'what-contributing-means' && !claAgreed
   const guidelinesSlideBlocked = slideId === 'contributing-guidelines' && !guidelinesAgreed
@@ -31,11 +35,23 @@ export function ContributingOverviewStep() {
     const prev = getContributingOverviewProgress()
     setContributingOverviewProgress({
       slideIndex,
+      maxReachedSlideIndex: Math.max(prev.maxReachedSlideIndex ?? 0, slideIndex),
       reachedLast: prev.reachedLast || isLast,
       claAgreed,
       guidelinesAgreed,
     })
   }, [slideIndex, isLast, claAgreed, guidelinesAgreed])
+
+  const claSlideIndex = CONTRIBUTING_SLIDES.findIndex((entry) => entry.embedCla)
+  const guidelinesSlideIndex = CONTRIBUTING_SLIDES.findIndex((entry) => entry.embedGuidelines)
+
+  // Cap jumps so dots cannot bypass agree-to-continue even after leaving a gate slide.
+  let gateCap = total - 1
+  if (!claAgreed && claSlideIndex >= 0) gateCap = Math.min(gateCap, claSlideIndex)
+  if (!guidelinesAgreed && guidelinesSlideIndex >= 0) {
+    gateCap = Math.min(gateCap, guidelinesSlideIndex)
+  }
+  const maxJumpableSlideIndex = Math.min(maxReachedSlideIndex, gateCap)
 
   const goPrev = useCallback(() => {
     setSlideIndex((index) => Math.max(0, index - 1))
@@ -44,6 +60,14 @@ export function ContributingOverviewStep() {
   const goNext = useCallback(() => {
     setSlideIndex((index) => Math.min(total - 1, index + 1))
   }, [total])
+
+  const goToSlide = useCallback(
+    (index: number) => {
+      if (index < 0 || index > maxJumpableSlideIndex || index === slideIndex) return
+      setSlideIndex(index)
+    },
+    [maxJumpableSlideIndex, slideIndex],
+  )
 
   useLayoutEffect(() => {
     const canNextSlide = !isLast && !claSlideBlocked && !guidelinesSlideBlocked
@@ -61,9 +85,41 @@ export function ContributingOverviewStep() {
   return (
     <StepPanel testId="step-contributing-overview" title="Contributing overview">
       <div className="space-y-5" data-testid="contributing-slides">
-        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-          Slide {slideIndex + 1} of {total}
-        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+            Slide {slideIndex + 1} of {total}
+          </p>
+          <div
+            data-testid="contributing-slide-nav"
+            className="flex flex-wrap gap-1.5"
+            role="tablist"
+            aria-label="Contributing overview slides"
+          >
+            {CONTRIBUTING_SLIDES.map((entry, index) => {
+              const reached = index <= maxJumpableSlideIndex
+              const current = index === slideIndex
+              return (
+                <button
+                  key={entry.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={current}
+                  aria-label={`Slide ${index + 1}`}
+                  data-testid={`contributing-slide-dot-${index}`}
+                  disabled={!reached}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2.5 w-2.5 rounded-full transition ${
+                    current
+                      ? 'bg-[var(--color-accent)]'
+                      : reached
+                        ? 'bg-slate-300 hover:bg-slate-400'
+                        : 'cursor-not-allowed bg-slate-200'
+                  }`}
+                />
+              )
+            })}
+          </div>
+        </div>
 
         <div
           key={slide.id}

@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { Markdown } from "./Markdown";
 
 const ATTESTATION_SHORT_URL = "https://attest.97115104.com/s/pz7r8cho";
 
@@ -69,7 +70,7 @@ export default function App() {
             }
             {...(msg.role === "assistant" ? { "data-role": "assistant" } : {})}
           >
-            {msg.content}
+            {msg.role === "assistant" ? <Markdown>{msg.content}</Markdown> : msg.content}
           </div>
         ))}
       </div>

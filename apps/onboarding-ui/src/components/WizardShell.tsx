@@ -6,6 +6,8 @@ import { WizardProgress } from './WizardProgress'
 
 interface WizardShellProps {
   currentIndex: number
+  maxReachedIndex: number
+  onGoToStep: (index: number) => void
   onBack: () => void
   onNext: () => void
   canGoBack: boolean
@@ -17,6 +19,8 @@ interface WizardShellProps {
 
 export function WizardShell({
   currentIndex,
+  maxReachedIndex,
+  onGoToStep,
   onBack,
   onNext,
   canGoBack,
@@ -66,7 +70,11 @@ export function WizardShell({
           </div>
         </motion.header>
 
-        <WizardProgress currentIndex={currentIndex} />
+        <WizardProgress
+          currentIndex={currentIndex}
+          maxReachedIndex={maxReachedIndex}
+          onGoToStep={onGoToStep}
+        />
 
         <main className="mt-8 flex flex-1 flex-col">
           <div className="flex-1">{children}</div>
@@ -78,8 +86,8 @@ export function WizardShell({
             hideNext={hideNext}
             nextLabel={nextLabel}
           />
-          <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[11px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[11px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="sm:flex-1">
               Built with <span aria-hidden>♥</span> for{' '}
               <a
                 href="https://github.com/comet-ml/opik"
@@ -99,7 +107,31 @@ export function WizardShell({
                 Austin H
               </a>
             </div>
-            <div>
+            <div
+              data-testid="footer-powered-by"
+              className="sm:flex-1 sm:text-center"
+            >
+              Powered by{' '}
+              <a
+                href="https://ollama.com/library/llama3.1:8b"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+              >
+                Llama 3.1 8B
+              </a>{' '}
+              via{' '}
+              <a
+                href="https://github.com/ollama/ollama"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+              >
+                Ollama
+              </a>{' '}
+              on this machine
+            </div>
+            <div className="sm:flex-1 sm:text-right">
               Made with{' '}
               <a
                 href={attestation.shortUrl}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { OpenOpikInCursorModal } from "@/components/OpenOpikInCursorModal";
 import { StepPanel } from "@/components/StepPanel";
 import { useContribution } from "../issues/ContributionContext";
 import { DEFAULT_OPIK_PATH } from "../issues/types";
@@ -11,6 +12,13 @@ import { formatVerifyArea, mapIssueToVerifyPlan } from "./verifyPlan";
 
 const VERIFY_CHECK_IDS = ["verify-check-ran-local", "verify-check-matches-issue"] as const;
 
+function fireDeeplink(href: string) {
+  const opener = window.open(href, "_blank", "noopener,noreferrer");
+  if (!opener) {
+    window.location.assign(href);
+  }
+}
+
 function VerifyStepContent() {
   const { selectedIssue, branchName } = useContribution();
   const saved = getVerifyProgress();
@@ -20,6 +28,8 @@ function VerifyStepContent() {
   const [branchFromDiff, setBranchFromDiff] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeeplink, setPendingDeeplink] = useState<string | null>(null);
 
   useEffect(() => {
     setVerifyProgress(checks, [...VERIFY_CHECK_IDS]);
@@ -193,10 +203,8 @@ function VerifyStepContent() {
                 data-testid="open-verify-prompt"
                 onClick={(event) => {
                   event.preventDefault();
-                  const opener = window.open(deeplink.href, "_blank", "noopener,noreferrer");
-                  if (!opener) {
-                    window.location.assign(deeplink.href);
-                  }
+                  setPendingDeeplink(deeplink.href);
+                  setConfirmOpen(true);
                 }}
                 className="btn-primary px-4 py-2 font-medium"
               >
@@ -214,6 +222,18 @@ function VerifyStepContent() {
             </button>
           </div>
         </div>
+
+        <OpenOpikInCursorModal
+          open={confirmOpen}
+          opikPath={opikPath}
+          onClose={() => {
+            setConfirmOpen(false);
+            setPendingDeeplink(null);
+          }}
+          onOpened={() => {
+            if (pendingDeeplink) fireDeeplink(pendingDeeplink);
+          }}
+        />
 
         <div className="space-y-3 border-t border-[var(--color-border)] pt-6">
           <p className="text-sm font-medium text-slate-900">Before you continue</p>

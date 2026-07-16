@@ -259,7 +259,7 @@ interface ContributionSnapshot {
 | `extend` | Footer label is **Finish**; advances to celebration |
 | `finish` | Footer Next/Finish hidden; Back returns to Extend; progress reads Complete |
 
-Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned). Wizard footer Back/Next drives slide navigation (no in-card prev/next).
+Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned). Wizard footer Back/Next drives slide navigation; clickable slide dots (`overview-slide-dot-{n}`) jump only to already-reached slides. Wizard step chips (`wizard-step-{id}`) jump only to `index <= maxReachedIndex`.
 
 Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide 1 embeds vendored `content/cla.md` with scroll-to-bottom agree (`contributing-cla-document`, `contributing-cla-agree`). Slide 2 embeds vendored `content/contributing-guidelines.md` with scroll-to-bottom agree (`contributing-guidelines-document`, `contributing-guidelines-agree`). Wizard Next on those slides stays disabled until the checkbox is checked after scrolling. Honor-system note: wizard agree prepares onboarding; GitHub CLA bot still applies on PRs.
 
@@ -329,6 +329,7 @@ Vite plugin contribution APIs (C):
 | `GET /api/contribution-branch?issue={N}&summary={slug}` | `{ branch }` | Creates/checks out Opik branch via `create-contribution-branch.sh` |
 | `GET /api/contributor` | `{ username }` | `CONTRIBUTOR_ID` if set, else authenticated `gh` login |
 | `GET /api/opik-path` | `{ path }` | Resolved `OPIK_PATH` |
+| `POST /api/open-opik-in-cursor` | `{ ok, path }` or `{ ok: false, path, error }` | Spawns `cursor [OPIK_PATH]` detached; never trusts a client path |
 | `GET /api/contribution-diff` | `{ paths, branch }` | Diff vs `origin/main` (see Verify step) |
 
 ### `scripts/create-contribution-branch.sh` (C)
@@ -355,10 +356,13 @@ Vite plugin contribution APIs (C):
 |----------------|--------|
 | Wizard nav next | `wizard-next` |
 | Wizard nav back | `wizard-back` |
+| Wizard step nav | `wizard-step-nav`, `wizard-step-{id}` (jump only to reached steps) |
+| Footer powered-by | `footer-powered-by` (Llama 3.1 8B + Ollama links) |
 | About you panel | `step-about` |
 | Persona choice | `about-persona-engineer`, `about-persona-pm`, `about-persona-support`, `about-persona-external` |
 | Overview panel | `step-overview` |
 | Overview slides | `overview-slides` |
+| Overview slide nav | `overview-slide-nav`, `overview-slide-dot-{n}` (reached slides only) |
 | Overview slide | `overview-slide-{id}` |
 | Overview role tile | `overview-role-{id}` |
 | Graph panel | `step-graph` |
@@ -385,6 +389,7 @@ Vite plugin contribution APIs (C):
 | Quiz results summary | `quiz-results` |
 | Contributing overview panel | `step-contributing-overview` |
 | Contributing slides | `contributing-slides` |
+| Contributing slide nav | `contributing-slide-nav`, `contributing-slide-dot-{n}` (reached; CLA/guidelines leave gates still apply) |
 | Contributing slide | `contributing-slide-{id}` |
 | Contributing CLA document panel | `contributing-cla-document` |
 | Contributing CLA agree checkbox | `contributing-cla-agree` |
@@ -408,6 +413,8 @@ Vite plugin contribution APIs (C):
 | Issue select | `issue-select-{number}` |
 | Prompt panel | `step-prompt` |
 | Open Cursor command | `open-cursor-command` |
+| Open Opik repo in Cursor | `open-opik-in-cursor` |
+| Open Opik confirm modal | `open-opik-confirm-modal`, `open-opik-confirm`, `open-opik-path` |
 | Open prompt in Cursor | `open-cursor-prompt` |
 | Open prompt truncated notice | `open-cursor-prompt-truncated` |
 | Cursor prompt | `cursor-prompt` |
@@ -477,7 +484,8 @@ Same JSON shape and auto-grade behavior as `content/quiz.json` (`passThreshold` 
 
 Primary prompt step must include:
 
-- Primary CTA: **Open prompt in Cursor** (`open-cursor-prompt`) via `cursor://anysphere.cursor-deeplink/prompt?text=…` (URL length ≤ 8000; if over, shorten deeplink text and keep full prompt in Copy)
+- Primary CTA: **Open prompt in Cursor** (`open-cursor-prompt`) opens confirm modal (`open-opik-confirm-modal`) showing absolute `OPIK_PATH` (`open-opik-path`); on confirm (`open-opik-confirm`) calls `POST /api/open-opik-in-cursor`, then fires `cursor://anysphere.cursor-deeplink/prompt?text=…` (URL length ≤ 8000; if over, shorten deeplink text and keep full prompt in Copy)
+- **Open Opik repo in Cursor** (`open-opik-in-cursor`) uses the same confirm modal + API (no deeplink)
 - Copyable open-repo command (`open-cursor-command`), e.g. `cursor "$OPIK_PATH"` plus `cd` fallback, using real path from contribution API / env
 - Copy prompt button (`copy-prompt`) as fallback
 - Assigned issue number, title, URL
@@ -489,13 +497,17 @@ Primary prompt step must include:
 - Shorter body; simpler tone for PM/Support
 - Note: user confirms the prompt in Cursor; open the Opik folder first if the workspace is not already open
 
+## Chat demo Markdown
+
+Assistant replies in `apps/chat-demo` render with `react-markdown` + `remark-gfm` + `remark-breaks` (prose styles on `.assistant-message`). User and error messages stay plain text. Existing testids (`chat-response-*`, `data-role="assistant"`) remain; e2e may assert text content through the rendered DOM.
+
 ## Verify step (pre-PR checks)
 
 Step `verify` (`step-verify`) sits between `prompt` and `pr-help`:
 
 1. Classify contribution area from optional `GET /api/contribution-diff` paths (override) or issue labels/title.
 2. Show area + rationale, copyable local commands, and GitHub Actions workflow links to watch.
-3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`) asking the agent to run those checks under `OPIK_PATH`.
+3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`): open CTA uses the same Opik-in-Cursor confirm modal + `POST /api/open-opik-in-cursor`, then fires the verify prompt deeplink.
 4. Honor-system checklist gate: `verify-check-ran-local` + `verify-check-matches-issue` before footer Next.
 
 Optional API: `GET /api/contribution-diff` returns `{ paths: string[], branch: string }` from `git diff --name-only origin/main...HEAD` (fallback `git status --porcelain`). No test execution.
@@ -523,7 +535,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (wizard Next drives deck; last slide gates step leave) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; step leave gated) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (wizard Next drives deck; slide dots jump to reached; last slide gates step leave) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; step leave gated; slide dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
