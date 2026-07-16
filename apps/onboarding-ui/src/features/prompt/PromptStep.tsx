@@ -67,7 +67,7 @@ function PromptStepContent() {
     window.setTimeout(() => setCopiedCmd(false), 2000);
   }, [openCommand]);
 
-  const openConfirm = useCallback((deeplinkHref: string | null) => {
+  const openConfirm = useCallback((deeplinkHref: string) => {
     setPendingDeeplink(deeplinkHref);
     setConfirmOpen(true);
   }, []);
@@ -136,7 +136,7 @@ function PromptStepContent() {
       </div>
 
       <div className="mt-8 space-y-3 border-t border-[var(--color-border)] pt-6">
-        <p className="text-sm font-medium text-slate-900">Open the Opik repo in Cursor</p>
+        <p className="text-sm font-medium text-slate-900">Fallback CLI command</p>
         <pre
           data-testid="open-cursor-command"
           className="overflow-auto rounded-lg border border-[var(--color-border)] bg-slate-50 p-4 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap"
@@ -144,14 +144,6 @@ function PromptStepContent() {
           {openCommand}
         </pre>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            data-testid="open-opik-in-cursor"
-            onClick={() => openConfirm(null)}
-            className="btn-primary px-4 py-2 font-medium"
-          >
-            Open Opik repo in Cursor
-          </button>
           <button
             type="button"
             onClick={() => void copyCommand()}

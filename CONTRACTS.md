@@ -427,8 +427,7 @@ Vite plugin contribution APIs (C):
 | Alternative issue | `issue-alternative-0`, `issue-alternative-1` |
 | Issue select | `issue-select-{number}` |
 | Prompt panel | `step-prompt` |
-| Open Cursor command | `open-cursor-command` |
-| Open Opik repo in Cursor | `open-opik-in-cursor` |
+| Fallback CLI open-repo command | `open-cursor-command` |
 | Open Opik confirm modal | `open-opik-confirm-modal`, `open-opik-confirm`, `open-opik-path` |
 | Open prompt in Cursor | `open-cursor-prompt` |
 | Open prompt truncated notice | `open-cursor-prompt-truncated` |
@@ -456,7 +455,7 @@ Vite plugin contribution APIs (C):
 | Finish Opik GitHub link | `finish-opik-github` |
 | Finish support email | `finish-support-email` |
 
-**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`, `graph-got-it`, `tour-open-spans`, `overview-slide-prev`, `overview-slide-next`, `contributing-slide-prev`, `contributing-slide-next`, `contributing-open-cla`, `contributing-cla-checklist`, `contributing-check-cla`, `contributing-cla-opened-elsewhere`.
+**Retired (must not appear in UI):** `quiz-submit`, `engineer-flag`, `pr-checklist`, `step-checklist`, `quiz-show-answer`, `graph-got-it`, `tour-open-spans`, `overview-slide-prev`, `overview-slide-next`, `contributing-slide-prev`, `contributing-slide-next`, `contributing-open-cla`, `contributing-cla-checklist`, `contributing-check-cla`, `contributing-cla-opened-elsewhere`, `open-opik-in-cursor`.
 
 ## Quiz contract (`content/quiz.json`)
 
@@ -504,8 +503,7 @@ Same JSON shape and auto-grade behavior as `content/quiz.json` (`passThreshold` 
 Primary prompt step must include:
 
 - Primary CTA: **Open prompt in Cursor** (`open-cursor-prompt`) opens confirm modal (`open-opik-confirm-modal`) showing absolute `OPIK_PATH` (`open-opik-path`); on confirm (`open-opik-confirm`) calls `POST /api/open-opik-in-cursor`, then fires `cursor://anysphere.cursor-deeplink/prompt?text=…` (URL length ≤ 8000; if over, shorten deeplink text and keep full prompt in Copy)
-- **Open Opik repo in Cursor** (`open-opik-in-cursor`) uses the same confirm modal + API (no deeplink)
-- Copyable open-repo command (`open-cursor-command`), e.g. `cursor "$OPIK_PATH"` plus `cd` fallback, using real path from contribution API / env
+- Fallback copyable CLI open-repo command (`open-cursor-command`), e.g. `cursor "$OPIK_PATH"` plus `cd` fallback, using real path from contribution API / env (no primary Open-repo button; Copy command only)
 - Copy prompt button (`copy-prompt`) as fallback
 - Assigned issue number, title, URL
 - Branch name matching Opik `{username}/{ticket}-{summary}` (`ticket` = `issue-{N}`, `OPIK-{N}`, or `NA`; legacy `opik-onboarding-tool-*-contribution-\d+` still accepted in soft checks)
@@ -556,7 +554,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` + `lifecycle-explanation` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates; `developer-tooling-ai` and `community-feature-requests` visible) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → cursor prompt contains llms.txt/MCP → verify plan + checklist unlocks Next → PR-help `open-pr-help-prompt` confirm modal + `copy-pr-help-prompt` + prompt includes `## AI Assistance` + attest-client instructions → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` + `lifecycle-explanation` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates; `developer-tooling-ai` and `community-feature-requests` visible) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal → cursor prompt contains llms.txt/MCP → verify plan + checklist unlocks Next → PR-help `open-pr-help-prompt` confirm modal + `copy-pr-help-prompt` + prompt includes `## AI Assistance` + attest-client instructions → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 

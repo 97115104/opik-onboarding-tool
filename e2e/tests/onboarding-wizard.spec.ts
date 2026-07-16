@@ -242,9 +242,17 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
       ).toContainText("llms.txt");
     }
     if (CONTRIBUTING_SLIDE_IDS[i] === "community-feature-requests") {
-      await expect(
-        page.getByTestId("contributing-slide-community-feature-requests"),
-      ).toContainText("feature request");
+      const featureSlide = page.getByTestId(
+        "contributing-slide-community-feature-requests",
+      );
+      await expect(featureSlide).toContainText("feature request");
+      const featureLink = featureSlide.getByRole("link", {
+        name: /open feature requests/i,
+      });
+      await expect(featureLink).toHaveAttribute(
+        "href",
+        /label(%3A|:)Feature_Request/,
+      );
     }
     if (i < CONTRIBUTING_SLIDE_IDS.length - 1) {
       await expect(page.getByTestId("wizard-next")).toBeEnabled();
@@ -438,7 +446,6 @@ test.describe("onboarding wizard", () => {
     await expect(prompt).toContainText("_mcp/server");
     await expect(prompt).not.toContainText("gh pr create --draft");
     await expect(page.getByTestId("open-cursor-prompt")).toBeVisible();
-    await expect(page.getByTestId("open-opik-in-cursor")).toBeVisible();
     const deeplink = page.getByTestId("open-cursor-prompt");
     await expect(deeplink).toHaveAttribute(
       "href",
@@ -465,18 +472,6 @@ test.describe("onboarding wizard", () => {
     );
     await page.getByTestId("open-opik-confirm").click();
     await promptOpenRequest;
-    await expect(page.getByTestId("open-opik-confirm-modal")).toHaveCount(0);
-
-    // Repo CTA uses the same confirm + API path.
-    await page.getByTestId("open-opik-in-cursor").click();
-    await expect(page.getByTestId("open-opik-confirm-modal")).toBeVisible();
-    await expect(page.getByTestId("open-opik-path")).toHaveText(/^\//);
-    const repoOpenRequest = page.waitForRequest(
-      (req) =>
-        req.url().includes("/api/open-opik-in-cursor") && req.method() === "POST",
-    );
-    await page.getByTestId("open-opik-confirm").click();
-    await repoOpenRequest;
     await expect(page.getByTestId("open-opik-confirm-modal")).toHaveCount(0);
 
     await clickNext(page);

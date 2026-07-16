@@ -5,7 +5,7 @@ export const OPIK_LLM_CONTEXT = {
   contributingAiSection:
     'https://www.comet.com/docs/opik/latest/contributing/overview#developer-tooling--ai-assistance',
   featureRequests:
-    'https://github.com/comet-ml/opik/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22',
+    'https://github.com/comet-ml/opik/issues?q=is%3Aissue+is%3Aopen+label%3AFeature_Request',
 } as const
 
 /** Concise Opik AI context block for Cursor prompts (watch deeplink budget). */
