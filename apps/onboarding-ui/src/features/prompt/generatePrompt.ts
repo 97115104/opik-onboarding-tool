@@ -1,3 +1,8 @@
+import {
+  buildAiAssistancePrBlock,
+  buildAttestPrInstructions,
+  buildOpikAiContextBlock,
+} from "../../content/opikAiContext";
 import type { Persona, RankedIssue } from "../issues/types";
 import { BRANCH_NAME_MATCH, DEFAULT_OPIK_PATH } from "../issues/types";
 
@@ -73,8 +78,7 @@ export function generateCursorPrompt(
 5. Commit referencing the issue (Fixes #${issue.number} or Resolves #${issue.number}).
 6. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding step covers checks and draft PR help.
 
-## Accountability
-Disclose AI assistance later in the PR template. A human remains accountable for correctness, licensing, and security.
+${buildOpikAiContextBlock()}
 `;
   }
 
@@ -96,8 +100,7 @@ Disclose AI assistance later in the PR template. A human remains accountable for
 5. Commit with Fixes #${issue.number} or Resolves #${issue.number}.
 6. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding steps cover local checks and draft PR help.
 
-## AI disclosure
-Disclose AI assistance later in the PR template. Human author remains accountable. Do not submit unreviewed AI output.
+${buildOpikAiContextBlock()}
 `;
 }
 
@@ -117,6 +120,9 @@ export function generateVerifyPrompt(
   const workflows = plan.workflows.map((w) => `- ${w.name}: ${w.url}`).join("\n");
 
   return `Verify my Opik contribution against the issue before I open a draft PR.
+
+${buildOpikAiContextBlock()}
+Verify AI-generated code against Opik docs and existing patterns.
 
 ## Issue
 - #${issue.number}: ${issue.title}
@@ -156,6 +162,10 @@ export function generatePrHelpPrompt(
     : "Use the issue already assigned in this onboarding session";
   const branch = branchName ?? "{username}/issue-<N>-onboarding";
 
+  const issueNum = issue?.number
+  const aiBlock = buildAiAssistancePrBlock(issueNum)
+  const attestBlock = buildAttestPrInstructions(issueNum)
+
   return `Help me open a draft pull request for my Opik contribution.
 
 ## Context
@@ -170,8 +180,11 @@ export function generatePrHelpPrompt(
 4. Confirm the commit message links the issue (Fixes #… or Resolves #…).
 5. Create a draft PR: gh pr create --draft
 6. Fill .github/pull_request_template.md completely.
-7. Disclose AI assistance if used.
+7. If AI was used, add this block to the PR description (omit entirely if no AI was used):
+${aiBlock}
 8. Confirm human attestation: I remain accountable for correctness, licensing, and security.
+
+${attestBlock}
 
 Keep instructions short and actionable. Point out anything still missing before I submit.
 `;

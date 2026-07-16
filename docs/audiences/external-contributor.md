@@ -23,7 +23,7 @@ When deploy succeeds, work through the wizard at http://127.0.0.1:4310.
 - Walk the Contributing overview and open the CLA
 - Finish the contributing quiz (CLA, issue links, CI, scope)
 - Select an assigned issue and copy the Cursor prompt
-- Complete **Verify** (local checks / CI awareness) and **PR help** (draft PR steps)
+- Complete **Verify** (local checks / CI awareness) and **PR help** (draft PR steps, `## AI Assistance` template, attest-client instructions)
 - Create work in the **Opik repo**, not this tool repo
 - Reach **Finish** when you complete the wizard
 
@@ -40,7 +40,7 @@ Follow [Opik CONTRIBUTING.md](https://github.com/comet-ml/opik/blob/main/CONTRIB
 2. Keep PRs focused: one issue per PR when possible
 3. Run relevant tests and linters
 4. Open as draft first: `gh pr create --draft`
-5. Disclose AI tools if you used them; you remain accountable for the code
+5. Disclose AI tools if you used them; you remain accountable for the code. Load Opik context from llms.txt; use the PR help prompt for attest and the `## AI Assistance` block.
 
 Good first issues often carry labels like `good first issue` or `help wanted`. The wizard ranking prefers those.
 

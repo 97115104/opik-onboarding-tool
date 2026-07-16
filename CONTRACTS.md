@@ -263,7 +263,7 @@ interface ContributionSnapshot {
 
 Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned). Wizard footer Back/Next drives slide navigation; clickable slide dots in the footer center (`overview-slide-dot-{n}`) jump only to already-reached slides. Wizard step chips (`wizard-step-{id}`) jump only to `index <= maxReachedIndex`.
 
-Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Footer-center slide dots (`contributing-slide-dot-{n}`) respect the same gates as navigation. Slide 1 embeds vendored `content/cla.md` with scroll-to-bottom agree (`contributing-cla-document`, `contributing-cla-agree`). Slide 2 embeds vendored `content/contributing-guidelines.md` with scroll-to-bottom agree (`contributing-guidelines-document`, `contributing-guidelines-agree`). Wizard Next on those slides stays disabled until the checkbox is checked after scrolling. Honor-system note: wizard agree prepares onboarding; GitHub CLA bot still applies on PRs.
+Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide IDs include `developer-tooling-ai` and `community-feature-requests` (after `github-actions`, before `whats-next`). Footer-center slide dots (`contributing-slide-dot-{n}`) respect the same gates as navigation. Slide 1 embeds vendored `content/cla.md` with scroll-to-bottom agree (`contributing-cla-document`, `contributing-cla-agree`). Slide 2 embeds vendored `content/contributing-guidelines.md` with scroll-to-bottom agree (`contributing-guidelines-document`, `contributing-guidelines-agree`). Wizard Next on those slides stays disabled until the checkbox is checked after scrolling. Honor-system note: wizard agree prepares onboarding; GitHub CLA bot still applies on PRs.
 
 Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
 
@@ -387,6 +387,7 @@ Vite plugin contribution APIs (C):
 | Stack service URL | `stack-url-{service}` |
 | Stack fix button | `stack-fix-{service}` |
 | Adding Opik panel | `step-adding-opik` |
+| Adding Opik lifecycle explanation | `lifecycle-explanation` |
 | Adding Opik SDK snippet copy button | `copy-sdk-snippet` |
 | Tour panel | `step-tour` |
 | Tour checklist | `tour-checklist` |
@@ -509,6 +510,7 @@ Primary prompt step must include:
 - Steps: implement fix and commit; stop before draft PR (verify + PR-help cover checks and `gh pr create --draft`)
 - Before work: `cd` to `OPIK_PATH`, `git fetch origin`, checkout the contribution branch (creating from `origin/main` if needed), and rebase onto `origin/main`
 - AI disclosure note (full disclosure happens in PR template)
+- Opik AI context block: llms.txt, llms-full.txt, MCP server URL, and contributing AI section link
 - Link to Opik CONTRIBUTING.md fast path
 - Shorter body; simpler tone for PM/Support
 - Note: user confirms the prompt in Cursor; open the Opik folder first if the workspace is not already open
@@ -523,7 +525,7 @@ Step `verify` (`step-verify`) sits between `prompt` and `pr-help`:
 
 1. Classify contribution area from optional `GET /api/contribution-diff` paths (override) or issue labels/title.
 2. Show area + rationale, the workflows selected for that area, a full GitHub Actions link, and copyable local commands.
-3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`): open CTA uses the same Opik-in-Cursor confirm modal + `POST /api/open-opik-in-cursor`, then fires the verify prompt deeplink.
+3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`): open CTA uses the same Opik-in-Cursor confirm modal + `POST /api/open-opik-in-cursor`, then fires the verify prompt deeplink. Prompt must include the Opik AI context block (llms.txt, MCP) and remind to verify AI-generated code against Opik docs.
 4. Honor-system checklist gate: `verify-check-ran-local` + `verify-check-matches-issue` before footer Next.
 
 Optional API: `GET /api/contribution-diff` returns `{ paths: string[], branch: string }` from `git diff --name-only origin/main...HEAD` (fallback `git status --porcelain`). No test execution.
@@ -533,7 +535,7 @@ Optional API: `GET /api/contribution-diff` returns `{ paths: string[], branch: s
 Step `pr-help` (`step-pr-help`):
 
 1. Brief plain-language "What is a PR?" (2–3 sentences).
-2. Secondary copy-paste Cursor prompt (`pr-help-prompt`) that walks: checkout branch, run checks, `gh pr create --draft`, fill template, AI disclosure, attestation.
+2. Secondary copy-paste Cursor prompt (`pr-help-prompt`) that walks: checkout branch, run checks, `gh pr create --draft`, fill template, `## AI Assistance` disclosure block (when AI used), and `npx attest-client` CLI instructions (prompt-only; no server API).
 
 No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 
@@ -551,7 +553,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik integrations link + `copy-sdk-snippet` + `lifecycle-explanation` → tour 3 progressive CTAs using the Opik project redirect URL (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates; `developer-tooling-ai` and `community-feature-requests` visible) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → cursor prompt contains llms.txt/MCP → verify plan + checklist unlocks Next → PR-help prompts include `## AI Assistance` + attest-client instructions → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -578,4 +580,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.7.0** (progress chrome, Video and Adding Opik steps, learning links)
+Contract version: **1.8.0** (Opik AI context in prompts, contributing slides, lifecycle explanation, PR attest instructions)

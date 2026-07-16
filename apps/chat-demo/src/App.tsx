@@ -104,6 +104,8 @@ export default function App() {
         Traces land in Opik project{" "}
         <a
           href={CHAT_DEMO_PROJECT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="status-project-link"
           data-testid="chat-status-project-link"
         >

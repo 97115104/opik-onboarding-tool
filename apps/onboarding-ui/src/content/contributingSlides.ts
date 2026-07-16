@@ -1,3 +1,5 @@
+import { OPIK_LLM_CONTEXT } from './opikAiContext'
+
 export type ContributingSlideLink = {
   label: string
   href: string
@@ -123,6 +125,36 @@ export const CONTRIBUTING_SLIDES: ContributingSlide[] = [
     didYouKnow: {
       body: 'Pre-commit runs only the hooks that match your changed files, so you do not need every toolchain installed to get useful feedback.',
     },
+  },
+  {
+    id: 'developer-tooling-ai',
+    title: 'Developer tooling for AI assistants',
+    paragraphs: [
+      'Opik publishes AI-readable context so Cursor and other tools understand the monorepo layout and conventions.',
+    ],
+    items: [
+      { label: 'General context (llms.txt)', href: OPIK_LLM_CONTEXT.llmsTxt },
+      { label: 'Full context (llms-full.txt)', href: OPIK_LLM_CONTEXT.llmsFullTxt },
+      { label: 'MCP server (live docs in Cursor)', href: OPIK_LLM_CONTEXT.mcpServer },
+      { label: 'Contributing AI guidelines', href: OPIK_LLM_CONTEXT.contributingAiSection },
+    ],
+    didYouKnow: {
+      body: 'Pointing your AI tool at these URLs reduces wrong assumptions about repo layout and contribution rules.',
+    },
+  },
+  {
+    id: 'community-feature-requests',
+    title: 'Support the roadmap',
+    paragraphs: [
+      'Before picking an issue, check open feature requests for duplicates. Comment on popular requests to show maintainer support.',
+    ],
+    links: [
+      { label: 'Open feature requests', href: OPIK_LLM_CONTEXT.featureRequests },
+      {
+        label: 'Contributing overview (issues)',
+        href: 'https://www.comet.com/docs/opik/contributing/overview',
+      },
+    ],
   },
   {
     id: 'whats-next',

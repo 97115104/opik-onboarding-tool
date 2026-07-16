@@ -13,7 +13,9 @@ This content describes the **upstream Opik repository** ([comet-ml/opik](https:/
 4. **Component areas**: Stay in the area your issue targets; text links to Backend, Frontend, Python SDK, TypeScript SDK, Documentation, and Agent optimizer guides.
 5. **How to contribute**: Structured bullets (Fixes #..., branch convention, scope, local checks).
 6. **GitHub Actions and quality**: Structured bullets plus Did you know for pre-commit.
-7. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
+7. **Developer tooling for AI assistants**: llms.txt, llms-full.txt, MCP server, contributing AI guidelines links; Did you know for reducing wrong assumptions.
+8. **Support the roadmap**: Check feature requests for duplicates; comment to show support; links to GitHub search and contributing overview.
+9. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
    - Did you know: SDLC is the software development lifecycle, from issue through design, implementation, testing, review, and release. The wizard gives this context before a first PR.
 
 Wizard footer Back/Next drives slide navigation. Step complete requires last slide plus `claAgreed` and `guidelinesAgreed`.

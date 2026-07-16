@@ -80,6 +80,28 @@ export function AddingOpikStep() {
               <text x="360" y="90">Local Opik UI</text>
             </g>
           </svg>
+          <ol
+            className="mt-4 list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-600"
+            data-testid="lifecycle-explanation"
+          >
+            <li>
+              The browser sends your message to the chat-demo server (<code>POST /api/chat</code>).
+              One request forks on the server: inference and observability run in parallel.
+            </li>
+            <li>
+              Before calling the model, the server opens an Opik trace and LLM span with your
+              message as input. This wraps the request and does not block the LLM call.
+            </li>
+            <li>The server calls Ollama and waits for the assistant reply.</li>
+            <li>
+              After the reply, the handler updates the span with output, token usage, and timing,
+              ends the span and trace, and flushes to the Opik API.
+            </li>
+            <li>
+              The reply returns to the browser and the trace appears in the local Opik UI under the{' '}
+              <code>chat-demo</code> project (Traces tab).
+            </li>
+          </ol>
         </div>
 
         <LearnMoreLink href="https://www.comet.com/docs/opik/integrations/overview">

@@ -6,7 +6,7 @@ For backend, frontend, ML, and platform engineers contributing code to **comet-m
 
 - Overview, Opik Features, and Try Opik: prioritize tracing, spans, and SDK integration
 - Finish the product quiz (aim for 4/5), walk the contributing overview (open the CLA), finish the contributing quiz, then pick a ranked GitHub issue
-- Copy the Cursor prompt (includes `OPIK_PATH` and branch name). Use **Verify** for local checks / CI awareness, then **PR help** for draft PR steps
+- Copy the Cursor prompt (includes `OPIK_PATH`, branch name, and Opik AI context URLs). Use **Verify** for local checks / CI awareness, then **PR help** for draft PR steps (includes `## AI Assistance` template and attest-client CLI instructions)
 - Implement in the **Opik repo** (`OPIK_PATH`), not this tool repo
 - Reach **Finish** when you complete the wizard
 
@@ -23,7 +23,7 @@ For backend, frontend, ML, and platform engineers contributing code to **comet-m
 2. Link the issue with `Fixes #1234`
 3. Run formatters, linters, and tests for touched packages
 4. Open a draft PR: `gh pr create --draft`
-5. Disclose AI assistance if you used Cursor or similar tools
+5. Disclose AI assistance if you used Cursor or similar tools (see llms.txt and the PR help prompt for the `## AI Assistance` block and attest link)
 
 Prefer small, focused spans (one per LLM call, tool, or retrieval step) so trace trees stay readable.
 

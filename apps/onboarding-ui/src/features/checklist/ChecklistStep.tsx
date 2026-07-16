@@ -53,7 +53,18 @@ function ChecklistStepContent() {
           </p>
           <p>
             Your PR should link the tracked issue, follow the Opik template, disclose AI help if
-            used, and confirm you remain accountable for the change.
+            used, and confirm you remain accountable for the change. If AI helped, the prompt below
+            asks Cursor to create a signed{' '}
+            <a
+              href="https://attest.97115104.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-primary)] underline"
+            >
+              attest
+            </a>{' '}
+            link for your PR description. That is separate from the wizard footer attestation,
+            which covers this onboarding tool itself.
           </p>
         </div>
 

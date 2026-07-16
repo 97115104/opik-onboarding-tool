@@ -32,6 +32,8 @@ const CONTRIBUTING_SLIDE_IDS = [
   "where-to-work",
   "how-to-contribute",
   "github-actions",
+  "developer-tooling-ai",
+  "community-feature-requests",
   "whats-next",
 ] as const;
 
@@ -234,6 +236,16 @@ async function completeContributingOverviewSlides(page: Page): Promise<void> {
     await expect(
       page.getByTestId(`contributing-slide-${CONTRIBUTING_SLIDE_IDS[i]}`),
     ).toBeVisible();
+    if (CONTRIBUTING_SLIDE_IDS[i] === "developer-tooling-ai") {
+      await expect(
+        page.getByTestId("contributing-slide-developer-tooling-ai"),
+      ).toContainText("llms.txt");
+    }
+    if (CONTRIBUTING_SLIDE_IDS[i] === "community-feature-requests") {
+      await expect(
+        page.getByTestId("contributing-slide-community-feature-requests"),
+      ).toContainText("feature request");
+    }
     if (i < CONTRIBUTING_SLIDE_IDS.length - 1) {
       await expect(page.getByTestId("wizard-next")).toBeEnabled();
       await clickNext(page);
@@ -290,6 +302,11 @@ async function completeVerify(page: Page): Promise<void> {
   await expect(page.getByTestId("verify-prompt")).toBeVisible();
   await expect(page.getByTestId("verify-prompt")).toContainText("git fetch origin");
   await expect(page.getByTestId("verify-prompt")).toContainText("origin/main");
+  await expect(page.getByTestId("verify-prompt")).toContainText("llms.txt");
+  await expect(page.getByTestId("verify-prompt")).toContainText("_mcp/server");
+  await expect(page.getByTestId("verify-prompt")).toContainText(
+    "Verify AI-generated code",
+  );
   await expect(page.getByTestId("verify-checklist")).toBeVisible();
   await expect(page.getByTestId("open-verify-prompt")).toBeVisible();
   await expect(page.getByTestId("copy-verify-prompt")).toBeVisible();
@@ -359,6 +376,7 @@ test.describe("onboarding wizard", () => {
       "https://www.comet.com/docs/opik/integrations/overview",
     );
     await expect(page.getByTestId("copy-sdk-snippet")).toBeVisible();
+    await expect(page.getByTestId("lifecycle-explanation")).toBeVisible();
     await clickNext(page);
 
     await completeTour(page);
@@ -416,6 +434,8 @@ test.describe("onboarding wizard", () => {
     await expect(prompt).toContainText("Do not open a PR yet");
     await expect(prompt).toContainText("git fetch origin");
     await expect(prompt).toContainText("origin/main");
+    await expect(prompt).toContainText("llms.txt");
+    await expect(prompt).toContainText("_mcp/server");
     await expect(prompt).not.toContainText("gh pr create --draft");
     await expect(page.getByTestId("open-cursor-prompt")).toBeVisible();
     await expect(page.getByTestId("open-opik-in-cursor")).toBeVisible();
@@ -467,6 +487,11 @@ test.describe("onboarding wizard", () => {
     await expect(page.getByTestId("pr-help-prompt")).toBeVisible();
     await expect(page.getByTestId("pr-help-prompt")).toContainText("git fetch origin");
     await expect(page.getByTestId("pr-help-prompt")).toContainText("origin/main");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("## AI Assistance");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("Tool/model:");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("Human verification:");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("npx attest-client");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("shortUrl/verifyUrl");
     await expect(page.getByTestId("pr-checklist")).toHaveCount(0);
     await clickNext(page);
 
