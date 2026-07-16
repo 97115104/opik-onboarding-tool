@@ -27,6 +27,7 @@ const GRAPH_NODE_IDS = [
 const OVERVIEW_SLIDE_COUNT = 6;
 const CONTRIBUTING_SLIDE_IDS = [
   "what-contributing-means",
+  "contributing-guidelines",
   "repo-layout",
   "where-to-work",
   "how-to-contribute",
@@ -42,20 +43,29 @@ async function expectStep(page: Page, testId: string): Promise<void> {
   await expect(page.getByTestId(testId)).toBeVisible({ timeout: 30_000 });
 }
 
+async function scrollAgreeDocument(page: Page, prefix: string): Promise<void> {
+  const doc = page.getByTestId(`${prefix}-document`);
+  await doc.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+    el.dispatchEvent(new Event("scroll"));
+  });
+}
+
 async function completeOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-overview");
   await expect(page.getByTestId("opik-brand-logo")).toBeVisible();
   await expect(page.getByTestId("overview-slides")).toBeVisible();
   await expect(page.getByTestId("slide-did-you-know")).toBeVisible();
-  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+  await expect(page.getByTestId("wizard-next")).toBeVisible();
+  await expect(page.getByTestId("wizard-next")).toBeEnabled();
 
   for (let i = 0; i < OVERVIEW_SLIDE_COUNT - 1; i++) {
-    await page.getByTestId("overview-slide-next").click();
+    await clickNext(page);
   }
 
-  // Last slide: no overview-slide-next; wizard Next unlocks via reachedLast.
-  await expect(page.getByTestId("overview-slide-next")).toHaveCount(0);
+  await expect(page.getByTestId("overview-slide-what-you-learn")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
+  await expect(page.getByTestId("wizard-next")).toBeEnabled();
   await clickNext(page);
 }
 
@@ -142,46 +152,48 @@ async function completeQuiz(page: Page): Promise<void> {
 async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-contributing-overview");
   await expect(page.getByTestId("contributing-slides")).toBeVisible();
-  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
-  await expect(page.getByTestId("contributing-slide-prev")).toBeDisabled();
+  await expect(page.getByTestId("wizard-next")).toBeVisible();
 
-  // Slide 1: CLA CTA + acknowledgment checkbox required before Next slide unlocks.
-  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
-  await expect(page.getByTestId("contributing-check-cla")).toHaveCount(0);
-  const cla = page.getByTestId("contributing-open-cla");
-  await expect(cla).toHaveAttribute(
-    "href",
-    "https://github.com/comet-ml/opik/blob/main/CLA.md",
-  );
-  page.on("popup", (popup) => {
-    void popup.close();
-  });
-  await cla.click();
-  await expect(page.getByTestId("contributing-cla-checklist")).toBeVisible();
-  await expect(page.getByTestId("contributing-check-cla")).toBeVisible();
-  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
-  await page.getByTestId("contributing-check-cla").check();
-  await expect(page.getByTestId("contributing-slide-next")).toBeEnabled();
-  await page.getByTestId("contributing-check-cla").uncheck();
-  await expect(page.getByTestId("contributing-slide-next")).toBeDisabled();
-  await page.getByTestId("contributing-check-cla").check();
-  await expect(page.getByTestId("contributing-slide-next")).toBeEnabled();
-  await expect(page.getByTestId("wizard-next")).toHaveCount(0);
+  // Slide 1: CLA scroll + agree required before wizard Next advances.
+  await expect(page.getByTestId("contributing-slide-what-contributing-means")).toBeVisible();
+  await expect(page.getByTestId("contributing-cla-document")).toBeVisible();
+  await expect(page.getByTestId("contributing-cla-agree")).toBeDisabled();
+  await expect(page.getByTestId("wizard-next")).toBeDisabled();
 
-  for (let i = 0; i < CONTRIBUTING_SLIDE_IDS.length; i++) {
+  await scrollAgreeDocument(page, "contributing-cla");
+  await expect(page.getByTestId("contributing-cla-agree")).toBeEnabled();
+  await page.getByTestId("contributing-cla-agree").check();
+  await expect(page.getByTestId("wizard-next")).toBeEnabled();
+  await page.getByTestId("contributing-cla-agree").uncheck();
+  await expect(page.getByTestId("wizard-next")).toBeDisabled();
+  await scrollAgreeDocument(page, "contributing-cla");
+  await page.getByTestId("contributing-cla-agree").check();
+  await clickNext(page);
+
+  // Slide 2: CONTRIBUTING scroll + agree.
+  await expect(page.getByTestId("contributing-slide-contributing-guidelines")).toBeVisible();
+  await expect(page.getByTestId("contributing-guidelines-document")).toBeVisible();
+  await expect(page.getByTestId("contributing-guidelines-agree")).toBeDisabled();
+  await expect(page.getByTestId("wizard-next")).toBeDisabled();
+
+  await scrollAgreeDocument(page, "contributing-guidelines");
+  await page.getByTestId("contributing-guidelines-agree").check();
+  await expect(page.getByTestId("wizard-next")).toBeEnabled();
+  await clickNext(page);
+
+  for (let i = 2; i < CONTRIBUTING_SLIDE_IDS.length; i++) {
     await expect(
       page.getByTestId(`contributing-slide-${CONTRIBUTING_SLIDE_IDS[i]}`),
     ).toBeVisible();
     if (i < CONTRIBUTING_SLIDE_IDS.length - 1) {
-      await expect(page.getByTestId("wizard-next")).toHaveCount(0);
-      await page.getByTestId("contributing-slide-next").click();
-      await expect(page.getByTestId("contributing-slide-prev")).toBeEnabled();
+      await expect(page.getByTestId("wizard-next")).toBeEnabled();
+      await clickNext(page);
     }
   }
 
-  // Last slide: no contributing-slide-next; wizard Next unlocks via reachedLast + CLA open + acknowledge.
-  await expect(page.getByTestId("contributing-slide-next")).toHaveCount(0);
+  // Last slide: wizard Next unlocks via reachedLast + both agrees.
   await expect(page.getByTestId("wizard-next")).toBeVisible();
+  await expect(page.getByTestId("wizard-next")).toBeEnabled();
   await clickNext(page);
 }
 
@@ -315,6 +327,7 @@ test.describe("onboarding wizard", () => {
     await expectStep(page, "step-finish");
     await expect(page.getByText("Complete")).toBeVisible();
     await expect(page.getByText("Well done")).toBeVisible();
+    await expect(page.getByText("✓ Finish")).toBeVisible();
     await expect(page.getByTestId("finish-fireworks")).toBeVisible();
     await expect(page.getByTestId("finish-opik-github")).toHaveAttribute(
       "href",

@@ -7,12 +7,17 @@ This content describes the **upstream Opik repository** ([comet-ml/opik](https:/
 
 ## Slides
 
-1. **What contributing means**: Welcome. Tracked issue, focused PR, maintainer review. Open and sign the CLA (button). After opening, check “I have viewed and read the CLA.” Soft note that AI help is welcome and the human stays accountable.
-2. **How the codebase is organized**: Prose naming `apps/`, `sdks/`, `tests_end_to_end/`, and `deployment/` (no bullets).
-3. **Component areas**: Stay in the area your issue targets; text links to Backend, Frontend, Python SDK, TypeScript SDK, Documentation, and Agent optimizer guides.
-4. **How to contribute**: Fixes #.... Opik convention `{username}/{ticket}-{summary}` (`{username}` = GitHub handle; ticket = `issue-{N}` or `NA`; summary = title slug). This wizard creates that branch. Scoped PR, local checks (prose).
-5. **GitHub Actions and quality**: Actions as CI in the SDLC; workflows; pre-commit / `make hooks`; Verify later.
-6. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
+1. **What contributing means**: Welcome copy plus embedded CLA scroll-and-agree panel (`contributing-cla-document`, `contributing-cla-agree`). Scroll to bottom unlocks the checkbox.
+2. **Contributing guidelines**: Intro plus embedded CONTRIBUTING scroll-and-agree panel (`contributing-guidelines-document`, `contributing-guidelines-agree`).
+3. **How the codebase is organized**: Linked GitHub tree paths for `apps/`, `sdks/`, `tests_end_to_end/`, `deployment/`. Did you know for SDK and deployment.
+4. **Component areas**: Stay in the area your issue targets; text links to Backend, Frontend, Python SDK, TypeScript SDK, Documentation, and Agent optimizer guides.
+5. **How to contribute**: Structured bullets (Fixes #..., branch convention, scope, local checks).
+6. **GitHub Actions and quality**: Structured bullets plus Did you know for pre-commit.
+7. **What comes next in this wizard**: Tool compresses SDLC context; next is the contributing quiz, then a ranked issue.
+
+Wizard footer Back/Next drives slide navigation. Step complete requires last slide plus `claAgreed` and `guidelinesAgreed`.
+
+Vendored markdown: `content/cla.md`, `content/contributing-guidelines.md` (canonical sources on GitHub).
 
 ## Learn more
 

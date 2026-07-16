@@ -1,12 +1,35 @@
-import { useEffect, useState } from 'react'
-import { OVERVIEW_SLIDES } from '../content/overviewSlides'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { OVERVIEW_SLIDES, type OverviewBullet } from '../content/overviewSlides'
 import { DidYouKnow } from '../components/DidYouKnow'
 import { StepPanel } from '../components/StepPanel'
 import { getOverviewProgress, setOverviewProgress } from '../lib/wizardGates'
+import { registerSlideDeck } from '../lib/slideDeckNav'
+
+function renderBullet(bullet: OverviewBullet, index: number) {
+  if (typeof bullet === 'string') {
+    return <li key={bullet}>{bullet}</li>
+  }
+  if (bullet.href) {
+    return (
+      <li key={`${bullet.text}-${index}`}>
+        <a
+          href={bullet.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+        >
+          {bullet.text}
+        </a>
+      </li>
+    )
+  }
+  return <li key={bullet.text}>{bullet.text}</li>
+}
 
 export function OverviewStep() {
   const saved = getOverviewProgress()
   const [slideIndex, setSlideIndex] = useState(saved.slideIndex)
+  const [expandedRole, setExpandedRole] = useState<string | null>(null)
   const total = OVERVIEW_SLIDES.length
   const slide = OVERVIEW_SLIDES[slideIndex]!
   const isLast = slideIndex === total - 1
@@ -18,6 +41,26 @@ export function OverviewStep() {
       reachedLast: prev.reachedLast || isLast,
     })
   }, [slideIndex, isLast])
+
+  const goPrev = useCallback(() => {
+    setSlideIndex((index) => Math.max(0, index - 1))
+    setExpandedRole(null)
+  }, [])
+
+  const goNext = useCallback(() => {
+    setSlideIndex((index) => Math.min(total - 1, index + 1))
+    setExpandedRole(null)
+  }, [total])
+
+  useLayoutEffect(() => {
+    return registerSlideDeck('overview', {
+      canPrevSlide: slideIndex > 0,
+      canNextSlide: !isLast,
+      atLastSlide: isLast,
+      prevSlide: goPrev,
+      nextSlide: goNext,
+    })
+  }, [slideIndex, isLast, goPrev, goNext])
 
   return (
     <StepPanel testId="step-overview" title="Product overview">
@@ -37,37 +80,59 @@ export function OverviewStep() {
               {paragraph}
             </p>
           ))}
+
+          {slide.roles && slide.roles.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              {slide.roles.map((role) => {
+                const expanded = expandedRole === role.id
+                return (
+                  <div
+                    key={role.id}
+                    data-testid={`overview-role-${role.id}`}
+                    className={`rounded-xl border px-3 py-3 text-left transition ${
+                      expanded
+                        ? 'border-[var(--color-accent)] bg-[var(--color-accent-soft)]'
+                        : 'border-[var(--color-border)] bg-white'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      aria-expanded={expanded}
+                      onClick={() => setExpandedRole(expanded ? null : role.id)}
+                      className="w-full text-left"
+                    >
+                      <p className="font-medium text-slate-900">{role.label}</p>
+                      <p className="mt-1 text-xs text-slate-500">{role.summary}</p>
+                    </button>
+                    {expanded ? (
+                      <p className="mt-2 text-sm leading-relaxed text-slate-600">{role.detail}</p>
+                    ) : null}
+                    {expanded && role.href ? (
+                      <p className="mt-2 text-sm">
+                        <a
+                          href={role.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
+                        >
+                          {role.hrefLabel ?? role.href}
+                        </a>
+                      </p>
+                    ) : null}
+                  </div>
+                )
+              })}
+            </div>
+          ) : null}
+
           {slide.bullets && slide.bullets.length > 0 ? (
             <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-600">
-              {slide.bullets.map((bullet) => (
-                <li key={bullet}>{bullet}</li>
-              ))}
+              {slide.bullets.map((bullet, index) => renderBullet(bullet, index))}
             </ul>
           ) : null}
+
           {slide.didYouKnow ? (
             <DidYouKnow title={slide.didYouKnow.title} body={slide.didYouKnow.body} />
-          ) : null}
-        </div>
-
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <button
-            type="button"
-            data-testid="overview-slide-prev"
-            disabled={slideIndex === 0}
-            onClick={() => setSlideIndex((index) => Math.max(0, index - 1))}
-            className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm text-slate-700 hover:border-slate-400 disabled:cursor-not-allowed disabled:opacity-35"
-          >
-            Previous slide
-          </button>
-          {!isLast ? (
-            <button
-              type="button"
-              data-testid="overview-slide-next"
-              onClick={() => setSlideIndex((index) => Math.min(total - 1, index + 1))}
-              className="btn-primary px-3 py-1.5"
-            >
-              Next slide
-            </button>
           ) : null}
         </div>
       </div>

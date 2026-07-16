@@ -20,7 +20,7 @@ export function WizardProgress({ currentIndex }: WizardProgressProps) {
             ? 'Complete'
             : `Step ${currentIndex + 1} of ${CONTENT_STEP_COUNT}`}
         </span>
-        <span>{step?.label}</span>
+        <span>{isFinish ? '✓ Finish' : step?.label}</span>
       </div>
       <div className="h-1 overflow-hidden rounded-full bg-slate-200">
         <motion.div

@@ -3,6 +3,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   useSyncExternalStore,
@@ -18,6 +19,11 @@ import {
   PERSONA_CHANGED_EVENT,
   readPersona,
 } from '@/lib/persona'
+import {
+  getSlideDeckSnapshot,
+  setActiveSlideDeckStep,
+  subscribeSlideDeck,
+} from '@/lib/slideDeckNav'
 import {
   getWizardGatesSnapshot,
   subscribeWizardGates,
@@ -139,6 +145,10 @@ function useWizardGates() {
   )
 }
 
+function useSlideDeckNav() {
+  return useSyncExternalStore(subscribeSlideDeck, getSlideDeckSnapshot, getSlideDeckSnapshot)
+}
+
 export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [boundaryKey, setBoundaryKey] = useState(0)
@@ -146,25 +156,37 @@ export default function App() {
   const quizFinished = useQuizFinished()
   const contributingQuizFinished = useContributingQuizFinished()
   const gates = useWizardGates()
+  const slideDeck = useSlideDeckNav()
 
   const step = STEP_REGISTRY[currentIndex]
   const StepComponent = step?.Component
   const stepId = WIZARD_STEPS[currentIndex]?.id
 
-  const canGoBack = currentIndex > 0
+  const isSlideDeckStep = stepId === 'overview' || stepId === 'contributing-overview'
+
+  useLayoutEffect(() => {
+    setActiveSlideDeckStep(isSlideDeckStep ? stepId! : null)
+    return () => setActiveSlideDeckStep(null)
+  }, [isSlideDeckStep, stepId])
+
+  const canGoBack = currentIndex > 0 || Boolean(isSlideDeckStep && slideDeck?.canPrevSlide)
   const isFinishStep = stepId === 'finish'
   const isExtendStep = stepId === 'extend'
   const canGoNext = currentIndex < STEP_REGISTRY.length - 1
 
-  // Gate Next: about requires persona; overview/graph/tour/contributing/verify/quiz hide until complete; issues require a pick.
+  const slideDeckStepComplete =
+    stepId === 'overview'
+      ? gates.overview
+      : stepId === 'contributing-overview'
+        ? gates.contributingOverview
+        : false
+
   const hideNext =
     isFinishStep ||
     (stepId === 'about' && !personaSelected) ||
-    (stepId === 'overview' && !gates.overview) ||
     (stepId === 'graph' && !gates.graph) ||
     (stepId === 'tour' && !gates.tour) ||
     (stepId === 'quiz' && !quizFinished) ||
-    (stepId === 'contributing-overview' && !gates.contributingOverview) ||
     (stepId === 'contributing-quiz' && !contributingQuizFinished) ||
     (stepId === 'verify' && !gates.verify)
 
@@ -174,10 +196,18 @@ export default function App() {
     () => contributionStore.getSnapshot().selectedIssue !== null,
   )
 
+  const canAdvanceSlideDeck =
+    isSlideDeckStep &&
+    Boolean(
+      slideDeck &&
+        (slideDeck.canNextSlide || (slideDeck.atLastSlide && slideDeckStepComplete)),
+    )
+
   const canAdvance =
     canGoNext &&
     !hideNext &&
-    !(stepId === 'issues' && !issueSelected)
+    !(stepId === 'issues' && !issueSelected) &&
+    (!isSlideDeckStep || canAdvanceSlideDeck)
 
   /** Clear quiz finished flags before entering a quiz step so stale localStorage cannot unlock Next during lazy Suspense. */
   function clearQuizGateForStep(nextId: string | undefined) {
@@ -190,17 +220,39 @@ export default function App() {
     }
   }
 
-  const goBack = useCallback(() => {
+  const goBackWizard = useCallback(() => {
     const nextIndex = Math.max(0, currentIndex - 1)
     clearQuizGateForStep(WIZARD_STEPS[nextIndex]?.id)
     setCurrentIndex(nextIndex)
   }, [currentIndex])
 
-  const goNext = useCallback(() => {
+  const goNextWizard = useCallback(() => {
     const nextIndex = Math.min(STEP_REGISTRY.length - 1, currentIndex + 1)
     clearQuizGateForStep(WIZARD_STEPS[nextIndex]?.id)
     setCurrentIndex(nextIndex)
   }, [currentIndex])
+
+  const handleBack = useCallback(() => {
+    if (isSlideDeckStep && slideDeck?.canPrevSlide) {
+      slideDeck.prevSlide()
+      return
+    }
+    goBackWizard()
+  }, [isSlideDeckStep, slideDeck, goBackWizard])
+
+  const handleNext = useCallback(() => {
+    if (isSlideDeckStep && slideDeck?.canNextSlide) {
+      slideDeck.nextSlide()
+      return
+    }
+    if (isSlideDeckStep && slideDeck && !slideDeck.canNextSlide) {
+      if (slideDeck.atLastSlide && slideDeckStepComplete) {
+        goNextWizard()
+      }
+      return
+    }
+    goNextWizard()
+  }, [isSlideDeckStep, slideDeck, slideDeckStepComplete, goNextWizard])
 
   const stepKey = useMemo(() => WIZARD_STEPS[currentIndex]?.id ?? 'unknown', [currentIndex])
 
@@ -208,8 +260,8 @@ export default function App() {
     <ContributionProvider>
       <WizardShell
         currentIndex={currentIndex}
-        onBack={goBack}
-        onNext={goNext}
+        onBack={handleBack}
+        onNext={handleNext}
         canGoBack={canGoBack}
         canGoNext={canAdvance}
         hideNext={hideNext}

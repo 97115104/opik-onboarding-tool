@@ -1,9 +1,26 @@
+export type OverviewBullet =
+  | string
+  | {
+      text: string
+      href?: string
+    }
+
+export type OverviewRole = {
+  id: string
+  label: string
+  summary: string
+  detail: string
+  href?: string
+  hrefLabel?: string
+}
+
 export type OverviewSlide = {
   id: string
   title: string
   /** Primary paragraphs shown under the title. */
   paragraphs: string[]
-  bullets?: string[]
+  bullets?: OverviewBullet[]
+  roles?: OverviewRole[]
   didYouKnow?: { title?: string; body: string }
 }
 
@@ -47,12 +64,38 @@ export const OVERVIEW_SLIDES: OverviewSlide[] = [
   {
     id: 'who-for',
     title: 'Who Opik is for',
-    paragraphs: ['Opik helps individuals and teams ship better AI products.'],
-    bullets: [
-      'Builders: debug agents and retrieval pipelines with full traces',
-      'PMs: see quality, cost, and regressions without digging through logs',
-      'Support: reproduce issues and point contributors at clear evidence',
-      'Businesses: self-host or use Comet Cloud for observability at scale',
+    paragraphs: ['Tap a role to see how Opik helps. Opik supports individuals and teams shipping AI products.'],
+    roles: [
+      {
+        id: 'builders',
+        label: 'Builders',
+        summary: 'Debug agents and pipelines',
+        detail:
+          'See full traces for retrieval, tools, and model calls. Find failures fast and ship fixes with evidence.',
+      },
+      {
+        id: 'pms',
+        label: 'PMs',
+        summary: 'Track quality and cost',
+        detail:
+          'Watch quality scores, latency, and spend without digging through raw logs. Spot regressions before users do.',
+      },
+      {
+        id: 'support',
+        label: 'Support',
+        summary: 'Reproduce user issues',
+        detail:
+          'Pull the exact trace for a report, share it with engineering, and point contributors at clear reproduction steps.',
+      },
+      {
+        id: 'businesses',
+        label: 'Businesses',
+        summary: 'Scale with control',
+        detail:
+          'Self-host for full control or use Comet Cloud for managed observability at scale.',
+        href: 'https://www.comet.com/opik',
+        hrefLabel: 'Comet Cloud',
+      },
     ],
   },
   {
@@ -60,19 +103,34 @@ export const OVERVIEW_SLIDES: OverviewSlide[] = [
     title: 'Deployment options',
     paragraphs: ['Choose the path that fits your environment.'],
     bullets: [
-      'Self-hosted (./opik.sh): local dev, air-gapped, full control. This wizard uses this option.',
-      'Comet Cloud: fastest start with managed infrastructure',
-      'Enterprise: scale, compliance, and org-wide rollout',
+      {
+        text: 'Self-hosted (./opik.sh): local dev, air-gapped, full control. This wizard uses this option.',
+        href: 'https://www.comet.com/docs/opik/self-host/local_deployment',
+      },
+      {
+        text: 'Comet Cloud: fastest start with managed infrastructure',
+        href: 'https://www.comet.com/opik',
+      },
+      {
+        text: 'Enterprise: scale, compliance, and org-wide rollout',
+        href: 'https://www.comet.com/site/about-us/contact-us',
+      },
     ],
     didYouKnow: {
       body: 'Self-hosted means you run Opik on your own machine or servers. Cloud means Comet runs it for you so you can start without installing the stack.',
     },
   },
   {
-    id: 'wizard-uses',
-    title: 'How this wizard uses Opik',
+    id: 'what-you-learn',
+    title: 'What you will learn in this onboarding',
     paragraphs: [
-      'You will run the self-hosted stack, send a chat demo trace, learn the product (Opik Features and Try Opik), take the product quiz, review how Opik contributions work, take a short contributing quiz, pick a GitHub issue, copy the Cursor prompt, verify your checks, open a draft PR with Cursor (PR help), optionally extend this tool, then Finish.',
+      'This wizard is hands-on. You will run real tools, not just read slides. Take your time on each step and use Back if you want to review.',
+    ],
+    bullets: [
+      'Run the self-hosted Opik stack locally and send a chat demo trace',
+      'Explore Opik Features and Try Opik to read a trace end to end',
+      'Review how Opik contributions work, agree to the CLA and guidelines, and pick a GitHub issue',
+      'Copy a Cursor prompt, verify your checks, and get help opening a draft pull request',
     ],
   },
 ]

@@ -12,17 +12,7 @@ type Particle = {
   size: number
 }
 
-const COLORS = [
-  '#0f172a',
-  '#1e293b',
-  '#334155',
-  '#0ea5e9',
-  '#38bdf8',
-  '#14b8a6',
-  '#2dd4bf',
-  '#e2e8f0',
-  '#f8fafc',
-]
+const COLORS = ['#FB9341', '#E30D3E', '#2e8555', '#19A979', '#f8fafc', '#fef3c7', '#ecfdf5']
 
 function burst(particles: Particle[], width: number, height: number) {
   const cx = width * (0.15 + Math.random() * 0.7)
@@ -47,8 +37,8 @@ function burst(particles: Particle[], width: number, height: number) {
 
 function fillAtmosphere(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const gradient = ctx.createLinearGradient(0, 0, 0, height)
-  gradient.addColorStop(0, '#e0f2fe')
-  gradient.addColorStop(0.45, '#f0fdfa')
+  gradient.addColorStop(0, '#fef3c7')
+  gradient.addColorStop(0.45, '#ecfdf5')
   gradient.addColorStop(1, '#f8fafc')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)

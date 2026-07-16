@@ -3,20 +3,28 @@ export type ContributingSlideLink = {
   href: string
 }
 
-export type ContributingSlideCta = {
+export type ContributingSlideItem = {
   label: string
-  href: string
-  testId: string
+  href?: string
 }
 
 export type ContributingSlide = {
   id: string
   title: string
-  body: string
+  paragraphs?: string[]
+  /** @deprecated Prefer paragraphs */
+  body?: string
   bullets?: string[]
-  cta?: ContributingSlideCta
+  items?: ContributingSlideItem[]
   links?: ContributingSlideLink[]
+  didYouKnow?: { title?: string; body: string }
+  /** Embedded CLA reader on the first slide. */
+  embedCla?: boolean
+  /** Embedded CONTRIBUTING reader on the guidelines slide. */
+  embedGuidelines?: boolean
 }
+
+const GITHUB_TREE = 'https://github.com/comet-ml/opik/tree/main'
 
 /**
  * Source of truth for the Contributing overview step walkthrough.
@@ -27,22 +35,42 @@ export const CONTRIBUTING_SLIDES: ContributingSlide[] = [
   {
     id: 'what-contributing-means',
     title: 'What contributing means',
-    body: 'Welcome. You contribute by picking a tracked GitHub issue, opening a focused pull request, and working with maintainers through review. Before your first PR, open and sign the Contributor License Agreement (CLA). AI help is welcome; you stay accountable for the result.',
-    cta: {
-      label: 'View the CLA',
-      href: 'https://github.com/comet-ml/opik/blob/main/CLA.md',
-      testId: 'contributing-open-cla',
-    },
+    paragraphs: [
+      'Welcome. You contribute by picking a tracked GitHub issue, opening a focused pull request, and working with maintainers through review.',
+      'Before your first PR, read and agree to the Contributor License Agreement below. AI help is welcome; you stay accountable for the result.',
+    ],
+    embedCla: true,
+  },
+  {
+    id: 'contributing-guidelines',
+    title: 'Contributing guidelines',
+    paragraphs: [
+      'The Opik repo CONTRIBUTING file covers setup, branch naming, checks, and PR conventions. Scroll through it here, then agree to continue.',
+    ],
+    embedGuidelines: true,
   },
   {
     id: 'repo-layout',
     title: 'How the codebase is organized',
-    body: 'The Opik repository (comet-ml/opik) groups work under apps/ (services and product surfaces), sdks/ (client libraries and related tooling), tests_end_to_end/ (end-to-end suites), and deployment/ (Docker and Kubernetes assets).',
+    paragraphs: [
+      'The Opik repository (comet-ml/opik) groups work by area. Open a folder on GitHub when you need to see what lives there.',
+    ],
+    items: [
+      { label: 'apps/', href: `${GITHUB_TREE}/apps` },
+      { label: 'sdks/', href: `${GITHUB_TREE}/sdks` },
+      { label: 'tests_end_to_end/', href: `${GITHUB_TREE}/tests_end_to_end` },
+      { label: 'deployment/', href: `${GITHUB_TREE}/deployment` },
+    ],
+    didYouKnow: {
+      body: 'SDK folders hold client libraries. The deployment folder has Docker and Kubernetes assets for self-hosting.',
+    },
   },
   {
     id: 'where-to-work',
     title: 'Component areas',
-    body: 'Most contributions land in one component area. Stay in the area your issue targets, and open the matching guide when you need setup details.',
+    paragraphs: [
+      'Most contributions land in one component area. Stay in the area your issue targets, and open the matching guide when you need setup details.',
+    ],
     links: [
       {
         label: 'Backend guide',
@@ -73,16 +101,34 @@ export const CONTRIBUTING_SLIDES: ContributingSlide[] = [
   {
     id: 'how-to-contribute',
     title: 'How to contribute',
-    body: 'Link your PR to a tracked issue with Fixes #.... Use the Opik branch convention {username}/{ticket}-{summary} where {username} is your GitHub handle. This wizard creates that branch for you (ticket is issue-{N} or NA; summary is a short slug). Keep the change scoped to that area, and run local formatters, linters, and tests before you open the PR.',
+    paragraphs: ['Follow the Opik fast path for a smooth review.'],
+    bullets: [
+      'Link your PR to a tracked issue with Fixes #... or Resolves #...',
+      'Use branch name {username}/{ticket}-{summary} where {username} is your GitHub handle (this wizard creates that branch for you)',
+      'Keep the change scoped to the issue area',
+      'Run local formatters, linters, and tests before you open the PR',
+    ],
   },
   {
     id: 'github-actions',
     title: 'GitHub Actions and quality',
-    body: "GitHub Actions is Opik's continuous integration in the software development lifecycle. Workflows under .github/workflows/ run checks on pull requests. Install pre-commit once, then run make hooks so local checks match CI. The Verify step later names the workflows that matter for your issue.",
+    paragraphs: [
+      'GitHub Actions runs continuous integration on pull requests. Match CI locally so review stays focused on your change.',
+    ],
+    bullets: [
+      'Workflows live under .github/workflows/',
+      'Install pre-commit once, then run make hooks so local checks match CI',
+      'The Verify step later names the workflows that matter for your issue',
+    ],
+    didYouKnow: {
+      body: 'Pre-commit runs only the hooks that match your changed files, so you do not need every toolchain installed to get useful feedback.',
+    },
   },
   {
     id: 'whats-next',
     title: 'What comes next in this wizard',
-    body: 'This tool compresses the SDLC context you need before you contribute. Next is a short contributing quiz, then a ranked issue to work on.',
+    paragraphs: [
+      'This tool compresses the SDLC context you need before you contribute. Next is a short contributing quiz, then a ranked issue to work on.',
+    ],
   },
 ]

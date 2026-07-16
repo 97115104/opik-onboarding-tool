@@ -11,10 +11,12 @@ The onboarding UI Overview step uses the typed slide deck in
    - Did you know: LLM = large language model; a trace records every step for one request.
 3. **Core capabilities**: Observability, evaluation, production monitoring, optimization and safety.
    - Did you know: observability means seeing inside a running system.
-4. **Who Opik is for**: Builders, PMs, support, and businesses (personal and team value).
-5. **Deployment options**: Self-hosted (`./opik.sh`), Comet Cloud, Enterprise. This wizard uses self-hosted.
+4. **Who Opik is for**: Interactive 2x2 role tiles (Builders, PMs, Support, Businesses). Tap to expand detail. Businesses links to Comet Cloud.
+5. **Deployment options**: Self-hosted (links to local deployment docs), Comet Cloud, Enterprise (contact link). This wizard uses self-hosted.
    - Did you know: self-hosted vs cloud.
-6. **How this wizard uses Opik**: Local stack, chat demo trace, learn (Opik Features / Try Opik), product quiz, contributing overview, contributing quiz, pick an issue, Cursor prompt, Verify, PR help (draft PR), Extend, Finish.
+6. **What you will learn in this onboarding**: Hands-on learning ethos plus outcome bullets (local stack, trace reading, CLA/guidelines/issue, Cursor prompt and PR help).
+
+Wizard footer Back/Next drives slide navigation (no in-card prev/next buttons).
 
 ## Learn more
 
