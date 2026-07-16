@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { StepPanel } from '../components/StepPanel'
+import { LearnMoreLink } from '../components/LearnMoreLink'
 import { opikHomeUrl, opikProjectRedirectUrl, OPIK_TOUR_PROJECT_NAME } from '../lib/opikUrls'
 import { personaSubtitle } from '../lib/persona'
 import { getTourProgress, setTourProgress } from '../lib/wizardGates'
@@ -176,6 +177,11 @@ export function TourStep() {
           </li>
         ))}
       </ol>
+      <div className="mt-4">
+        <LearnMoreLink href="https://www.comet.com/docs/opik/quickstart">
+          Read the Opik quickstart
+        </LearnMoreLink>
+      </div>
     </StepPanel>
   )
 }

@@ -230,8 +230,10 @@ interface ContributionSnapshot {
 |------|-----|--------|-------|
 | About you | `about` | `step-about` | B |
 | Overview | `overview` | `step-overview` | B |
+| Video | `video` | `step-video` | B |
 | Opik Features | `graph` | `step-graph` | B |
 | Local stack | `stack` | `step-stack` | B |
+| Adding Opik | `adding-opik` | `step-adding-opik` | B |
 | Try Opik | `tour` | `step-tour` | B |
 | Quiz | `quiz` | `step-quiz` | C |
 | Contributing overview | `contributing-overview` | `step-contributing-overview` | C |
@@ -259,11 +261,19 @@ interface ContributionSnapshot {
 | `extend` | Footer label is **Finish**; advances to celebration |
 | `finish` | Footer Next/Finish hidden; Back returns to Extend; progress reads Complete |
 
-Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned). Wizard footer Back/Next drives slide navigation; clickable slide dots (`overview-slide-dot-{n}`) jump only to already-reached slides. Wizard step chips (`wizard-step-{id}`) jump only to `index <= maxReachedIndex`.
+Overview slides source: `apps/onboarding-ui/src/content/overviewSlides.ts` (keep `content/overview.md` aligned). Wizard footer Back/Next drives slide navigation; clickable slide dots in the footer center (`overview-slide-dot-{n}`) jump only to already-reached slides. Wizard step chips (`wizard-step-{id}`) jump only to `index <= maxReachedIndex`.
 
-Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Slide 1 embeds vendored `content/cla.md` with scroll-to-bottom agree (`contributing-cla-document`, `contributing-cla-agree`). Slide 2 embeds vendored `content/contributing-guidelines.md` with scroll-to-bottom agree (`contributing-guidelines-document`, `contributing-guidelines-agree`). Wizard Next on those slides stays disabled until the checkbox is checked after scrolling. Honor-system note: wizard agree prepares onboarding; GitHub CLA bot still applies on PRs.
+Contributing overview slides source: `apps/onboarding-ui/src/content/contributingSlides.ts` (keep `content/contributing-overview.md` aligned). Content describes upstream Opik (`comet-ml/opik`), not this onboarding-tool repo. Footer-center slide dots (`contributing-slide-dot-{n}`) respect the same gates as navigation. Slide 1 embeds vendored `content/cla.md` with scroll-to-bottom agree (`contributing-cla-document`, `contributing-cla-agree`). Slide 2 embeds vendored `content/contributing-guidelines.md` with scroll-to-bottom agree (`contributing-guidelines-document`, `contributing-guidelines-agree`). Wizard Next on those slides stays disabled until the checkbox is checked after scrolling. Honor-system note: wizard agree prepares onboarding; GitHub CLA bot still applies on PRs.
 
 Opik Features unlock: nodes unlock in `knowledge-graph.json` array order; locked nodes are greyed and not clickable.
+
+### Learning links
+
+Each listed step renders one secondary `Learn more` link. The Video, Opik Features, and Finish steps
+link to the Opik University overview; Local stack links to local deployment; Adding Opik links to
+integrations; Try Opik links to quickstart; Contributing overview links to contributing overview; and
+Cursor prompt links to `llms.txt`. Slide dots stay in the footer-center navigation rather than inside
+slide cards.
 
 ## Script contracts
 
@@ -357,14 +367,15 @@ Vite plugin contribution APIs (C):
 | Wizard nav next | `wizard-next` |
 | Wizard nav back | `wizard-back` |
 | Wizard step nav | `wizard-step-nav`, `wizard-step-{id}` (jump only to reached steps) |
-| Footer powered-by | `footer-powered-by` (Llama 3.1 8B + Ollama links) |
+| Footer inference line | `footer-powered-by` (Inference by Llama 3.1 8B via local Ollama links) |
 | About you panel | `step-about` |
 | Persona choice | `about-persona-engineer`, `about-persona-pm`, `about-persona-support`, `about-persona-external` |
 | Overview panel | `step-overview` |
 | Overview slides | `overview-slides` |
-| Overview slide nav | `overview-slide-nav`, `overview-slide-dot-{n}` (reached slides only) |
+| Overview slide nav | `overview-slide-dot-{n}` in footer center (reached slides only) |
 | Overview slide | `overview-slide-{id}` |
 | Overview role tile | `overview-role-{id}` |
+| Video panel and embed | `step-video`, `opik-intro-video` |
 | Graph panel | `step-graph` |
 | Graph empty hint | `graph-empty-hint` |
 | Graph progress | `graph-progress` |
@@ -374,6 +385,7 @@ Vite plugin contribution APIs (C):
 | Stack status | `step-stack` |
 | Stack service URL | `stack-url-{service}` |
 | Stack fix button | `stack-fix-{service}` |
+| Adding Opik panel | `step-adding-opik` |
 | Tour panel | `step-tour` |
 | Tour checklist | `tour-checklist` |
 | Tour progress | `tour-progress` |
@@ -389,7 +401,7 @@ Vite plugin contribution APIs (C):
 | Quiz results summary | `quiz-results` |
 | Contributing overview panel | `step-contributing-overview` |
 | Contributing slides | `contributing-slides` |
-| Contributing slide nav | `contributing-slide-nav`, `contributing-slide-dot-{n}` (reached; CLA/guidelines leave gates still apply) |
+| Contributing slide nav | `contributing-slide-dot-{n}` in footer center (reached; CLA/guidelines leave gates still apply) |
 | Contributing slide | `contributing-slide-{id}` |
 | Contributing CLA document panel | `contributing-cla-document` |
 | Contributing CLA agree checkbox | `contributing-cla-agree` |
@@ -423,6 +435,7 @@ Vite plugin contribution APIs (C):
 | Verify area | `verify-area`, `verify-area-name`, `verify-area-rationale` |
 | Verify commands | `verify-commands` |
 | Verify workflows | `verify-workflows` |
+| Verify all Actions link | `verify-all-actions-link` |
 | Verify prompt | `verify-prompt` |
 | Open verify prompt in Cursor | `open-verify-prompt` |
 | Open verify prompt truncated notice | `open-verify-prompt-truncated` |
@@ -492,6 +505,7 @@ Primary prompt step must include:
 - Branch name matching Opik `{username}/{ticket}-{summary}` (`ticket` = `issue-{N}`, `OPIK-{N}`, or `NA`; legacy `opik-onboarding-tool-*-contribution-\d+` still accepted in soft checks)
 - Opik clone path `OPIK_PATH`
 - Steps: implement fix and commit; stop before draft PR (verify + PR-help cover checks and `gh pr create --draft`)
+- Before work: `cd` to `OPIK_PATH`, `git fetch origin`, checkout the contribution branch (creating from `origin/main` if needed), and rebase onto `origin/main`
 - AI disclosure note (full disclosure happens in PR template)
 - Link to Opik CONTRIBUTING.md fast path
 - Shorter body; simpler tone for PM/Support
@@ -506,7 +520,7 @@ Assistant replies in `apps/chat-demo` render with `react-markdown` + `remark-gfm
 Step `verify` (`step-verify`) sits between `prompt` and `pr-help`:
 
 1. Classify contribution area from optional `GET /api/contribution-diff` paths (override) or issue labels/title.
-2. Show area + rationale, copyable local commands, and GitHub Actions workflow links to watch.
+2. Show area + rationale, the workflows selected for that area, a full GitHub Actions link, and copyable local commands.
 3. Verify Cursor prompt (`verify-prompt` / `open-verify-prompt` / `copy-verify-prompt`): open CTA uses the same Opik-in-Cursor confirm modal + `POST /api/open-opik-in-cursor`, then fires the verify prompt deeplink.
 4. Honor-system checklist gate: `verify-check-ran-local` + `verify-check-matches-issue` before footer Next.
 
@@ -535,7 +549,7 @@ No multi-checkbox busywork. Align guidance with Opik CONTRIBUTING:
 |------|-------------------|
 | `deploy-smoke.spec.ts` | HTTP 200 on ports 4310, 4311, 5173; `[data-testid=step-about]` visible |
 | `chat-opik-wiring.spec.ts` | Send message; response received; Opik trace exists |
-| `onboarding-wizard.spec.ts` | About you → overview slides (wizard Next drives deck; slide dots jump to reached; last slide gates step leave) → Opik Features sequential unlock via modal close (Next gated) → stack URL → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; step leave gated; slide dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
+| `onboarding-wizard.spec.ts` | About you → overview slides (footer-center dots jump to reached slides; last slide gates step leave) → video embed → Opik Features sequential unlock via modal close (Next gated) → stack URL → Adding Opik → tour 3 progressive CTAs (Next gated) → Tour→Quiz stays alive (quiz Next hidden until finished) → quiz auto-grade → contributing overview slides (CLA + guidelines scroll-and-agree unlock wizard Next; footer-center dots respect leave gates) → contributing quiz auto-grade (Next gated) → issue modal select → open-cursor-prompt confirm modal + open-opik-in-cursor → verify plan + checklist unlocks Next → PR-help prompts → Extend Finish → Well done celebration with ✓ Finish label; footer-powered-by; branch regex on `[data-testid=cursor-prompt]` |
 
 Playwright base URL for onboarding UI: `http://127.0.0.1:4310`.
 
@@ -562,4 +576,4 @@ Root has no `package.json` — orchestration is Bash-only.
 
 ## Version
 
-Contract version: **1.6.0** (unified slide nav, in-slide CLA/guidelines agree, overview polish)
+Contract version: **1.7.0** (progress chrome, Video and Adding Opik steps, learning links)

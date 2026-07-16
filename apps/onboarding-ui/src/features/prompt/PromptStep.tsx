@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { OpenOpikInCursorModal } from "@/components/OpenOpikInCursorModal";
 import { StepPanel } from "@/components/StepPanel";
+import { LearnMoreLink } from "@/components/LearnMoreLink";
 import { useContribution } from "../issues/ContributionContext";
 import { DEFAULT_OPIK_PATH } from "../issues/types";
 import {
@@ -98,6 +99,9 @@ function PromptStepContent() {
           Confirm the prompt in Cursor after it opens. Open the Opik folder first if that workspace
           is not already open.
         </p>
+        <LearnMoreLink href="https://www.comet.com/docs/opik/llms.txt">
+          Read the Opik AI guidance
+        </LearnMoreLink>
 
         {deeplink?.truncated ? (
           <p className="text-xs text-amber-700" data-testid="open-cursor-prompt-truncated">

@@ -103,52 +103,24 @@ export function OverviewStep() {
 
   useLayoutEffect(() => {
     return registerSlideDeck('overview', {
+      currentSlideIndex: slideIndex,
+      totalSlides: total,
+      maxReachedSlideIndex,
       canPrevSlide: slideIndex > 0,
       canNextSlide: !isLast,
       atLastSlide: isLast,
       prevSlide: goPrev,
       nextSlide: goNext,
+      goToSlide,
     })
-  }, [slideIndex, isLast, goPrev, goNext])
+  }, [slideIndex, isLast, total, maxReachedSlideIndex, goPrev, goNext, goToSlide])
 
   return (
     <StepPanel testId="step-overview" title="Product overview">
       <div className="space-y-5" data-testid="overview-slides">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Slide {slideIndex + 1} of {total}
-          </p>
-          <div
-            data-testid="overview-slide-nav"
-            className="flex flex-wrap gap-1.5"
-            role="tablist"
-            aria-label="Overview slides"
-          >
-            {OVERVIEW_SLIDES.map((entry, index) => {
-              const reached = index <= maxReachedSlideIndex
-              const current = index === slideIndex
-              return (
-                <button
-                  key={entry.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={current}
-                  aria-label={`Slide ${index + 1}`}
-                  data-testid={`overview-slide-dot-${index}`}
-                  disabled={!reached}
-                  onClick={() => goToSlide(index)}
-                  className={`h-2.5 w-2.5 rounded-full transition ${
-                    current
-                      ? 'bg-[var(--color-accent)]'
-                      : reached
-                        ? 'bg-slate-300 hover:bg-slate-400'
-                        : 'cursor-not-allowed bg-slate-200'
-                  }`}
-                />
-              )
-            })}
-          </div>
-        </div>
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+          Slide {slideIndex + 1} of {total}
+        </p>
 
         <div
           key={slide.id}

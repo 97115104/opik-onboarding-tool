@@ -53,9 +53,18 @@ export default function App() {
 
   return (
     <div className="app">
-      <header>
+      <header className="app-header">
+        <a
+          href="https://www.comet.com/docs/opik/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="brand-logo"
+          data-testid="opik-brand-logo"
+        >
+          <img src="/opik-logo.svg" alt="Opik" height={28} />
+        </a>
         <h1>Opik Chat Demo</h1>
-        <p>Ollama backend with Opik SDK tracing to your local stack.</p>
+        <p>Chat with Ollama and inspect each traced turn in your local Opik stack.</p>
       </header>
 
       <div className="messages" data-testid="chat-messages">
@@ -100,6 +109,20 @@ export default function App() {
           by{" "}
           <a href="https://links.97115104.com" target="_blank" rel="noopener noreferrer">
             Austin H
+          </a>
+        </div>
+        <div>
+          Inference by{" "}
+          <a
+            href="https://ollama.com/library/llama3.1:8b"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Llama 3.1 8B
+          </a>{" "}
+          via local{" "}
+          <a href="https://github.com/ollama/ollama" target="_blank" rel="noopener noreferrer">
+            Ollama
           </a>
         </div>
         <div>

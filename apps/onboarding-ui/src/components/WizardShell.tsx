@@ -14,6 +14,7 @@ interface WizardShellProps {
   canGoNext: boolean
   hideNext?: boolean
   nextLabel?: string
+  navCenter?: ReactNode
   children: ReactNode
 }
 
@@ -27,6 +28,7 @@ export function WizardShell({
   canGoNext,
   hideNext,
   nextLabel,
+  navCenter,
   children,
 }: WizardShellProps) {
   return (
@@ -85,6 +87,7 @@ export function WizardShell({
             canGoNext={canGoNext}
             hideNext={hideNext}
             nextLabel={nextLabel}
+            center={navCenter}
           />
           <footer className="mt-6 flex flex-col gap-2 border-t border-[var(--color-border)] pt-3 text-[11px] leading-relaxed text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="sm:flex-1">
@@ -111,7 +114,7 @@ export function WizardShell({
               data-testid="footer-powered-by"
               className="sm:flex-1 sm:text-center"
             >
-              Powered by{' '}
+              Inference by{' '}
               <a
                 href="https://ollama.com/library/llama3.1:8b"
                 target="_blank"
@@ -120,7 +123,7 @@ export function WizardShell({
               >
                 Llama 3.1 8B
               </a>{' '}
-              via{' '}
+              via local{' '}
               <a
                 href="https://github.com/ollama/ollama"
                 target="_blank"
@@ -128,8 +131,7 @@ export function WizardShell({
                 className="text-[var(--color-accent)] underline underline-offset-2 hover:text-[var(--color-accent-hover)]"
               >
                 Ollama
-              </a>{' '}
-              on this machine
+              </a>
             </div>
             <div className="sm:flex-1 sm:text-right">
               Made with{' '}

@@ -3,8 +3,10 @@ import type { WizardStepConfig } from '../types'
 export const WIZARD_STEPS: WizardStepConfig[] = [
   { id: 'about', label: 'About you', testId: 'step-about', owner: 'B' },
   { id: 'overview', label: 'Overview', testId: 'step-overview', owner: 'B' },
+  { id: 'video', label: 'Video', testId: 'step-video', owner: 'B' },
   { id: 'graph', label: 'Opik Features', testId: 'step-graph', owner: 'B' },
   { id: 'stack', label: 'Local stack', testId: 'step-stack', owner: 'B' },
+  { id: 'adding-opik', label: 'Adding Opik', testId: 'step-adding-opik', owner: 'B' },
   { id: 'tour', label: 'Try Opik', testId: 'step-tour', owner: 'B' },
   { id: 'quiz', label: 'Quiz', testId: 'step-quiz', owner: 'C' },
   {

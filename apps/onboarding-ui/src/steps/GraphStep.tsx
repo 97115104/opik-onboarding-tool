@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import graphData from '@content/knowledge-graph.json'
 import { Modal } from '../components/Modal'
+import { LearnMoreLink } from '../components/LearnMoreLink'
 import { StepPanel } from '../components/StepPanel'
 import { getGraphReviewedIds, setGraphReviewedIds } from '../lib/wizardGates'
 import type { KnowledgeGraph } from '../types'
@@ -78,6 +79,11 @@ export function GraphStep() {
         {reviewedIds.size} of {nodeIds.length} features reviewed
         {allReviewed ? ' (complete)' : ''}
       </p>
+      <div className="mb-4">
+        <LearnMoreLink href="https://www.comet.com/docs/opik/v1/opik-university/overview">
+          Explore Opik University
+        </LearnMoreLink>
+      </div>
 
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {graph.nodes.map((node, index) => {

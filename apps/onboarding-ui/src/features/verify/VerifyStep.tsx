@@ -164,6 +164,10 @@ function VerifyStepContent() {
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-slate-900">Watch on GitHub Actions</p>
+          <p className="text-sm leading-relaxed text-slate-600">
+            These workflows were selected for the detected {formatVerifyArea(plan.area)} area because{' '}
+            {plan.rationale}
+          </p>
           <ul className="space-y-1" data-testid="verify-workflows">
             {plan.workflows.map((wf) => (
               <li key={wf.name}>
@@ -179,6 +183,15 @@ function VerifyStepContent() {
               </li>
             ))}
           </ul>
+          <a
+            href="https://github.com/comet-ml/opik/actions"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="verify-all-actions-link"
+            className="inline-block text-sm text-slate-900 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-900"
+          >
+            See all Opik GitHub Actions
+          </a>
         </div>
 
         <div className="space-y-3 border-t border-[var(--color-border)] pt-6">

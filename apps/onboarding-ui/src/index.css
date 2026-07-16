@@ -64,6 +64,62 @@ body {
   opacity: 0.35;
 }
 
+/* Animate the trace path without relying on JavaScript or affecting reduced-motion users. */
+.lifecycle-path {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+  marker-end: url(#flow-arrow);
+  animation: lifecycle-dash 2.8s linear infinite;
+}
+
+.lifecycle-node rect {
+  fill: #fff;
+  stroke: var(--color-border);
+}
+
+.lifecycle-node text {
+  fill: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.lifecycle-node {
+  animation: lifecycle-highlight 2.8s ease-in-out infinite;
+}
+
+.lifecycle-node-delay {
+  animation-delay: 0.45s;
+}
+
+.lifecycle-node-later {
+  animation-delay: 0.9s;
+}
+
+.lifecycle-node-final {
+  animation-delay: 1.35s;
+}
+
+@keyframes lifecycle-dash {
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+@keyframes lifecycle-highlight {
+  0%, 100% { opacity: 0.55; }
+  35%, 55% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lifecycle-path,
+  .lifecycle-node {
+    animation: none;
+  }
+}
+
 .markdown-body h1 {
   font-family: var(--font-display);
   font-size: 2rem;

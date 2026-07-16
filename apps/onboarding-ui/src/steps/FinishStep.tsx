@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { StepPanel } from '../components/StepPanel'
+import { LearnMoreLink } from '../components/LearnMoreLink'
 
 type Particle = {
   x: number
@@ -144,6 +145,9 @@ export function FinishStep() {
           You are ready to keep exploring Opik and ship your contribution. Star the project, open an
           issue, or reach out if you get stuck.
         </p>
+        <LearnMoreLink href="https://www.comet.com/docs/opik/v1/opik-university/overview">
+          Keep learning with Opik University
+        </LearnMoreLink>
 
         <div className="flex flex-wrap gap-3">
           <a

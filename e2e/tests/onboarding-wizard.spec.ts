@@ -55,7 +55,6 @@ async function completeOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-overview");
   await expect(page.getByTestId("opik-brand-logo")).toBeVisible();
   await expect(page.getByTestId("overview-slides")).toBeVisible();
-  await expect(page.getByTestId("overview-slide-nav")).toBeVisible();
   await expect(page.getByTestId("overview-slide-dot-0")).toBeEnabled();
   await expect(page.getByTestId("overview-slide-dot-1")).toBeDisabled();
   await expect(page.getByTestId("slide-did-you-know")).toBeVisible();
@@ -101,6 +100,9 @@ async function completeOverviewSlides(page: Page): Promise<void> {
 
 async function completeGraphUnlock(page: Page): Promise<void> {
   await expectStep(page, "step-graph");
+  await expect(
+    page.getByRole("link", { name: "Explore Opik University →" }),
+  ).toHaveAttribute("href", "https://www.comet.com/docs/opik/v1/opik-university/overview");
   await expect(page.getByTestId("graph-empty-hint")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
@@ -122,6 +124,10 @@ async function completeGraphUnlock(page: Page): Promise<void> {
 
 async function completeTour(page: Page): Promise<void> {
   await expectStep(page, "step-tour");
+  await expect(page.getByRole("link", { name: "Read the Opik quickstart →" })).toHaveAttribute(
+    "href",
+    "https://www.comet.com/docs/opik/quickstart",
+  );
   await expect(page.getByTestId("tour-checklist")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
@@ -192,7 +198,6 @@ async function completeQuiz(page: Page): Promise<void> {
 async function completeContributingOverviewSlides(page: Page): Promise<void> {
   await expectStep(page, "step-contributing-overview");
   await expect(page.getByTestId("contributing-slides")).toBeVisible();
-  await expect(page.getByTestId("contributing-slide-nav")).toBeVisible();
   await expect(page.getByTestId("wizard-next")).toBeVisible();
 
   // Slide 1: CLA scroll + agree required before wizard Next advances.
@@ -276,7 +281,13 @@ async function completeVerify(page: Page): Promise<void> {
   await expect(page.getByTestId("verify-area-rationale")).toBeVisible();
   await expect(page.getByTestId("verify-commands")).toBeVisible();
   await expect(page.getByTestId("verify-workflows")).toBeVisible();
+  await expect(page.getByTestId("verify-all-actions-link")).toHaveAttribute(
+    "href",
+    "https://github.com/comet-ml/opik/actions",
+  );
   await expect(page.getByTestId("verify-prompt")).toBeVisible();
+  await expect(page.getByTestId("verify-prompt")).toContainText("git fetch origin");
+  await expect(page.getByTestId("verify-prompt")).toContainText("origin/main");
   await expect(page.getByTestId("verify-checklist")).toBeVisible();
   await expect(page.getByTestId("open-verify-prompt")).toBeVisible();
   await expect(page.getByTestId("copy-verify-prompt")).toBeVisible();
@@ -301,6 +312,8 @@ test.describe("onboarding wizard", () => {
     await expect(page.getByTestId("wizard-step-overview")).toBeDisabled();
     const poweredBy = page.getByTestId("footer-powered-by");
     await expect(poweredBy).toBeVisible();
+    await expect(poweredBy).toContainText("Inference by");
+    await expect(poweredBy).toContainText("via local");
     await expect(poweredBy.getByRole("link", { name: "Llama 3.1 8B" })).toHaveAttribute(
       "href",
       "https://ollama.com/library/llama3.1:8b",
@@ -322,11 +335,27 @@ test.describe("onboarding wizard", () => {
     await expectStep(page, "step-overview");
 
     await completeOverviewSlides(page);
+    await expectStep(page, "step-video");
+    await expect(page.getByTestId("opik-intro-video")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Explore Opik University →" })).toHaveAttribute(
+      "href",
+      "https://www.comet.com/docs/opik/v1/opik-university/overview",
+    );
+    await clickNext(page);
     await completeGraphUnlock(page);
 
     const stack = page.getByTestId("step-stack");
     await expect(stack).toBeVisible();
     await expect(page.getByTestId("stack-url-opik-ui")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Read the local deployment guide →" }),
+    ).toHaveAttribute("href", "https://www.comet.com/docs/opik/self-host/local_deployment");
+    await clickNext(page);
+    await expectStep(page, "step-adding-opik");
+    await expect(page.getByRole("link", { name: "Explore Opik integrations →" })).toHaveAttribute(
+      "href",
+      "https://www.comet.com/docs/opik/integrations/overview",
+    );
     await clickNext(page);
 
     await completeTour(page);
@@ -378,6 +407,8 @@ test.describe("onboarding wizard", () => {
     await expect(prompt).toBeVisible();
     await expect(prompt).toContainText(BRANCH_NAME_PATTERN);
     await expect(prompt).toContainText("Do not open a PR yet");
+    await expect(prompt).toContainText("git fetch origin");
+    await expect(prompt).toContainText("origin/main");
     await expect(prompt).not.toContainText("gh pr create --draft");
     await expect(page.getByTestId("open-cursor-prompt")).toBeVisible();
     await expect(page.getByTestId("open-opik-in-cursor")).toBeVisible();
@@ -427,6 +458,8 @@ test.describe("onboarding wizard", () => {
 
     await expectStep(page, "step-pr-help");
     await expect(page.getByTestId("pr-help-prompt")).toBeVisible();
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("git fetch origin");
+    await expect(page.getByTestId("pr-help-prompt")).toContainText("origin/main");
     await expect(page.getByTestId("pr-checklist")).toHaveCount(0);
     await clickNext(page);
 
@@ -447,6 +480,9 @@ test.describe("onboarding wizard", () => {
       "href",
       "mailto:support@97115104.com",
     );
+    await expect(
+      page.getByRole("link", { name: "Keep learning with Opik University →" }),
+    ).toHaveAttribute("href", "https://www.comet.com/docs/opik/v1/opik-university/overview");
     await expect(page.getByTestId("wizard-next")).toHaveCount(0);
 
     await page.getByTestId("wizard-back").click();

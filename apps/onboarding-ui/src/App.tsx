@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from 'react'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { ProgressDots } from '@/components/ProgressDots'
 import { WizardShell } from '@/components/WizardShell'
 import { ContributionProvider } from '@/features/issues/ContributionContext'
 import { contributionStore } from '@/features/issues'
@@ -271,6 +272,28 @@ export default function App() {
   }, [isSlideDeckStep, slideDeck, slideDeckStepComplete, goNextWizard])
 
   const stepKey = useMemo(() => WIZARD_STEPS[currentIndex]?.id ?? 'unknown', [currentIndex])
+  const navCenter =
+    isSlideDeckStep && slideDeck
+      ? (
+          <ProgressDots
+            currentIndex={slideDeck.currentSlideIndex}
+            total={slideDeck.totalSlides}
+            maxReachedIndex={slideDeck.maxReachedSlideIndex}
+            onGoTo={slideDeck.goToSlide}
+            testIdPrefix={stepId === "contributing-overview" ? "contributing-slide-dot" : "overview-slide-dot"}
+            label={`${step?.id === 'overview' ? 'Overview' : 'Contributing overview'} slides`}
+          />
+        )
+      : (
+          <ProgressDots
+            currentIndex={currentIndex}
+            total={WIZARD_STEPS.length}
+            maxReachedIndex={maxReachedIndex}
+            onGoTo={goToStep}
+            testIdPrefix="wizard-progress-dot"
+            label="Wizard steps"
+          />
+        )
 
   return (
     <ContributionProvider>
@@ -284,6 +307,7 @@ export default function App() {
         canGoNext={canAdvance}
         hideNext={hideNext}
         nextLabel={isExtendStep ? 'Finish' : 'Next'}
+        navCenter={navCenter}
       >
         <ErrorBoundary onReset={() => setBoundaryKey((value) => value + 1)}>
           <AnimatePresence mode="wait">

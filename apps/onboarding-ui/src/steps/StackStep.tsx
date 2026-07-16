@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { StepPanel } from '../components/StepPanel'
+import { LearnMoreLink } from '../components/LearnMoreLink'
 import {
   checkStackHealth,
   healService,
@@ -236,6 +237,11 @@ export function StackStep() {
       </ul>
 
       {checking ? <p className="mt-4 text-sm text-slate-500">Checking services…</p> : null}
+      <div className="mt-4">
+        <LearnMoreLink href="https://www.comet.com/docs/opik/self-host/local_deployment">
+          Read the local deployment guide
+        </LearnMoreLink>
+      </div>
     </StepPanel>
   )
 }

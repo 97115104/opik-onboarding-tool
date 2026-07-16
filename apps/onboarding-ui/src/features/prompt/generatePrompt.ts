@@ -66,11 +66,12 @@ export function generateCursorPrompt(
 - Branch: ${branchName}
 
 ## What to do
-1. Open the repo in Cursor (or cd into ${opikPath}) and checkout ${branchName}.
-2. Read the issue and the Opik CONTRIBUTING fast path: https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md#fast-path
-3. Make the smallest change that fixes the issue. Explain what you change in plain language.
-4. Commit referencing the issue (Fixes #${issue.number} or Resolves #${issue.number}).
-5. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding step covers checks and draft PR help.
+1. cd "${opikPath}", run git fetch origin, then checkout ${branchName} (create it from origin/main if needed).
+2. Rebase onto the latest origin/main and resolve any conflicts before making changes.
+3. Read the issue and the Opik CONTRIBUTING fast path: https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md#fast-path
+4. Make the smallest change that fixes the issue. Explain what you change in plain language.
+5. Commit referencing the issue (Fixes #${issue.number} or Resolves #${issue.number}).
+6. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding step covers checks and draft PR help.
 
 ## Accountability
 Disclose AI assistance later in the PR template. A human remains accountable for correctness, licensing, and security.
@@ -88,11 +89,12 @@ Disclose AI assistance later in the PR template. A human remains accountable for
 - OPIK_PATH: ${opikPath}
 
 ## Steps
-1. cd "${opikPath}" and checkout ${branchName} (create from origin/main if needed).
-2. Read the issue and https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md#fast-path
-3. Implement a focused fix for the issue.
-4. Commit with Fixes #${issue.number} or Resolves #${issue.number}.
-5. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding steps cover local checks and draft PR help.
+1. cd "${opikPath}", run git fetch origin, then checkout ${branchName} (create from origin/main if needed).
+2. Rebase onto the latest origin/main and resolve conflicts before implementing.
+3. Read the issue and https://github.com/comet-ml/opik/blob/main/CONTRIBUTING.md#fast-path
+4. Implement a focused fix for the issue.
+5. Commit with Fixes #${issue.number} or Resolves #${issue.number}.
+6. Stop when the fix is ready to verify. Do not open a PR yet; the next onboarding steps cover local checks and draft PR help.
 
 ## AI disclosure
 Disclose AI assistance later in the PR template. Human author remains accountable. Do not submit unreviewed AI output.
@@ -130,14 +132,15 @@ export function generateVerifyPrompt(
 - CONTRIBUTING: ${plan.contributingUrl}
 
 ## What to do
-1. cd "${opikPath}" and checkout ${branchName}.
-2. Inspect the diff vs origin/main and confirm it matches the issue.
-3. Run these local checks (adapt if paths differ):
+1. cd "${opikPath}", run git fetch origin, then checkout ${branchName}.
+2. Rebase onto the latest origin/main and resolve conflicts before verifying.
+3. Inspect the diff vs origin/main and confirm it matches the issue.
+4. Run these local checks (adapt if paths differ):
 ${commands}
-4. Report pass/fail for each command with short evidence.
-5. List GitHub Actions workflows to watch on the PR:
+5. Report pass/fail for each command with short evidence.
+6. List GitHub Actions workflows to watch on the PR:
 ${workflows}
-6. Do not open a PR yet unless I ask; summarize what is still missing.
+7. Do not open a PR yet unless I ask; summarize what is still missing.
 
 Keep the report short and actionable.
 `;
@@ -161,13 +164,14 @@ export function generatePrHelpPrompt(
 - Repo path: ${opikPath}
 
 ## Walk me through
-1. cd "${opikPath}" and checkout ${branch}.
-2. Run formatters, linters, and tests for the files I changed.
-3. Confirm the commit message links the issue (Fixes #… or Resolves #…).
-4. Create a draft PR: gh pr create --draft
-5. Fill .github/pull_request_template.md completely.
-6. Disclose AI assistance if used.
-7. Confirm human attestation: I remain accountable for correctness, licensing, and security.
+1. cd "${opikPath}", run git fetch origin, then checkout ${branch}.
+2. Rebase onto the latest origin/main and resolve conflicts before opening a PR.
+3. Run formatters, linters, and tests for the files I changed.
+4. Confirm the commit message links the issue (Fixes #… or Resolves #…).
+5. Create a draft PR: gh pr create --draft
+6. Fill .github/pull_request_template.md completely.
+7. Disclose AI assistance if used.
+8. Confirm human attestation: I remain accountable for correctness, licensing, and security.
 
 Keep instructions short and actionable. Point out anything still missing before I submit.
 `;

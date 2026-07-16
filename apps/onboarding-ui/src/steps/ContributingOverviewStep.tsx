@@ -4,6 +4,7 @@ import guidelinesMarkdown from '@content/contributing-guidelines.md?raw'
 import { CONTRIBUTING_SLIDES } from '../content/contributingSlides'
 import { AgreeDocumentPanel } from '../components/AgreeDocumentPanel'
 import { DidYouKnow } from '../components/DidYouKnow'
+import { LearnMoreLink } from '../components/LearnMoreLink'
 import { StepPanel } from '../components/StepPanel'
 import {
   getContributingOverviewProgress,
@@ -72,54 +73,36 @@ export function ContributingOverviewStep() {
   useLayoutEffect(() => {
     const canNextSlide = !isLast && !claSlideBlocked && !guidelinesSlideBlocked
     return registerSlideDeck('contributing-overview', {
+      currentSlideIndex: slideIndex,
+      totalSlides: total,
+      maxReachedSlideIndex: maxJumpableSlideIndex,
       canPrevSlide: slideIndex > 0,
       canNextSlide,
       atLastSlide: isLast,
       prevSlide: goPrev,
       nextSlide: goNext,
+      goToSlide,
     })
-  }, [slideIndex, isLast, claSlideBlocked, guidelinesSlideBlocked, goPrev, goNext])
+  }, [
+    slideIndex,
+    isLast,
+    total,
+    maxJumpableSlideIndex,
+    claSlideBlocked,
+    guidelinesSlideBlocked,
+    goPrev,
+    goNext,
+    goToSlide,
+  ])
 
   const paragraphs = slide.paragraphs ?? (slide.body ? [slide.body] : [])
 
   return (
     <StepPanel testId="step-contributing-overview" title="Contributing overview">
       <div className="space-y-5" data-testid="contributing-slides">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
-            Slide {slideIndex + 1} of {total}
-          </p>
-          <div
-            data-testid="contributing-slide-nav"
-            className="flex flex-wrap gap-1.5"
-            role="tablist"
-            aria-label="Contributing overview slides"
-          >
-            {CONTRIBUTING_SLIDES.map((entry, index) => {
-              const reached = index <= maxJumpableSlideIndex
-              const current = index === slideIndex
-              return (
-                <button
-                  key={entry.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={current}
-                  aria-label={`Slide ${index + 1}`}
-                  data-testid={`contributing-slide-dot-${index}`}
-                  disabled={!reached}
-                  onClick={() => goToSlide(index)}
-                  className={`h-2.5 w-2.5 rounded-full transition ${
-                    current
-                      ? 'bg-[var(--color-accent)]'
-                      : reached
-                        ? 'bg-slate-300 hover:bg-slate-400'
-                        : 'cursor-not-allowed bg-slate-200'
-                  }`}
-                />
-              )
-            })}
-          </div>
-        </div>
+        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
+          Slide {slideIndex + 1} of {total}
+        </p>
 
         <div
           key={slide.id}
@@ -204,6 +187,9 @@ export function ContributingOverviewStep() {
           {slide.didYouKnow ? (
             <DidYouKnow title={slide.didYouKnow.title} body={slide.didYouKnow.body} />
           ) : null}
+          <LearnMoreLink href="https://www.comet.com/docs/opik/contributing/overview">
+            Read the contributing overview
+          </LearnMoreLink>
         </div>
       </div>
     </StepPanel>

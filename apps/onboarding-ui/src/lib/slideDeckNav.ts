@@ -1,10 +1,14 @@
 export type SlideDeckNav = {
+  currentSlideIndex: number
+  totalSlides: number
+  maxReachedSlideIndex: number
   canPrevSlide: boolean
   canNextSlide: boolean
   /** True when the deck is showing its final slide (distinct from canNextSlide=false on doc gates). */
   atLastSlide: boolean
   prevSlide: () => void
   nextSlide: () => void
+  goToSlide: (index: number) => void
 }
 
 type Listener = () => void
