@@ -66,11 +66,13 @@ if [[ -n "$EXTRA_LABEL" ]]; then
   LABEL_ARGS=(--label "$EXTRA_LABEL")
 fi
 
+# ${arr[@]+...} keeps set -u happy on macOS bash 3.2, where expanding an
+# empty array is treated as an unbound variable (fixed only in bash 4.4).
 issues_json="$(gh issue list \
   --repo "$GITHUB_REPO" \
   --state open \
   --limit 100 \
-  "${LABEL_ARGS[@]}" \
+  ${LABEL_ARGS[@]+"${LABEL_ARGS[@]}"} \
   --json number,title,url,labels,assignees,body)"
 
 # Write JSON to a temp file so large issue bodies never hit ARG_MAX.

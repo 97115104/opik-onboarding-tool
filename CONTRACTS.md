@@ -418,6 +418,7 @@ Vite plugin contribution APIs (C):
 | Contributing quiz results | `contributing-quiz-results` |
 | Issues panel | `step-issues` |
 | Issue list | `issue-list` |
+| Issue load error | `issue-load-error` |
 | Recommended issue | `issue-recommended` |
 | Issue detail modal | `issue-detail-modal` |
 | Issue excerpt | `issue-excerpt` |

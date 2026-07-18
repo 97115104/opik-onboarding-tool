@@ -23,15 +23,23 @@ export function useRankedIssues({ persona = null, limit = 8 }: UseRankedIssuesOp
         const params = new URLSearchParams({ limit: String(limit) });
         if (persona) params.set("persona", persona);
         const res = await fetch(`${RANKED_ISSUES_API}?${params}`);
-        if (!res.ok) throw new Error(`Failed to load issues (${res.status})`);
+        if (!res.ok) {
+          // Plugin puts script stderr in `{ error }`; prefer that over a bare status.
+          let detail = `Failed to load issues (${res.status})`;
+          try {
+            const body = (await res.json()) as { error?: string };
+            if (body.error?.trim()) detail = body.error.trim();
+          } catch {
+            /* non-JSON body — keep status message */
+          }
+          throw new Error(detail);
+        }
         const data = (await res.json()) as RankedIssue[];
         if (!cancelled) setIssues(data);
       } catch (e) {
         if (!cancelled) {
           setError(
-            e instanceof Error
-              ? e.message
-              : "Could not load ranked issues. Ensure rank-issues.sh API is wired.",
+            e instanceof Error ? e.message : "Could not load ranked issues.",
           );
           setIssues([]);
         }

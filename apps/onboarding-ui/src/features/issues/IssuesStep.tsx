@@ -83,8 +83,8 @@ function IssuesStepContent() {
     >
       {loading && <p className="text-sm text-slate-500">Loading ranked issues…</p>}
       {error && (
-        <p className="text-sm text-amber-700">
-          {error} Wire <code className="text-slate-900">contributionApiPlugin</code> in vite.config.
+        <p className="text-sm text-amber-700" data-testid="issue-load-error">
+          Could not load issues: {error}
         </p>
       )}
 

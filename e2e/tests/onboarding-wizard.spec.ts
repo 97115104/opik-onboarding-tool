@@ -406,9 +406,16 @@ test.describe("onboarding wizard", () => {
     await clickNext(page);
 
     await expectStep(page, "step-issues");
-    await expect(page.getByTestId("issue-recommended")).toBeVisible({
-      timeout: 60_000,
-    });
+    // Wait until ranking settles: either a recommended card or a load error.
+    const recommended = page.getByTestId("issue-recommended");
+    const loadError = page.getByTestId("issue-load-error");
+    await expect(recommended.or(loadError)).toBeVisible({ timeout: 60_000 });
+    if ((await loadError.count()) > 0) {
+      throw new Error(
+        `Issues ranking failed: ${(await loadError.textContent())?.trim() ?? "unknown error"}`,
+      );
+    }
+    await expect(recommended).toBeVisible();
     const alt0 = page.getByTestId("issue-alternative-0");
     const alt1 = page.getByTestId("issue-alternative-1");
     // Ranking may return fewer than 3 issues; require alternatives only when present.
