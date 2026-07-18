@@ -2,6 +2,8 @@
 
 Guide contributors from zero to a first [Opik](https://github.com/comet-ml/opik) contribution. One command deploys the local stack, walks product knowledge, assigns a ranked GitHub issue, and generates a Cursor prompt with an Opik-repo branch.
 
+Video demo: https://www.loom.com/share/b8b6eec7297447dfb795db25851f9fa8
+
 ## Quick start
 
 ```bash
